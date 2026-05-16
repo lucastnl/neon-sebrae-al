@@ -15,16 +15,35 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../../assets/js/neon-store.js?v=3"></script>
 <script>
-// boot guard: se neon-store não carregou, mostra erro visível
+// captura QUALQUER erro JS antes mesmo dos scripts externos rodarem
+window._neonErrors = [];
+window.addEventListener('error', e => {
+  window._neonErrors.push({
+    msg: e.message || String(e),
+    src: e.filename || '?',
+    line: e.lineno || '?',
+    col: e.colno || '?'
+  });
+}, true);
+window.addEventListener('unhandledrejection', e => {
+  window._neonErrors.push({ msg: 'unhandled promise: ' + (e.reason?.message || e.reason), src: 'promise', line: '?', col: '?' });
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/js/neon-store.js?v=4"></script>
+<script>
 window.addEventListener('load', () => {
-  if (!window.NeonStore) {
+  const errs = window._neonErrors || [];
+  const ok = !!window.NeonStore;
+  if (!ok || errs.length) {
+    const lines = [];
+    if (!ok) lines.push('⚠ window.NeonStore indisponível');
+    if (typeof window.supabase === 'undefined') lines.push('⚠ supabase-js (CDN) indisponível');
+    errs.forEach(e => lines.push('⚠ ' + e.msg + ' (' + e.src.split('/').pop() + ':' + e.line + ':' + e.col + ')'));
     document.body.insertAdjacentHTML('afterbegin',
-      '<div style="position:fixed;top:0;left:0;right:0;background:red;color:white;padding:14px;font:14px sans-serif;text-align:center;z-index:9999;">' +
-      '⚠ neon-store.js NÃO carregou. Abra devtools (F12) aba Network e veja o status da requisição /assets/js/neon-store.js?v=3' +
-      '</div>'
+      '<div style="position:fixed;top:0;left:0;right:0;background:#b00020;color:white;padding:12px;font:12px/1.4 monospace;text-align:left;z-index:9999;white-space:pre-wrap;">'
+      + lines.join('\n') + '</div>'
     );
   } else {
     console.info('[boot] NeonStore disponível:', Object.keys(window.NeonStore));
