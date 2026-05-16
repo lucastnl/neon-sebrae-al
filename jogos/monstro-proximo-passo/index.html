@@ -15,6 +15,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../../assets/js/neon-store.js"></script>
+
 <style>
 :root {
   --verde: #00D95C;
@@ -1362,80 +1365,73 @@ function showScreen(name) {
   game.classList.toggle('is-playing', name === 'play');
 }
 
-// ============ STORAGE (abstrai pra trocar por Supabase depois) ============
-function loadCaravanData() {
-  try {
-    const raw = localStorage.getItem(CARAVAN_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return { current: 1, history: {} };
-}
-function saveCaravanData(data) {
-  try { localStorage.setItem(CARAVAN_KEY, JSON.stringify(data)); } catch {}
-}
-function getCurrentCaravana() {
-  return loadCaravanData().current;
-}
+// ============ STORAGE (NeonStore: Supabase com fallback localStorage) ============
+let _currentCaravana = null;
+
 function formatCaravana(n) {
   return 'CARAVANA ' + String(n).padStart(2, '0');
 }
-function updateCaravanaBadge() {
+async function refreshCaravanaAtiva() {
+  _currentCaravana = await window.NeonStore.getCaravanaAtiva();
+  return _currentCaravana;
+}
+function getCurrentCaravana() {
+  return _currentCaravana ? _currentCaravana.numero : 1;
+}
+async function updateCaravanaBadge() {
+  await refreshCaravanaAtiva();
   $('caravana-badge').textContent = formatCaravana(getCurrentCaravana());
 }
-function closeCurrentCaravana() {
-  const data = loadCaravanData();
-  const list = loadRanking();
-  data.history[data.current] = {
-    encerradaEm: new Date().toISOString(),
-    top: list.slice(0, 5)
-  };
-  data.current++;
-  saveCaravanData(data);
-  saveRanking([]);
-  renderRanking();
-  updateCaravanaBadge();
+async function closeCurrentCaravana() {
+  await window.NeonStore.encerrarCaravanaAtiva();
+  await refreshCaravanaAtiva();
+  await renderRanking();
+  $('caravana-badge').textContent = formatCaravana(getCurrentCaravana());
 }
-function resetAllCaravan() {
-  try {
-    localStorage.removeItem(CARAVAN_KEY);
-    localStorage.removeItem(HS_KEY);
-  } catch {}
-  renderRanking();
-  updateCaravanaBadge();
+async function resetAllCaravan() {
+  await window.NeonStore.resetarTudo();
+  await refreshCaravanaAtiva();
+  await renderRanking();
+  $('caravana-badge').textContent = formatCaravana(getCurrentCaravana());
 }
 
-function loadRanking() {
-  try { return JSON.parse(localStorage.getItem(HS_KEY)) || []; } catch { return []; }
-}
-function saveRanking(rank) {
-  try { localStorage.setItem(HS_KEY, JSON.stringify(rank)); } catch {}
-}
-function renderRanking() {
-  const list = loadRanking();
+// ranking agora vem da caravana atual via NeonStore (Supabase com fallback localStorage)
+let _cachedRanking = [];
+
+async function renderRanking() {
+  try {
+    const partidas = await window.NeonStore.topPartidasCaravanaAtiva(5);
+    _cachedRanking = partidas || [];
+  } catch (e) {
+    _cachedRanking = [];
+  }
   const c = $('hs-list');
-  if (list.length === 0) {
+  if (_cachedRanking.length === 0) {
     c.innerHTML = '<div class="hs-empty">--- VAZIO ---</div>';
     return;
   }
-  c.innerHTML = list.slice(0, 5).map((r, i) => {
+  c.innerHTML = _cachedRanking.map((r, i) => {
     return '<div class="hs-row">'
       + '<span class="rank">' + String(i + 1).padStart(2, '0') + '</span>'
-      + '<span class="name">' + r.name + '</span>'
+      + '<span class="name">' + (r.nome_jogador || '???') + '</span>'
       + '<span class="score">' + String(r.score).padStart(6, '0') + '</span>'
-      + '<span class="stage">F' + r.stage + '</span>'
+      + '<span class="stage">F' + (r.fase_max || 1) + '</span>'
       + '</div>';
   }).join('');
 }
 function isHighScore(score) {
-  const list = loadRanking();
-  if (list.length < 5) return true;
-  return score > (list[list.length - 1] ? list[list.length - 1].score : 0);
+  if (_cachedRanking.length < 5) return true;
+  return score > (_cachedRanking[_cachedRanking.length - 1].score || 0);
 }
-function addToRanking(name, score, stage) {
-  const list = loadRanking();
-  list.push({ name: name, score: score, stage: stage, date: new Date().toISOString() });
-  list.sort((a, b) => b.score - a.score);
-  saveRanking(list.slice(0, 10));
+async function addToRanking(name, score, stage) {
+  await window.NeonStore.salvarPartida({
+    nome_jogador: name,
+    score: score,
+    fase_max: stage,
+    medo_escolhido: state.chosenFear,
+    acertos: state.hits,
+    combo_max: state.maxCombo
+  });
 }
 
 function startGame() {
@@ -1916,7 +1912,7 @@ function endGame(won) {
   setTimeout(() => showScreen('choice'), 1500);
 }
 
-function chooseFear(fearKey) {
+async function chooseFear(fearKey) {
   state.chosenFear = fearKey;
   const lesson = LESSONS[fearKey];
   const fear = FEARS[fearKey];
@@ -1929,10 +1925,22 @@ function chooseFear(fearKey) {
   $('share-trail').textContent = 'SOBRE ' + fear.label + ' · ' + lesson.trail;
   // mostra botão de ranking só se high score
   const rankBtn = $('btn-rank');
-  if (isHighScore(state.pendingScore) && state.pendingScore > 0) {
+  if (state.pendingScore > 0 && isHighScore(state.pendingScore)) {
     rankBtn.hidden = false;
   } else {
     rankBtn.hidden = true;
+    // se não for high score mas teve score, ainda registra a partida como anônima (AAA)
+    if (state.pendingScore > 0) {
+      await window.NeonStore.salvarPartida({
+        nome_jogador: '???',
+        score: state.pendingScore,
+        fase_max: state.pendingStage,
+        medo_escolhido: fearKey,
+        acertos: state.hits,
+        combo_max: state.maxCombo
+      });
+      await renderRanking();
+    }
   }
   showScreen('share');
 }
@@ -1964,10 +1972,10 @@ function changeInitial(slot, dir) {
   updateInitialsUI();
 }
 
-function saveInitials() {
+async function saveInitials() {
   const name = state.initials.join('');
-  addToRanking(name, state.pendingScore, state.pendingStage);
-  renderRanking();
+  await addToRanking(name, state.pendingScore, state.pendingStage);
+  await renderRanking();
   showScreen('start');
 }
 
@@ -2036,23 +2044,23 @@ function pressOpKey(k) {
   updateOpCodeDisplay();
 }
 
-function renderHistory() {
-  const data = loadCaravanData();
+async function renderHistory() {
+  const list = await window.NeonStore.listarHistoricoCaravanas();
   const c = $('op-history-list');
-  const keys = Object.keys(data.history).sort((a, b) => Number(b) - Number(a));
-  if (keys.length === 0) {
+  if (!list || list.length === 0) {
     c.innerHTML = '<div class="hs-empty" style="text-align:center; padding:20px;">NENHUMA CARAVANA ENCERRADA AINDA</div>';
     return;
   }
-  c.innerHTML = keys.map(k => {
-    const car = data.history[k];
-    const date = new Date(car.encerradaEm).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
-    const topHtml = car.top.length > 0
-      ? car.top.map((r, i) => '<div class="top-line"><span class="name">' + String(i+1).padStart(2,'0') + ' ' + r.name + '</span><span class="pts">' + String(r.score).padStart(6,'0') + '</span></div>').join('')
-      : '<div class="top-line" style="color: rgba(255,255,255,0.4);">SEM REGISTROS</div>';
+  c.innerHTML = list.map(car => {
+    const date = car.encerrada_em
+      ? new Date(car.encerrada_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+      : '';
+    const escolaLine = car.escola ? '<div class="top-line"><span class="name" style="color: var(--ciano);">' + car.escola + '</span></div>' : '';
     return '<div class="op-history-row">'
-      + '<div class="car-id">' + formatCaravana(Number(k)) + ' · ' + date + '</div>'
-      + topHtml
+      + '<div class="car-id">' + formatCaravana(car.numero) + ' · ' + date + '</div>'
+      + escolaLine
+      + '<div class="top-line"><span class="name">PONTOS TOTAIS</span><span class="pts">' + String(car.pontos_totais || 0).padStart(6,'0') + '</span></div>'
+      + '<div class="top-line"><span class="name">PARTIDAS</span><span class="pts">' + (car.partidas_jogadas || 0) + '</span></div>'
       + '</div>';
   }).join('');
 }
@@ -2068,26 +2076,30 @@ $('op-action-next').addEventListener('click', () => {
   $('op-confirm-text').innerHTML = 'Vai encerrar a <strong>' + formatCaravana(cur) + '</strong> e iniciar a <strong>' + formatCaravana(cur + 1) + '</strong>. O ranking atual vai pro histórico.';
   showOpView('op-view-confirm');
 });
-$('op-confirm-yes').addEventListener('click', () => {
-  closeCurrentCaravana();
+$('op-confirm-yes').addEventListener('click', async () => {
+  await closeCurrentCaravana();
   showScreen('start');
 });
 $('op-confirm-no').addEventListener('click', () => showOpView('op-view-menu'));
-$('op-action-history').addEventListener('click', () => {
-  renderHistory();
+$('op-action-history').addEventListener('click', async () => {
+  await renderHistory();
   showOpView('op-view-history');
 });
 $('op-history-back').addEventListener('click', () => showOpView('op-view-menu'));
 $('op-action-reset').addEventListener('click', () => showOpView('op-view-confirm-reset'));
-$('op-reset-yes').addEventListener('click', () => {
-  resetAllCaravan();
+$('op-reset-yes').addEventListener('click', async () => {
+  await resetAllCaravan();
   showScreen('start');
 });
 $('op-reset-no').addEventListener('click', () => showOpView('op-view-menu'));
 
-renderRanking();
-updateCaravanaBadge();
-showScreen('start');
+// Boot
+(async function boot() {
+  await window.NeonStore.init();
+  await updateCaravanaBadge();
+  await renderRanking();
+  showScreen('start');
+})();
 </script>
 </body>
 </html>

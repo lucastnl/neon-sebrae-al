@@ -3,16 +3,19 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dashboard, Neon Sebrae AL · Escalada</title>
+<title>Placar ao Vivo · Neon Sebrae AL</title>
 
-<meta property="og:title" content="Dashboard, Neon Sebrae AL" />
-<meta property="og:description" content="Resultados do jogo do Totem, por caravana e por escola." />
+<meta property="og:title" content="Placar ao Vivo · Neon 2026" />
+<meta property="og:description" content="Ranking das caravanas em tempo real no Neon Sebrae Alagoas." />
 <meta property="og:type" content="website" />
 <meta property="og:image" content="../assets/logo-escalada.svg" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/js/neon-store.js"></script>
 
 <style>
 :root {
@@ -38,6 +41,7 @@ html, body {
   color: var(--branco);
   font-family: 'Space Grotesk', sans-serif;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 body::before {
@@ -52,28 +56,23 @@ body::before {
 }
 
 .container {
-  max-width: 1100px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 28px 20px 60px;
+  padding: 24px 22px 40px;
 }
 
-.header {
+.top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 22px;
+  padding-bottom: 18px;
   border-bottom: 1px solid rgba(255,255,255,0.1);
-  margin-bottom: 30px;
+  margin-bottom: 26px;
   flex-wrap: wrap;
   gap: 16px;
 }
-.header img { height: 30px; }
-.header .info {
-  display: flex;
-  gap: 18px;
-  align-items: center;
-  flex-wrap: wrap;
-}
+.top img { height: 28px; }
+.top .meta { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
 .tag {
   font-family: 'Press Start 2P', monospace;
   font-size: 9px;
@@ -81,573 +80,364 @@ body::before {
   color: var(--ciano);
   text-shadow: 0 0 6px var(--ciano);
 }
-.tag.mock {
-  color: var(--amarelo);
-  text-shadow: 0 0 6px var(--amarelo);
-  border: 1px solid var(--amarelo);
-  padding: 5px 10px;
-  border-radius: 4px;
+.live-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--vermelho);
+  text-shadow: 0 0 8px var(--vermelho);
+  letter-spacing: 1.5px;
+}
+.live-dot::before {
+  content: '';
+  width: 10px; height: 10px;
+  background: var(--vermelho);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--vermelho);
+  animation: liveBlink 1s infinite;
+}
+@keyframes liveBlink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
 }
 
 .page-title {
   font-family: 'Press Start 2P', monospace;
-  font-size: 22px;
-  color: var(--verde-claro);
-  text-shadow: 0 0 12px var(--verde-claro);
-  margin-bottom: 10px;
-  line-height: 1.4;
-}
-.page-subtitle {
-  font-size: 16px;
-  color: rgba(255,255,255,0.7);
-  margin-bottom: 36px;
-  font-weight: 500;
-}
-
-.section {
-  margin-bottom: 44px;
-}
-.section-title {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 13px;
-  color: var(--amarelo);
-  text-shadow: 0 0 6px var(--amarelo);
-  letter-spacing: 1px;
-  margin-bottom: 18px;
-  padding-bottom: 8px;
-  border-bottom: 2px dashed rgba(255, 217, 61, 0.3);
-}
-
-/* KPI CARDS */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 12px;
-  margin-bottom: 12px;
-}
-.kpi {
-  background: rgba(10, 15, 54, 0.7);
-  border: 2px solid;
-  border-radius: 10px;
-  padding: 18px 16px;
-  text-align: center;
-}
-.kpi.green { border-color: var(--verde); box-shadow: 0 0 12px rgba(0, 217, 92, 0.3); }
-.kpi.cyan { border-color: var(--ciano); box-shadow: 0 0 12px rgba(0, 249, 255, 0.3); }
-.kpi.magenta { border-color: var(--magenta); box-shadow: 0 0 12px rgba(255, 0, 255, 0.3); }
-.kpi.yellow { border-color: var(--amarelo); box-shadow: 0 0 12px rgba(255, 217, 61, 0.3); }
-.kpi-value {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 26px;
-  color: var(--branco);
-  margin-bottom: 6px;
-  text-shadow: 0 0 8px currentColor;
-}
-.kpi.green .kpi-value { color: var(--verde-claro); }
-.kpi.cyan .kpi-value { color: var(--ciano); }
-.kpi.magenta .kpi-value { color: var(--magenta-claro); }
-.kpi.yellow .kpi-value { color: var(--amarelo); }
-.kpi-label {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 8px;
-  color: rgba(255,255,255,0.6);
-  letter-spacing: 1px;
-}
-
-/* WINNER */
-.winner-card {
-  background: linear-gradient(135deg, var(--amarelo) 0%, var(--laranja) 100%);
-  color: var(--navy-deep);
-  padding: 22px 24px;
-  border-radius: 12px;
-  display: flex;
-  gap: 22px;
-  align-items: center;
-  box-shadow: 0 0 32px rgba(255, 217, 61, 0.5);
-  flex-wrap: wrap;
-}
-.trophy {
-  font-size: 64px;
-  filter: drop-shadow(2px 4px 0 rgba(0,0,0,0.2));
-}
-.winner-info { flex: 1; min-width: 200px; }
-.winner-label {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  opacity: 0.7;
-  margin-bottom: 4px;
-}
-.winner-name {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 18px;
-  margin-bottom: 4px;
+  font-size: 24px;
+  color: var(--magenta-claro);
+  text-shadow: 0 0 14px var(--magenta), 3px 3px 0 var(--navy-deep);
+  margin-bottom: 8px;
   line-height: 1.3;
 }
-.winner-detail {
-  font-size: 14px;
-  font-weight: 500;
-}
-.winner-score {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 32px;
-  text-shadow: 2px 2px 0 rgba(0,0,0,0.15);
+.page-sub {
+  font-size: 16px;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 28px;
 }
 
-/* TABLE ESCOLAS */
-.table-wrap {
-  background: rgba(10, 15, 54, 0.6);
-  border-radius: 10px;
-  border: 1px solid rgba(0, 249, 255, 0.25);
-  overflow-x: auto;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 700px;
-}
-th, td {
-  padding: 12px 14px;
-  text-align: left;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-th {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 9px;
-  color: var(--ciano);
-  letter-spacing: 1px;
-  background: rgba(0, 0, 0, 0.3);
-  text-shadow: 0 0 4px var(--ciano);
-}
-td {
-  font-size: 14px;
-  font-weight: 500;
-}
-tbody tr:hover { background: rgba(0, 249, 255, 0.05); }
-.rank-cell {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 13px;
-  color: var(--amarelo);
-  text-shadow: 0 0 6px var(--amarelo);
-  width: 50px;
-}
-.score-cell {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 13px;
-  color: var(--verde-claro);
-  text-align: right;
-}
-.escola-cell strong { color: var(--branco); }
-.escola-cell small { display: block; color: rgba(255,255,255,0.5); font-size: 12px; margin-top: 2px; }
-
-/* TWO COLS */
-.two-cols {
+.layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1.1fr;
   gap: 22px;
 }
-@media (max-width: 760px) {
-  .two-cols { grid-template-columns: 1fr; }
-}
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
 
-/* HEAT BARS (medos) */
-.heat-list { display: flex; flex-direction: column; gap: 10px; }
-.heat-row {
-  display: grid;
-  grid-template-columns: 140px 1fr 50px;
-  gap: 10px;
-  align-items: center;
-}
-.heat-label {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 9px;
-  letter-spacing: 1px;
-}
-.heat-track {
-  background: rgba(10, 15, 54, 0.7);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 4px;
-  height: 18px;
-  position: relative;
-  overflow: hidden;
-}
-.heat-fill {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  padding: 0 10px;
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--navy-deep);
-  transition: width 0.6s ease-out;
-}
-.heat-row.plano .heat-fill { background: var(--azul-claro); }
-.heat-row.plano .heat-label { color: var(--azul-claro); text-shadow: 0 0 4px var(--azul-claro); }
-.heat-row.foco .heat-fill { background: var(--ciano); }
-.heat-row.foco .heat-label { color: var(--ciano); text-shadow: 0 0 4px var(--ciano); }
-.heat-row.coragem .heat-fill { background: var(--laranja); }
-.heat-row.coragem .heat-label { color: var(--laranja); text-shadow: 0 0 4px var(--laranja); }
-.heat-row.apoio .heat-fill { background: var(--verde); }
-.heat-row.apoio .heat-label { color: var(--verde); text-shadow: 0 0 4px var(--verde); }
-.heat-pct {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 10px;
-  color: var(--branco);
-  text-align: right;
-}
-
-/* MUNICIPIO BARS */
-.mun-list { display: flex; flex-direction: column; gap: 8px; }
-.mun-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.mun-name {
-  font-size: 14px;
-  font-weight: 500;
-}
-.mun-bar {
-  height: 6px;
-  background: linear-gradient(90deg, var(--verde) 0%, var(--ciano) 100%);
-  border-radius: 3px;
-  margin-top: 6px;
-}
-.mun-score {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 11px;
-  color: var(--verde-claro);
-  align-self: center;
-}
-
-/* CTA */
-.cta {
-  background: linear-gradient(135deg, var(--magenta) 0%, var(--azul) 100%);
-  padding: 32px 24px;
+.podium {
+  background: rgba(10, 15, 54, 0.6);
+  border: 2px solid var(--amarelo);
   border-radius: 14px;
-  text-align: center;
-  margin-top: 40px;
-  border: 3px solid var(--ciano);
-  box-shadow: 0 0 36px rgba(255, 0, 255, 0.3);
+  padding: 22px;
+  box-shadow: 0 0 28px rgba(255, 217, 61, 0.25);
 }
-.cta h3 {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 14px;
-  color: var(--branco);
-  margin-bottom: 14px;
-  letter-spacing: 1.5px;
-  line-height: 1.4;
-}
-.cta p { margin-bottom: 18px; font-size: 14px; line-height: 1.5; }
-.cta-btn {
-  display: inline-block;
+.podium-title {
   font-family: 'Press Start 2P', monospace;
   font-size: 12px;
-  background: var(--amarelo);
-  color: var(--navy-deep);
-  padding: 16px 26px;
-  border-radius: 8px;
-  text-decoration: none;
-  box-shadow: 0 0 24px rgba(255, 217, 61, 0.6), 4px 4px 0 var(--navy-deep);
+  color: var(--amarelo);
+  text-shadow: 0 0 8px var(--amarelo);
   letter-spacing: 1.5px;
-  transition: transform 0.1s;
+  margin-bottom: 18px;
+  text-align: center;
 }
-.cta-btn:active { transform: translate(2px, 2px); box-shadow: 0 0 24px rgba(255, 217, 61, 0.6), 2px 2px 0 var(--navy-deep); }
+.podium-list { display: flex; flex-direction: column; gap: 10px; }
+.podium-card {
+  border: 2px solid;
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  transition: transform 0.4s, box-shadow 0.4s;
+  background: rgba(10, 15, 54, 0.7);
+}
+.podium-card.first { border-color: var(--amarelo); box-shadow: 0 0 24px rgba(255, 217, 61, 0.4); transform: scale(1.04); }
+.podium-card.second { border-color: var(--ciano); }
+.podium-card.third { border-color: var(--magenta); }
+.podium-card.other { border-color: rgba(255,255,255,0.2); padding: 12px 16px; }
+.podium-rank { font-family: 'Press Start 2P', monospace; font-size: 28px; text-align: center; }
+.podium-card.first .podium-rank { color: var(--amarelo); text-shadow: 0 0 10px var(--amarelo); }
+.podium-card.second .podium-rank { color: var(--ciano); text-shadow: 0 0 10px var(--ciano); }
+.podium-card.third .podium-rank { color: var(--magenta-claro); text-shadow: 0 0 10px var(--magenta); }
+.podium-card.other .podium-rank { color: rgba(255,255,255,0.6); font-size: 22px; }
+.podium-info .car {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  color: var(--branco);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.podium-info .escola { font-size: 13px; color: rgba(255,255,255,0.7); }
+.podium-info .partidas {
+  font-size: 11px;
+  font-family: 'Press Start 2P', monospace;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+.podium-pts {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 20px;
+  color: var(--verde-claro);
+  text-shadow: 0 0 10px var(--verde-claro);
+  text-align: right;
+}
+.podium-card.first .podium-pts { font-size: 26px; color: var(--amarelo); text-shadow: 0 0 14px var(--amarelo); }
+
+.side { display: flex; flex-direction: column; gap: 18px; }
+
+.ticker {
+  background: rgba(10, 15, 54, 0.6);
+  border: 2px solid var(--ciano);
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: 0 0 20px rgba(0, 249, 255, 0.2);
+}
+.ticker-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--ciano);
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+  text-shadow: 0 0 6px var(--ciano);
+}
+.ticker-list { max-height: 240px; overflow: hidden; display: flex; flex-direction: column; gap: 8px; }
+.ticker-row {
+  padding: 8px 12px;
+  border-left: 3px solid var(--ciano);
+  background: rgba(0, 249, 255, 0.05);
+  border-radius: 4px;
+  font-size: 13px;
+  animation: tickerIn 0.5s ease-out;
+}
+@keyframes tickerIn {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+.ticker-row strong { color: var(--amarelo); }
+.ticker-row .when { color: rgba(255,255,255,0.4); font-size: 11px; margin-left: 8px; }
+
+.table-wrap {
+  background: rgba(10, 15, 54, 0.6);
+  border: 2px solid var(--verde);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 217, 92, 0.2);
+}
+.table-header {
+  padding: 14px 18px;
+  background: rgba(0, 217, 92, 0.1);
+  border-bottom: 1px solid rgba(0, 217, 92, 0.3);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--verde-claro);
+  text-shadow: 0 0 6px var(--verde-claro);
+  letter-spacing: 1.5px;
+}
+.table-body { max-height: 380px; overflow-y: auto; }
+.table-row {
+  display: grid;
+  grid-template-columns: 36px 1fr 80px 50px;
+  padding: 10px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  align-items: center;
+  font-size: 13px;
+  gap: 8px;
+  transition: background 0.3s;
+}
+.table-row.up { animation: rowUp 0.6s ease-out; }
+@keyframes rowUp {
+  0% { background: rgba(0, 217, 92, 0.3); }
+  100% { background: transparent; }
+}
+.table-row .pos { font-family: 'Press Start 2P', monospace; font-size: 11px; color: var(--amarelo); }
+.table-row .car-name { font-weight: 500; }
+.table-row .car-name small { display: block; color: rgba(255,255,255,0.5); font-size: 12px; margin-top: 2px; }
+.table-row .pts { font-family: 'Press Start 2P', monospace; font-size: 11px; color: var(--verde-claro); text-align: right; }
+.table-row .games { font-family: 'Press Start 2P', monospace; font-size: 9px; color: rgba(255,255,255,0.4); text-align: right; }
+
+.empty-state {
+  padding: 60px 30px;
+  text-align: center;
+  color: rgba(255,255,255,0.5);
+  font-size: 14px;
+  line-height: 1.6;
+}
 
 .footer {
-  margin-top: 50px;
+  margin-top: 36px;
   text-align: center;
   color: rgba(255,255,255,0.4);
   font-size: 12px;
   letter-spacing: 1px;
 }
+.footer a { color: var(--ciano); text-decoration: none; }
+
+#status {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  background: rgba(10, 15, 54, 0.7);
+  border: 1px solid rgba(255,255,255,0.2);
+  z-index: 100;
+}
+#status.online { color: var(--verde-claro); border-color: var(--verde); }
+#status.offline { color: var(--amarelo); border-color: var(--amarelo); }
 </style>
 </head>
 
 <body>
 <div class="container">
 
-  <div class="header">
+  <div class="top">
     <img src="../assets/logo-escalada.svg" alt="Escalada" />
-    <div class="info">
-      <span class="tag">DASHBOARD · NEON 2026</span>
-      <span class="tag mock">⚠ MOCKUP · DADOS FICTÍCIOS</span>
+    <div class="meta">
+      <span class="tag">PLACAR · NEON 2026</span>
+      <span class="live-dot">AO VIVO</span>
     </div>
   </div>
 
-  <h1 class="page-title">RESULTADOS<br>DO MONSTRO DO PRÓXIMO PASSO</h1>
-  <p class="page-subtitle">3 dias de evento, 39 caravanas, 1.700 alunos. Quem mais subiu a montanha?</p>
+  <h1 class="page-title">QUEM TÁ NO TOPO<br>DA MONTANHA?</h1>
+  <p class="page-sub">Ranking somado das caravanas. Atualiza em tempo real.</p>
 
-  <!-- KPIs gerais -->
-  <div class="section">
-    <h2 class="section-title">📊 NÚMEROS GERAIS</h2>
-    <div class="kpi-grid">
-      <div class="kpi cyan">
-        <div class="kpi-value">39</div>
-        <div class="kpi-label">CARAVANAS</div>
-      </div>
-      <div class="kpi green">
-        <div class="kpi-value">1.687</div>
-        <div class="kpi-label">PARTIDAS JOGADAS</div>
-      </div>
-      <div class="kpi magenta">
-        <div class="kpi-value">72%</div>
-        <div class="kpi-label">CHEGOU NA FASE 2</div>
-      </div>
-      <div class="kpi yellow">
-        <div class="kpi-value">194</div>
-        <div class="kpi-label">PRÉ-CADASTROS ESCALADA</div>
+  <div class="layout">
+
+    <div class="podium">
+      <div class="podium-title">🏆 PÓDIO DAS CARAVANAS</div>
+      <div class="podium-list" id="podium-list">
+        <div class="empty-state">Aguardando primeiras partidas...</div>
       </div>
     </div>
-  </div>
 
-  <!-- ESCOLA VENCEDORA -->
-  <div class="section">
-    <h2 class="section-title">🏆 ESCOLA VENCEDORA</h2>
-    <div class="winner-card">
-      <div class="trophy">🏆</div>
-      <div class="winner-info">
-        <div class="winner-label">CAMPEÃ DO EVENTO</div>
-        <div class="winner-name">Escola Estadual<br>Marechal Floriano Peixoto</div>
-        <div class="winner-detail">Maceió, AL · 47 alunos participantes · 38 chegaram na Fase 3</div>
-      </div>
-      <div class="winner-score">042.180</div>
-    </div>
-  </div>
-
-  <!-- TOP 10 ESCOLAS -->
-  <div class="section">
-    <h2 class="section-title">🥇 TOP 10 ESCOLAS</h2>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>POS</th>
-            <th>ESCOLA</th>
-            <th>MUNICÍPIO</th>
-            <th>ALUNOS</th>
-            <th>FASE MÁX</th>
-            <th style="text-align:right;">MELHOR SCORE</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="rank-cell">01</td>
-            <td class="escola-cell"><strong>EE Marechal Floriano Peixoto</strong><br><small>Top scorer: MJF · 11/06</small></td>
-            <td>Maceió</td>
-            <td>47</td>
-            <td>3</td>
-            <td class="score-cell">042.180</td>
-          </tr>
-          <tr>
-            <td class="rank-cell">02</td>
-            <td class="escola-cell"><strong>IFAL Campus Maceió</strong><br><small>Top scorer: LHA · 12/06</small></td>
-            <td>Maceió</td>
-            <td>40</td>
-            <td>3</td>
-            <td class="score-cell">039.745</td>
-          </tr>
-          <tr>
-            <td class="rank-cell">03</td>
-            <td class="escola-cell"><strong>EE Profa. Maria Mariá</strong><br><small>Top scorer: VPS · 11/06</small></td>
-            <td>Arapiraca</td>
-            <td>50</td>
-            <td>3</td>
-            <td class="score-cell">036.520</td>
-          </tr>
-          <tr>
-            <td class="rank-cell">04</td>
-            <td class="escola-cell"><strong>Colégio Estadual Tavares Bastos</strong><br><small>Top scorer: KDV · 12/06</small></td>
-            <td>Maceió</td>
-            <td>43</td>
-            <td>3</td>
-            <td class="score-cell">033.890</td>
-          </tr>
-          <tr>
-            <td class="rank-cell">05</td>
-            <td class="escola-cell"><strong>EE Padre Cabral</strong><br><small>Top scorer: BRT · 13/06</small></td>
-            <td>Penedo</td>
-            <td>42</td>
-            <td>3</td>
-            <td class="score-cell">031.220</td>
-          </tr>
-          <tr>
-            <td class="rank-cell">06</td>
-            <td class="escola-cell"><strong>EE Antônio Cansanção</strong><br><small>Top scorer: GLM · 11/06</small></td>
-            <td>Palmeira dos Índios</td>
-            <td>48</td>
-            <td>2</td>
-            <td class="score-cell">028.610</td>
-          </tr>
-          <tr>
-            <td class="rank-cell">07</td>
-            <td class="escola-cell"><strong>EE Ulisses Luna Freire</strong><br><small>Top scorer: ANF · 12/06</small></td>
-            <td>São Miguel dos Campos</td>
-            <td>38</td>
-            <td>2</td>
-            <td class="score-cell">025.940</td>
-          </tr>
-          <tr>
-            <td class="rank-cell">08</td>
-            <td class="escola-cell"><strong>EE Profa. Lucina Maia</strong><br><small>Top scorer: ROS · 11/06</small></td>
-            <td>Coruripe</td>
-            <td>45</td>
-            <td>2</td>
-            <td class="score-cell">023.510</td>
-          </tr>
-          <tr>
-            <td class="rank-cell">09</td>
-            <td class="escola-cell"><strong>SEMED · Polo Rio Largo</strong><br><small>Top scorer: WLT · 13/06</small></td>
-            <td>Rio Largo</td>
-            <td>50</td>
-            <td>2</td>
-            <td class="score-cell">021.870</td>
-          </tr>
-          <tr>
-            <td class="rank-cell">10</td>
-            <td class="escola-cell"><strong>EE Moreira e Silva</strong><br><small>Top scorer: DMC · 12/06</small></td>
-            <td>União dos Palmares</td>
-            <td>41</td>
-            <td>2</td>
-            <td class="score-cell">019.430</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="two-cols">
-
-    <!-- MEDOS MAIS ESCOLHIDOS -->
-    <div class="section">
-      <h2 class="section-title">💭 MEDO QUE MAIS PEGOU</h2>
-      <p style="margin-bottom:18px; color: rgba(255,255,255,0.7); font-size:14px;">Dos 1.687 que escolheram um medo no fim do jogo.</p>
-      <div class="heat-list">
-        <div class="heat-row coragem">
-          <div class="heat-label">💔 AUTOCOBRANÇA</div>
-          <div class="heat-track"><div class="heat-fill" style="width: 38%">CORAGEM</div></div>
-          <div class="heat-pct">38%</div>
-        </div>
-        <div class="heat-row plano">
-          <div class="heat-label">📋 PROCRASTINAÇÃO</div>
-          <div class="heat-track"><div class="heat-fill" style="width: 27%">PLANO</div></div>
-          <div class="heat-pct">27%</div>
-        </div>
-        <div class="heat-row foco">
-          <div class="heat-label">👥 COMPARAÇÃO</div>
-          <div class="heat-track"><div class="heat-fill" style="width: 22%">FOCO</div></div>
-          <div class="heat-pct">22%</div>
-        </div>
-        <div class="heat-row apoio">
-          <div class="heat-label">🧊 PARALISIA</div>
-          <div class="heat-track"><div class="heat-fill" style="width: 13%">APOIO</div></div>
-          <div class="heat-pct">13%</div>
+    <div class="side">
+      <div class="ticker">
+        <div class="ticker-title">⚡ ÚLTIMAS JOGADAS</div>
+        <div class="ticker-list" id="ticker-list">
+          <div class="empty-state" style="padding: 24px;">Esperando alguém jogar.</div>
         </div>
       </div>
-      <p style="margin-top:18px; font-size:13px; color: rgba(255,255,255,0.6); font-style:italic;">
-        38% dos alunos disse que <strong style="color:var(--laranja);">autocobrança</strong> é o medo que mais pega. Esse insight conversa direto com a TR6 e DP1 do Escalada.
-      </p>
-    </div>
 
-    <!-- TOP MUNICÍPIOS -->
-    <div class="section">
-      <h2 class="section-title">🗺️ TOP MUNICÍPIOS POR SCORE MÉDIO</h2>
-      <p style="margin-bottom:18px; color: rgba(255,255,255,0.7); font-size:14px;">Média das partidas por município.</p>
-      <div class="mun-list">
-        <div class="mun-row">
-          <div>
-            <div class="mun-name">Maceió</div>
-            <div class="mun-bar" style="width:100%"></div>
-          </div>
-          <div class="mun-score">24.870</div>
-        </div>
-        <div class="mun-row">
-          <div>
-            <div class="mun-name">Arapiraca</div>
-            <div class="mun-bar" style="width:84%"></div>
-          </div>
-          <div class="mun-score">20.910</div>
-        </div>
-        <div class="mun-row">
-          <div>
-            <div class="mun-name">Penedo</div>
-            <div class="mun-bar" style="width:72%"></div>
-          </div>
-          <div class="mun-score">17.880</div>
-        </div>
-        <div class="mun-row">
-          <div>
-            <div class="mun-name">Palmeira dos Índios</div>
-            <div class="mun-bar" style="width:66%"></div>
-          </div>
-          <div class="mun-score">16.420</div>
-        </div>
-        <div class="mun-row">
-          <div>
-            <div class="mun-name">São Miguel dos Campos</div>
-            <div class="mun-bar" style="width:58%"></div>
-          </div>
-          <div class="mun-score">14.350</div>
-        </div>
-        <div class="mun-row">
-          <div>
-            <div class="mun-name">Coruripe</div>
-            <div class="mun-bar" style="width:52%"></div>
-          </div>
-          <div class="mun-score">12.760</div>
-        </div>
-        <div class="mun-row">
-          <div>
-            <div class="mun-name">Rio Largo</div>
-            <div class="mun-bar" style="width:48%"></div>
-          </div>
-          <div class="mun-score">11.890</div>
-        </div>
-        <div class="mun-row">
-          <div>
-            <div class="mun-name">União dos Palmares</div>
-            <div class="mun-bar" style="width:42%"></div>
-          </div>
-          <div class="mun-score">10.310</div>
+      <div class="table-wrap">
+        <div class="table-header">TOP 10 · CLASSIFICAÇÃO COMPLETA</div>
+        <div class="table-body" id="table-body">
+          <div class="empty-state">Sem caravanas registradas ainda.</div>
         </div>
       </div>
     </div>
 
-  </div>
-
-  <!-- INSIGHTS -->
-  <div class="section">
-    <h2 class="section-title">💡 O QUE ESSES NÚMEROS DIZEM</h2>
-    <div style="background: rgba(10, 15, 54, 0.6); padding: 22px 26px; border-radius: 10px; border-left: 4px solid var(--verde-claro);">
-      <p style="margin-bottom: 14px; font-size: 15px; line-height: 1.6;">
-        <strong style="color: var(--verde-claro);">A maioria chega na Fase 2.</strong> 72% dos alunos passou da Fase 1, mas só 31% chegou na Fase 3 (infinito). A curva de dificuldade está cumprindo o papel: aquece sem afastar.
-      </p>
-      <p style="margin-bottom: 14px; font-size: 15px; line-height: 1.6;">
-        <strong style="color: var(--laranja);">Autocobrança é o medo dominante.</strong> 38% escolheu autocobrança como o medo que mais pegou. Isso conversa direto com Ana Carolina e com as trilhas TR4 e TR6 do Escalada (mostrar trabalho mesmo imperfeito, primeira venda é coragem).
-      </p>
-      <p style="margin-bottom: 14px; font-size: 15px; line-height: 1.6;">
-        <strong style="color: var(--amarelo);">194 pré-cadastros no Escalada.</strong> Cerca de 11,5% dos que jogaram seguiram pro pré-cadastro durante a caravana, o que vira a métrica primária de sucesso do evento (não score em si).
-      </p>
-      <p style="font-size: 15px; line-height: 1.6;">
-        <strong style="color: var(--ciano);">Top 3 escolas levaram brindes Impacto.</strong> Fone, garrafa e minigame retrô distribuídos por monitor a cada caravana, conforme planejado com o Sebrae AL.
-      </p>
-    </div>
-  </div>
-
-  <!-- CTA -->
-  <div class="cta">
-    <h3>BORA SUBIR A SUA?</h3>
-    <p>O jogo continua disponível, sem fila de caravana. Joga e vê seu score.</p>
-    <a href="../jogos/monstro-proximo-passo/" class="cta-btn">▶ JOGAR AGORA</a>
   </div>
 
   <div class="footer">
-    Tiro na Lua · 2026 · Escalada Sebrae<br>
-    Página de exemplo, dados fictícios pra demonstração da estrutura final
+    Tiro na Lua, 2026 · <a href="/">voltar pro Neon</a>
   </div>
 
 </div>
+
+<div id="status">conectando...</div>
+
+<script>
+const FEAR_LABELS = {
+  procrastinacao: 'PROCRASTINAÇÃO',
+  comparacao: 'COMPARAÇÃO',
+  autocobranca: 'AUTOCOBRANÇA',
+  paralisia: 'PARALISIA'
+};
+
+let prevRanking = [];
+
+function renderPodium(ranking) {
+  const el = document.getElementById('podium-list');
+  if (ranking.length === 0) {
+    el.innerHTML = '<div class="empty-state">Aguardando primeiras partidas...</div>';
+    return;
+  }
+  const top = ranking.slice(0, 5);
+  el.innerHTML = top.map((r, i) => {
+    const cls = i === 0 ? 'first' : i === 1 ? 'second' : i === 2 ? 'third' : 'other';
+    const rank = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : String(i + 1).padStart(2, '0');
+    const car = 'CARAVANA ' + String(r.numero).padStart(2, '0');
+    const escola = r.escola || (r.ativa ? '· em andamento' : '· encerrada');
+    return '<div class="podium-card ' + cls + '">'
+      + '<div class="podium-rank">' + rank + '</div>'
+      + '<div class="podium-info">'
+      +   '<div class="car">' + car + '</div>'
+      +   '<div class="escola">' + escola + '</div>'
+      +   '<div class="partidas">' + (r.partidas_jogadas || 0) + ' PARTIDAS</div>'
+      + '</div>'
+      + '<div class="podium-pts">' + String(r.pontos_totais).padStart(6, '0') + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function renderTable(ranking) {
+  const el = document.getElementById('table-body');
+  if (ranking.length === 0) {
+    el.innerHTML = '<div class="empty-state">Sem caravanas registradas ainda.</div>';
+    return;
+  }
+  const top10 = ranking.slice(0, 10);
+  el.innerHTML = top10.map((r, i) => {
+    const car = 'CARAVANA ' + String(r.numero).padStart(2, '0');
+    const escola = r.escola || (r.ativa ? 'em andamento' : 'encerrada');
+    const prevPos = prevRanking.findIndex(p => p.id === r.id);
+    const up = prevPos > i && prevPos !== -1 ? ' up' : '';
+    return '<div class="table-row' + up + '">'
+      + '<span class="pos">' + String(i + 1).padStart(2, '0') + '</span>'
+      + '<span class="car-name">' + car + '<small>' + escola + '</small></span>'
+      + '<span class="pts">' + String(r.pontos_totais).padStart(6, '0') + '</span>'
+      + '<span class="games">' + (r.partidas_jogadas || 0) + 'P</span>'
+      + '</div>';
+  }).join('');
+  prevRanking = ranking;
+}
+
+function pushTicker(partida) {
+  const tickerList = document.getElementById('ticker-list');
+  if (tickerList.querySelector('.empty-state')) tickerList.innerHTML = '';
+  const row = document.createElement('div');
+  row.className = 'ticker-row';
+  const nome = partida.nome_jogador || '???';
+  const score = String(partida.score).padStart(6, '0');
+  const fase = partida.fase_max || 1;
+  const medo = partida.medo_escolhido && FEAR_LABELS[partida.medo_escolhido] ? ' · ' + FEAR_LABELS[partida.medo_escolhido] : '';
+  const when = new Date(partida.created_at || Date.now()).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  row.innerHTML = '<strong>' + nome + '</strong> fez <strong>' + score + '</strong> · Fase ' + fase + medo + ' <span class="when">' + when + '</span>';
+  tickerList.insertBefore(row, tickerList.firstChild);
+  while (tickerList.children.length > 10) tickerList.removeChild(tickerList.lastChild);
+}
+
+async function refreshRanking() {
+  try {
+    const ranking = await window.NeonStore.rankingCaravanas();
+    renderPodium(ranking);
+    renderTable(ranking);
+  } catch (e) {
+    console.error('[dashboard] erro carregando ranking:', e);
+  }
+}
+
+(async function boot() {
+  const ok = await window.NeonStore.init();
+  const status = document.getElementById('status');
+  if (ok) {
+    status.textContent = '● REALTIME ATIVO';
+    status.className = 'online';
+  } else {
+    status.textContent = '○ MODO LOCAL';
+    status.className = 'offline';
+  }
+  await refreshRanking();
+  window.NeonStore.subscribeNovasPartidas(async (partida) => {
+    pushTicker(partida);
+    await refreshRanking();
+  });
+  setInterval(refreshRanking, 8000);
+})();
+</script>
 </body>
 </html>
