@@ -13,6 +13,32 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# HTMLs principais nunca cacheados, evita "precisar dar Cmd+Shift+R" no totem
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/jogar/*"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/jogos/*"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/dashboard/*"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0, must-revalidate"
+
 # Rotas amigáveis
 [[redirects]]
   from = "/jogar"
