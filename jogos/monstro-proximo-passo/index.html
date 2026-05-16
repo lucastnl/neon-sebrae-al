@@ -2,14 +2,23 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="theme-color" content="#050822" />
 <title>O Monstro do Próximo Passo · Escalada</title>
 
 <meta property="og:title" content="O Monstro do Próximo Passo" />
 <meta property="og:description" content="Encare os medos que caem. Use seus recursos. Quanto antes você reage, mais pontos." />
 <meta property="og:type" content="website" />
-<meta property="og:image" content="../../assets/logo-escalada.svg" />
+<meta property="og:url" content="https://neon-sebrae-al.netlify.app/jogar/monstro/" />
+<meta property="og:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="1170" />
+<meta property="og:image:height" content="350" />
+<meta property="og:image:alt" content="Neon Sebrae Alagoas 2026" />
 <meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -87,13 +96,17 @@ html, body {
 #game {
   position: relative;
   height: 100vh;
+  height: 100dvh;
   max-height: 100vh;
+  max-height: 100dvh;
   max-width: 540px;
   margin: 0 auto;
   background: var(--navy-deep);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-top: env(safe-area-inset-top);
 }
 
 /* CRT effect */
@@ -964,6 +977,75 @@ html, body {
   max-width: 320px;
 }
 .op-confirm strong { color: var(--amarelo); }
+
+/* ===== RESPONSIVO MOBILE =====
+   Telas com altura curta (celular em portrait, paisagem em tablet pequeno) */
+@media (max-height: 760px) {
+  .start-title { font-size: 17px; margin-bottom: 8px; }
+  .start-monster-wrap { margin-bottom: 10px; }
+  .start-monster-wrap svg { width: 90px; height: 90px; }
+  .start-subtitle { margin-bottom: 12px; }
+  .highscore-table { padding: 8px 12px; margin-bottom: 14px; font-size: 9px; }
+  .highscore-table .hs-title { font-size: 10px; margin-bottom: 6px; }
+  .hs-row { padding: 3px 0; font-size: 9px; }
+  .start-button, .end-button, .choice-button { font-size: 11px; padding: 12px 18px; }
+  .arena { margin-top: 110px; margin-bottom: 150px; }
+  .boss-wrap { width: 92px; height: 92px; }
+  .player-wrap { width: 56px; height: 70px; }
+  .actions { padding: 8px; gap: 5px; }
+  .action-btn { font-size: 9px; padding: 10px 4px; }
+  .action-btn .icon { font-size: 19px; margin-bottom: 2px; }
+  .choice-title { font-size: 12px; }
+  .initials-prompt { font-size: 11px; margin-bottom: 12px; }
+  .initials-score { font-size: 14px; margin-bottom: 16px; }
+  .initial-slot .letter { width: 48px; height: 54px; font-size: 32px; }
+  .initial-slot .arrow { width: 36px; height: 26px; font-size: 14px; }
+}
+
+@media (max-height: 640px) {
+  .start-title { font-size: 15px; }
+  .start-monster-wrap svg { width: 72px; height: 72px; }
+  .start-subtitle { font-size: 8px; margin-bottom: 8px; }
+  .highscore-table { margin-bottom: 10px; }
+  .arena { margin-top: 96px; margin-bottom: 132px; }
+  .boss-wrap { width: 80px; height: 80px; }
+  .player-wrap { width: 50px; height: 62px; }
+  .hud { top: 38px; }
+  .actions { padding: 6px; }
+  .action-btn { font-size: 9px; padding: 8px 4px; }
+  .action-btn .icon { font-size: 17px; }
+}
+
+/* Larguras estreitas (Android pequeno, iPhone SE) */
+@media (max-width: 360px) {
+  .header { padding: 8px 10px 4px; }
+  .start-title { font-size: 15px; }
+  .choice-grid { gap: 8px; }
+  .action-btn { font-size: 8px; }
+  .actions { padding: 6px; gap: 4px; }
+  .op-numpad { grid-template-columns: repeat(3, 56px); }
+  .op-menu-card { min-width: 240px; font-size: 9px; }
+}
+
+/* Modo paisagem em celular: layout fica esquisito; sugerir rotacionar */
+@media (orientation: landscape) and (max-height: 480px) {
+  #game::before {
+    content: '↻ GIRE O CELULAR';
+    position: absolute;
+    inset: 0;
+    z-index: 9999;
+    background: var(--navy-deep);
+    color: var(--amarelo);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 16px;
+    letter-spacing: 2px;
+    text-shadow: 0 0 12px var(--amarelo);
+    text-align: center;
+  }
+}
 </style>
 </head>
 
