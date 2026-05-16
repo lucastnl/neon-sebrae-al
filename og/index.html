@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<title>OG Image · O Monstro do Próximo Passo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+:root {
+  --verde: #00D95C;
+  --verde-claro: #00FF85;
+  --magenta: #FF00FF;
+  --magenta-claro: #FF76FF;
+  --ciano: #00F9FF;
+  --azul: #2A4FDA;
+  --azul-claro: #5680FF;
+  --navy: #0A0F36;
+  --navy-deep: #050822;
+  --amarelo: #FFD93D;
+  --branco: #FFFFFF;
+  --vermelho: #FF3060;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #111;
+  color: var(--branco);
+  font-family: 'Space Grotesk', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  gap: 24px;
+}
+.toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.toolbar button {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  background: var(--verde);
+  color: var(--navy-deep);
+  border: none;
+  padding: 14px 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  letter-spacing: 1.5px;
+  box-shadow: 0 0 24px rgba(0, 217, 92, 0.6);
+}
+.toolbar button:active { transform: translate(2px, 2px); }
+.toolbar .secondary {
+  background: var(--ciano);
+  box-shadow: 0 0 24px rgba(0, 249, 255, 0.5);
+}
+.note {
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  max-width: 900px;
+  text-align: center;
+  line-height: 1.5;
+}
+.note code { background: #222; padding: 2px 6px; border-radius: 3px; color: var(--amarelo); font-size: 12px; }
+
+/* CARD OG 1200x630 */
+#og-card {
+  width: 1200px;
+  height: 630px;
+  position: relative;
+  background:
+    linear-gradient(135deg, var(--navy-deep) 0%, var(--navy) 50%, #1A1F4E 100%);
+  overflow: hidden;
+  box-shadow: 0 20px 80px rgba(0,0,0,0.6);
+  font-family: 'Press Start 2P', monospace;
+  color: var(--branco);
+}
+#og-card .grid-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 47px, rgba(0,249,255,0.08) 48px),
+    repeating-linear-gradient(90deg, transparent, transparent 47px, rgba(0,249,255,0.08) 48px);
+  z-index: 1;
+}
+#og-card .stars {
+  position: absolute; inset: 0; z-index: 1;
+  background-image:
+    radial-gradient(3px 3px at 12% 18%, var(--branco) 50%, transparent 50%),
+    radial-gradient(2px 2px at 28% 75%, var(--ciano) 50%, transparent 50%),
+    radial-gradient(2px 2px at 45% 12%, var(--branco) 50%, transparent 50%),
+    radial-gradient(2px 2px at 64% 88%, var(--magenta-claro) 50%, transparent 50%),
+    radial-gradient(3px 3px at 80% 22%, var(--branco) 50%, transparent 50%),
+    radial-gradient(2px 2px at 95% 60%, var(--ciano) 50%, transparent 50%),
+    radial-gradient(2px 2px at 8%  56%, var(--branco) 50%, transparent 50%);
+  opacity: 0.7;
+}
+#og-card .glow-magenta {
+  position: absolute;
+  width: 600px; height: 600px;
+  left: -100px; top: -100px;
+  background: radial-gradient(circle, rgba(255,0,255,0.25) 0%, transparent 60%);
+  z-index: 1;
+}
+#og-card .glow-ciano {
+  position: absolute;
+  width: 600px; height: 600px;
+  right: -150px; bottom: -150px;
+  background: radial-gradient(circle, rgba(0,249,255,0.18) 0%, transparent 60%);
+  z-index: 1;
+}
+
+/* Top bar com logo Escalada */
+#og-card .top-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28px 64px 0;
+}
+#og-card .logo-escalada {
+  height: 38px;
+  filter: drop-shadow(0 0 12px rgba(255,255,255,0.4));
+}
+#og-card .top-eyebrow {
+  font-size: 13px;
+  color: var(--ciano);
+  letter-spacing: 3px;
+  text-shadow: 0 0 12px var(--ciano);
+}
+
+#og-card .content {
+  position: relative;
+  z-index: 5;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 460px 1fr;
+  align-items: center;
+  padding: 86px 64px 86px;
+  gap: 32px;
+}
+
+#og-card .monster-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+#og-card .monster {
+  width: 340px;
+  height: 340px;
+  filter: drop-shadow(0 0 32px rgba(255,0,255,0.9)) drop-shadow(0 0 64px rgba(255,0,255,0.4));
+}
+#og-card .floor {
+  position: absolute;
+  bottom: 30px;
+  left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--vermelho), transparent);
+  box-shadow: 0 0 16px var(--vermelho);
+  opacity: 0.7;
+}
+
+#og-card .text-block {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+#og-card .title {
+  font-size: 50px;
+  line-height: 1.15;
+  color: var(--magenta-claro);
+  text-shadow: 0 0 20px var(--magenta), 5px 5px 0 var(--navy-deep);
+  letter-spacing: 1px;
+}
+#og-card .subtitle {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--branco);
+  line-height: 1.4;
+  letter-spacing: 0.5px;
+  text-shadow: 2px 2px 0 var(--navy-deep);
+}
+#og-card .badges {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+#og-card .badge {
+  font-size: 11px;
+  padding: 8px 12px;
+  border: 2px solid;
+  border-radius: 4px;
+  letter-spacing: 1.5px;
+  background: rgba(10, 15, 54, 0.6);
+}
+#og-card .badge.b1 { border-color: var(--verde-claro); color: var(--verde-claro); text-shadow: 0 0 8px var(--verde); }
+#og-card .badge.b2 { border-color: var(--amarelo); color: var(--amarelo); text-shadow: 0 0 8px var(--amarelo); }
+#og-card .badge.b3 { border-color: var(--ciano); color: var(--ciano); text-shadow: 0 0 8px var(--ciano); }
+
+#og-card .footer-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  z-index: 6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 64px;
+  background: linear-gradient(180deg, transparent, rgba(5,8,34,0.95));
+}
+#og-card .brand {
+  font-size: 12px;
+  color: var(--verde-claro);
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px var(--verde-claro);
+}
+#og-card .url {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ciano);
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px var(--ciano);
+}
+
+/* CRT scanlines */
+#og-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,0.18) 0, rgba(0,0,0,0.18) 1px, transparent 1px, transparent 3px);
+  mix-blend-mode: multiply;
+  opacity: 0.45;
+}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button id="btn-download">↓ BAIXAR PNG</button>
+  <button id="btn-download-jpg" class="secondary">↓ BAIXAR JPG</button>
+</div>
+
+<p class="note">
+  Capa Open Graph 1200×630. Clique em <strong>baixar</strong>, salve o arquivo como <code>og-monstro.jpg</code> dentro de <code>assets/</code> e depois eu troco o <code>og:image</code> dos HTMLs pra apontar pra ele.
+</p>
+
+<div id="og-card">
+  <div class="grid-bg"></div>
+  <div class="stars"></div>
+  <div class="glow-magenta"></div>
+  <div class="glow-ciano"></div>
+
+  <div class="top-bar">
+    <svg class="logo-escalada" viewBox="0 0 1111.1 355.8">
+      <path fill="#fff" d="M243.1,259.3c0-3.2,3.5-6.2,10-6.2s7.6,1.6,7.6,5.3,0,1.1-.2,2.1h15.4c.4-2.1.7-3.7.7-5.3,0-7.8-9.5-11.9-21.5-11.9s-27.8,8.2-27.8,19c0,17.7,29.5,12.4,29.5,21.3s-4.8,6.2-11.1,6.2-9.5-2.1-9.5-6,0-1.2.2-2.5h-15.2c-.2,2-.4,3.4-.4,4.8,0,10.5,11.5,13.5,23,13.5,17.8,0,29.5-7.4,29.5-18.8,0-18.3-30.2-11.9-30.2-21.4M355,299.6c16.3,0,26.7-8,26.7-17.7s-2.6-9.9-11.7-11.5c8.5-1.1,15.8-6.7,15.8-14.5s-5.8-12.4-16-12.4h-30.2l-12.4,56.2h27.8ZM435.8,284.3c0-7.1-1.7-10.8-10.8-12.4,10.8-.7,18.6-6.9,18.6-15.4s-6.5-13.1-18-13.1h-29.5l-12.8,56.2h16.9l5-21.8h7.8c2.2,0,6.5,0,6.5,5.8s-.9,10.1-1.1,16h17.3c-.2-6,.2-11,.2-15.2M294.1,288.8l2.8-12.1h26.5l2.4-10.8h-26.5l2.6-11.5h28.4l2.4-10.8h-44.9l-12.6,56h45.5l2.4-10.8h-28.9ZM558.3,243.5h-44.9l-12.6,56h45.5l2.4-10.8h-29.1l2.6-12.1h27.1l2.4-10.8h-27.1l2.6-11.5h28.8l2.4-10.8ZM435.7,299.6h16.3l5.9-10.6h21.5l.9,10.6h16.9l-8.2-55.8h-20.2l-33.2,55.8ZM362.2,253.3c4.1,0,6.7,1.8,6.7,5.7s-2.8,6.9-8.5,6.9h-9.6l2.8-12.6h8.7ZM407.6,267.7l3-13.8h7.2c2.6,0,8.9,0,8.9,5.8s-4.1,8-10.8,8h-8.3ZM476.7,255.1h.2l1.9,23.2h-14.8l12.8-23.2ZM357,276c2.6,0,7.8.5,7.8,6.2s-3.3,7.1-10,7.1h-9.3l3-13.3h8.5Z"/>
+      <path fill="#fff" d="M220.9,196.9l30.7-140.6h90.4l-5.3,24.1h-63.9l-7.3,33.5h58.2l-5.3,24.1h-58.2l-7.6,34.7h65.1l-5.3,24.1h-91.6Z"/>
+      <path fill="#fff" d="M369.7,199.7c-13,0-23-2.8-30.1-8.4-7.1-5.6-10.3-13.7-9.8-24.1l24.6-6c0,4.7.7,8.4,2.3,11,1.6,2.7,3.9,4.6,7,5.7,3,1.1,6.5,1.7,10.4,1.7,5.9,0,10.5-1,13.7-3.1s5.2-4.7,5.9-7.7c.7-3.1-.1-5.5-2.5-7.1-2.3-1.7-6.3-3-12-4.1l-5.4-1c-6.7-1.3-12.6-3.2-17.9-5.5-5.2-2.3-9.2-5.6-11.7-9.7-2.6-4.2-3.2-9.5-1.7-16.1,2.2-9.9,7.4-17.5,15.8-22.8,8.4-5.3,18.5-7.9,30.2-7.9s19.8,2.5,26.1,7.4c6.3,5,9.7,11.4,10.2,19.5l-25.1,7.2c0-5.1-1.3-8.7-4.2-10.8-2.8-2.1-6.6-3.2-11.5-3.2s-8.7.8-11.6,2.5c-2.9,1.7-4.7,4-5.3,6.9-.7,3.2.1,5.6,2.5,7.1,2.3,1.5,5.7,2.7,10.1,3.5l5.4,1c7.2,1.3,13.6,3.1,19.2,5.3,5.6,2.2,9.7,5.4,12.4,9.4,2.6,4.1,3.2,9.6,1.7,16.6-2.3,10.4-7.8,18.5-16.6,24.2-8.8,5.7-19.6,8.5-32.3,8.5Z"/>
+      <path fill="#fff" d="M471.1,199.7c-9.6,0-17.9-2-24.9-6-7-4-11.9-9.8-14.8-17.5-2.9-7.6-3.2-16.9-.8-27.7l.6-2.8c2.4-10.9,6.7-20.1,12.9-27.7,6.2-7.6,13.7-13.5,22.4-17.5,8.7-4,17.9-6,27.5-6s17.3,1.7,23.4,5c6.1,3.4,10.6,7.9,13.6,13.8,2.9,5.8,4.3,12.4,4,19.8l-25.6,5.2c.3-4,0-7.6-1.2-10.9-1.2-3.2-3.3-5.8-6.3-7.6-3-1.9-7.1-2.8-12.1-2.8s-9.9,1.1-14.5,3.3c-4.6,2.2-8.5,5.5-11.8,9.8-3.3,4.4-5.6,9.7-7,16l-.4,2c-1.4,6.3-1.4,11.6,0,16,1.4,4.3,3.9,7.6,7.5,9.8,3.6,2.2,7.9,3.3,13,3.3,7.6,0,13.9-2,18.7-5.9,4.8-3.9,8.4-9.1,10.9-15.6l23.2,5.8c-3.3,7.1-7.7,13.6-13.2,19.4-5.5,5.8-12,10.4-19.6,13.8-7.6,3.4-16.1,5-25.6,5Z"/>
+      <path fill="#fff" d="M652.2,196.9l30.7-140.6h25.3l-30.7,140.6h-25.3Z"/>
+      <path fill="#fff" d="M853.6,199.7c-7.9,0-14.9-2-20.9-5.9-6-4-10.3-9.7-12.8-17.4-2.5-7.6-2.5-16.9-.2-27.7l.7-3.2c2.4-10.8,6.5-20.1,12.3-27.7,5.8-7.6,12.6-13.4,20.3-17.4,7.7-4,15.5-5.9,23.6-5.9s10.9.7,14.7,2.1c3.8,1.4,6.7,3.2,8.8,5.3,2.1,2.1,3.5,4.4,4.3,6.8h3.6l11.4-52.4h25.3l-30.7,140.6h-24.9l2.6-12h-3.6c-3.1,3.7-7.3,7.2-12.8,10.2-5.4,3.1-12.7,4.6-21.8,4.6ZM866,177.6c7.8,0,14.8-2.5,21.1-7.5,6.3-5,10.5-12.4,12.6-22l.4-2c2.1-9.6,1.1-17-2.9-22-4.1-5-10-7.5-17.9-7.5s-14.8,2.5-21.1,7.5c-6.3,5-10.5,12.3-12.6,22l-.4,2c-2.1,9.6-1.1,17,3,22,4.1,5,10.1,7.5,17.8,7.5Z"/>
+      <path fill="#fff" d="M792.6,97.3l-2.6,12h-3.6c-1.5-3.7-4.2-7.2-8.3-10.2-4.1-3.1-10.7-4.6-19.8-4.6s-15.7,2-23.5,5.9c-7.8,4-14.5,9.7-20.4,17.4s-9.9,16.9-12.3,27.7l-.3,1.6h0s-.3,1.6-.3,1.6c-2.4,10.8-2.3,20.1.2,27.7,2.5,7.6,6.8,13.4,12.8,17.4,6,3.9,13,5.9,20.9,5.9s16.4-1.5,21.8-4.6c5.4-3.1,9.7-6.5,12.8-10.2h3.6l-2.6,12h24.9l10.9-49.8h0s10.9-49.8,10.9-49.8h-24.9ZM781.7,147.1l-.2,1c-2.1,9.6-6.3,17-12.6,22-6.3,5-13.4,7.5-21.1,7.5s-13.7-2.5-17.8-7.5c-4.1-5-5.1-12.4-3-22l.2-1h0s.2-1,.2-1c2.1-9.6,6.3-17,12.6-22,6.3-5,13.4-7.5,21.1-7.5s13.7,2.5,17.8,7.5c4.1,5,5.1,12.4,3,22l-.2,1h0Z"/>
+      <path fill="#fff" d="M1029.2,97.3l-2.6,12h-3.6c-1.5-3.7-4.2-7.2-8.3-10.2-4.1-3.1-10.7-4.6-19.8-4.6s-15.7,2-23.5,5.9c-7.8,4-14.5,9.7-20.4,17.4-5.8,7.6-9.9,16.9-12.3,27.7l-.3,1.6h0s-.3,1.6-.3,1.6c-2.4,10.8-2.3,20.1.2,27.7,2.5,7.6,6.8,13.4,12.8,17.4,6,3.9,13,5.9,20.9,5.9s16.4-1.5,21.8-4.6c5.4-3.1,9.7-6.5,12.8-10.2h3.6l-2.6,12h24.9l10.9-49.8h0s10.9-49.8,10.9-49.8h-24.9ZM1018.3,147.1l-.2,1c-2.1,9.6-6.3,17-12.6,22-6.3,5-13.4,7.5-21.1,7.5s-13.7-2.5-17.8-7.5c-4.1-5-5.1-12.4-3-22l.2-1h0s.2-1,.2-1c2.1-9.6,6.3-17,12.6-22,6.3-5,13.4-7.5,21.1-7.5s13.7,2.5,17.8,7.5c4.1,5,5.1,12.4,3,22l-.2,1h0Z"/>
+      <path fill="#fff" d="M632.2,97.3l-2.6,12h-3.6c-1.5-3.7-4.2-7.2-8.3-10.2-4.1-3.1-10.7-4.6-19.8-4.6s-15.7,2-23.5,5.9c-7.8,4-14.5,9.7-20.4,17.4-5.8,7.6-9.9,16.9-12.3,27.7l-.3,1.6h0s-.3,1.6-.3,1.6c-2.4,10.8-2.3,20.1.2,27.7,2.5,7.6,6.8,13.4,12.8,17.4,6,3.9,13,5.9,20.9,5.9s16.4-1.5,21.8-4.6c5.4-3.1,9.7-6.5,12.8-10.2h3.6l-2.6,12h24.9l10.9-49.8h0s10.9-49.8,10.9-49.8h-24.9ZM621.3,147.1l-.2,1c-2.1,9.6-6.3,17-12.6,22-6.3,5-13.4,7.5-21.1,7.5s-13.7-2.5-17.8-7.5c-4.1-5-5.1-12.4-3-22l.2-1h0s.2-1,.2-1c2.1-9.6,6.3-17,12.6-22,6.3-5,13.4-7.5,21.1-7.5s13.7,2.5,17.8,7.5c4.1,5,5.1,12.4,3,22l-.2,1h0Z"/>
+      <polygon fill="#fff" points="137.2 56.1 118.8 140.6 175.1 140.6 162.8 196.9 190.9 196.9 221.6 56.1 137.2 56.1"/>
+      <polygon fill="#bbb" points="74.7 84.3 56.3 168.7 112.6 168.7 131 84.3 74.7 84.3"/>
+    </svg>
+    <span class="top-eyebrow">▶ NEON SEBRAE AL · 2026</span>
+  </div>
+
+  <div class="content">
+    <div class="monster-wrap">
+      <svg class="monster" viewBox="0 0 16 16" shape-rendering="crispEdges">
+        <rect x="2" y="3" width="12" height="10" fill="#FF00FF"/>
+        <rect x="3" y="2" width="10" height="1" fill="#FF00FF"/>
+        <rect x="1" y="4" width="1" height="8" fill="#A800A8"/>
+        <rect x="14" y="4" width="1" height="8" fill="#A800A8"/>
+        <rect x="3" y="13" width="10" height="1" fill="#A800A8"/>
+        <rect x="3" y="1" width="1" height="2" fill="#A800A8"/>
+        <rect x="12" y="1" width="1" height="2" fill="#A800A8"/>
+        <rect x="2" y="0" width="1" height="1" fill="#A800A8"/>
+        <rect x="13" y="0" width="1" height="1" fill="#A800A8"/>
+        <rect x="4" y="5" width="2" height="2" fill="#FFFFFF"/>
+        <rect x="10" y="5" width="2" height="2" fill="#FFFFFF"/>
+        <rect x="5" y="5" width="1" height="2" fill="#FF3060"/>
+        <rect x="11" y="5" width="1" height="2" fill="#FF3060"/>
+        <rect x="5" y="9" width="6" height="2" fill="#0A0F36"/>
+        <rect x="5" y="9" width="1" height="1" fill="#FFFFFF"/>
+        <rect x="7" y="9" width="1" height="1" fill="#FFFFFF"/>
+        <rect x="9" y="9" width="1" height="1" fill="#FFFFFF"/>
+        <rect x="0" y="6" width="1" height="2" fill="#FF00FF"/>
+        <rect x="15" y="6" width="1" height="2" fill="#FF00FF"/>
+      </svg>
+      <div class="floor"></div>
+    </div>
+
+    <div class="text-block">
+      <h1 class="title">O MONSTRO<br/>DO PRÓXIMO<br/>PASSO</h1>
+      <p class="subtitle">Os medos caem. Seus recursos derrubam.</p>
+      <div class="badges">
+        <span class="badge b1">JOGO ARCADE</span>
+        <span class="badge b2">EDUCAÇÃO EMPREENDEDORA</span>
+        <span class="badge b3">11 A 13 DE JUN</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bar">
+    <span class="brand">★ TIRO NA LUA × ESCALADA</span>
+    <span class="url">neon-sebrae-al.netlify.app/jogar/monstro</span>
+  </div>
+</div>
+
+<script>
+function dl(format) {
+  const node = document.getElementById('og-card');
+  html2canvas(node, {
+    width: 1200,
+    height: 630,
+    scale: 2,
+    backgroundColor: format === 'jpg' ? '#050822' : null,
+    useCORS: true
+  }).then(canvas => {
+    const mime = format === 'jpg' ? 'image/jpeg' : 'image/png';
+    const ext = format === 'jpg' ? 'jpg' : 'png';
+    const url = canvas.toDataURL(mime, 0.92);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'og-monstro.' + ext;
+    a.click();
+  });
+}
+document.getElementById('btn-download').addEventListener('click', () => dl('png'));
+document.getElementById('btn-download-jpg').addEventListener('click', () => dl('jpg'));
+</script>
+
+</body>
+</html>
