@@ -119,15 +119,21 @@ async function salvarPartida(partida) {
     acertos: partida.acertos || 0,
     combo_max: partida.combo_max || 0
   };
+  console.info('[neon-store] salvando partida', { useSupabase, payload });
   if (useSupabase) {
-    const { error } = await supabase.from('partidas').insert(payload);
-    if (error) console.error('[neon-store] erro salvando partida:', error);
-    return !error;
+    const { data, error } = await supabase.from('partidas').insert(payload).select();
+    if (error) {
+      console.error('[neon-store] erro salvando partida no Supabase:', error);
+      return { ok: false, error: error.message || JSON.stringify(error) };
+    }
+    console.info('[neon-store] partida salva no Supabase:', data);
+    return { ok: true, data };
   }
   const partidas = JSON.parse(localStorage.getItem('neon-partidas-local') || '[]');
   partidas.push({ ...payload, id: 'p-' + Date.now(), created_at: new Date().toISOString() });
   localStorage.setItem('neon-partidas-local', JSON.stringify(partidas));
-  return true;
+  console.info('[neon-store] partida salva em localStorage (fallback)');
+  return { ok: true, data: payload };
 }
 
 async function topPartidasCaravanaAtiva(limit) {

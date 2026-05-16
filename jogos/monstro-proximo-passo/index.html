@@ -1424,14 +1424,25 @@ function isHighScore(score) {
   return score > (_cachedRanking[_cachedRanking.length - 1].score || 0);
 }
 async function addToRanking(name, score, stage) {
-  await window.NeonStore.salvarPartida({
-    nome_jogador: name,
-    score: score,
-    fase_max: stage,
-    medo_escolhido: state.chosenFear,
-    acertos: state.hits,
-    combo_max: state.maxCombo
-  });
+  try {
+    const res = await window.NeonStore.salvarPartida({
+      nome_jogador: name,
+      score: score,
+      fase_max: stage,
+      medo_escolhido: state.chosenFear,
+      acertos: state.hits,
+      combo_max: state.maxCombo
+    });
+    if (!res || !res.ok) {
+      alert('NAO SALVOU: ' + (res ? res.error : 'sem resposta'));
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('[jogo] addToRanking explodiu:', err);
+    alert('ERRO: ' + (err.message || err));
+    return false;
+  }
 }
 
 function startGame() {
@@ -1973,10 +1984,25 @@ function changeInitial(slot, dir) {
 }
 
 async function saveInitials() {
-  const name = state.initials.join('');
-  await addToRanking(name, state.pendingScore, state.pendingStage);
-  await renderRanking();
-  showScreen('start');
+  const btn = $('btn-save-initials');
+  const orig = btn.textContent;
+  btn.textContent = 'SALVANDO...';
+  btn.disabled = true;
+  try {
+    const name = state.initials.join('');
+    console.info('[jogo] saveInitials disparado', { name, score: state.pendingScore, stage: state.pendingStage });
+    const ok = await addToRanking(name, state.pendingScore, state.pendingStage);
+    console.info('[jogo] addToRanking retornou:', ok);
+    await renderRanking();
+    btn.textContent = orig;
+    btn.disabled = false;
+    showScreen('start');
+  } catch (err) {
+    console.error('[jogo] saveInitials EXCEPTION:', err);
+    alert('EXCEPTION saveInitials: ' + (err.message || err));
+    btn.textContent = orig;
+    btn.disabled = false;
+  }
 }
 
 // ============ EVENTS ============
