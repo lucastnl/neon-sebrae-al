@@ -2,6 +2,12 @@
 
 Ecossistema digital do espaço **Educação Empreendedora** do Neon Sebrae Alagoas, 11 a 13 de junho de 2026. Reúne jogos arcade do totem, placar ao vivo das caravanas e (em breve) página do método TNL aplicado a jogos.
 
+## No ar
+
+- 🏠 Landing: https://neon-sebrae-al.netlify.app
+- 🎮 Jogo: https://neon-sebrae-al.netlify.app/jogar/monstro/
+- 📊 Placar ao vivo: https://neon-sebrae-al.netlify.app/dashboard/
+
 ## Estrutura
 
 ```
