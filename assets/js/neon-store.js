@@ -1,11 +1,13 @@
 // neon-store.js, backbone de dados Neon 2026
 // Camada única que conversa com Supabase, importada por jogo e dashboard.
 // Fallback automático pra localStorage se Supabase falhar (modo offline-friendly).
+// IIFE pra isolar o escopo do `let sb`, evitando colisão com a global `supabase` do CDN.
 
+(function () {
 const NEON_SUPABASE_URL = 'https://supdxnfogmfjrdkgmrvo.supabase.co';
 const NEON_SUPABASE_ANON = 'sb_publishable_Tk9gs3COsOipbZW-w0wa6w_ncI0bt6_';
 
-let supabase = null;
+let sb = null;
 let useSupabase = false;
 
 async function initStore() {
@@ -14,13 +16,13 @@ async function initStore() {
       console.warn('[neon-store] supabase-js nao carregado, usando localStorage');
       return false;
     }
-    supabase = window.supabase.createClient(NEON_SUPABASE_URL, NEON_SUPABASE_ANON, {
+    sb = window.supabase.createClient(NEON_SUPABASE_URL, NEON_SUPABASE_ANON, {
       realtime: { params: { eventsPerSecond: 10 } }
     });
-    const { error } = await supabase.from('caravanas').select('id').limit(1);
+    const { error } = await sb.from('caravanas').select('id').limit(1);
     if (error) {
       console.warn('[neon-store] supabase indisponivel:', error.message, ', caindo pra localStorage');
-      supabase = null;
+      sb = null;
       return false;
     }
     useSupabase = true;
@@ -36,7 +38,7 @@ async function initStore() {
 
 async function getCaravanaAtiva() {
   if (useSupabase) {
-    const { data } = await supabase
+    const { data } = await sb
       .from('caravanas')
       .select('*')
       .eq('ativa', true)
@@ -55,14 +57,14 @@ async function getCaravanaAtiva() {
 
 async function criarNovaCaravana() {
   if (useSupabase) {
-    const { data: last } = await supabase
+    const { data: last } = await sb
       .from('caravanas')
       .select('numero')
       .order('numero', { ascending: false })
       .limit(1)
       .maybeSingle();
     const numero = (last?.numero || 0) + 1;
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('caravanas')
       .insert({ numero, ativa: true })
       .select()
@@ -80,7 +82,7 @@ async function criarNovaCaravana() {
 async function encerrarCaravanaAtiva() {
   if (useSupabase) {
     const atual = await getCaravanaAtiva();
-    await supabase
+    await sb
       .from('caravanas')
       .update({ ativa: false, encerrada_em: new Date().toISOString() })
       .eq('id', atual.id);
@@ -95,7 +97,7 @@ async function encerrarCaravanaAtiva() {
 
 async function listarHistoricoCaravanas() {
   if (useSupabase) {
-    const { data } = await supabase
+    const { data } = await sb
       .from('ranking_caravanas')
       .select('*')
       .eq('ativa', false)
@@ -121,7 +123,7 @@ async function salvarPartida(partida) {
   };
   console.info('[neon-store] salvando partida', { useSupabase, payload });
   if (useSupabase) {
-    const { data, error } = await supabase.from('partidas').insert(payload).select();
+    const { data, error } = await sb.from('partidas').insert(payload).select();
     if (error) {
       console.error('[neon-store] erro salvando partida no Supabase:', error);
       return { ok: false, error: error.message || JSON.stringify(error) };
@@ -140,7 +142,7 @@ async function topPartidasCaravanaAtiva(limit) {
   limit = limit || 5;
   const caravana = await getCaravanaAtiva();
   if (useSupabase) {
-    const { data } = await supabase
+    const { data } = await sb
       .from('partidas')
       .select('nome_jogador, score, fase_max, created_at')
       .eq('caravana_id', caravana.id)
@@ -159,7 +161,7 @@ async function topPartidasCaravanaAtiva(limit) {
 
 async function rankingCaravanas() {
   if (useSupabase) {
-    const { data } = await supabase
+    const { data } = await sb
       .from('ranking_caravanas')
       .select('*')
       .order('pontos_totais', { ascending: false });
@@ -185,21 +187,21 @@ function subscribeNovasPartidas(callback) {
     console.warn('[neon-store] realtime indisponivel no fallback localStorage');
     return () => {};
   }
-  const channel = supabase
+  const channel = sb
     .channel('partidas-realtime')
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'partidas' }, payload => {
       callback(payload.new);
     })
     .subscribe();
-  return () => supabase.removeChannel(channel);
+  return () => sb.removeChannel(channel);
 }
 
 // ============ RESET (operador) ============
 
 async function resetarTudo() {
   if (useSupabase) {
-    await supabase.from('partidas').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-    await supabase.from('caravanas').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    await sb.from('partidas').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    await sb.from('caravanas').delete().neq('id', '00000000-0000-0000-0000-000000000000');
     return await criarNovaCaravana();
   }
   localStorage.removeItem('neon-caravana-ativa');
@@ -222,3 +224,4 @@ window.NeonStore = {
   subscribeNovasPartidas,
   resetarTudo
 };
+})();
