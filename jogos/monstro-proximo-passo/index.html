@@ -1,0 +1,2093 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<title>O Monstro do Próximo Passo · Escalada</title>
+
+<meta property="og:title" content="O Monstro do Próximo Passo" />
+<meta property="og:description" content="Encare os medos que caem. Use seus recursos. Quanto antes você reage, mais pontos." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="../../assets/logo-escalada.svg" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+
+<style>
+:root {
+  --verde: #00D95C;
+  --verde-claro: #00FF85;
+  --magenta: #FF00FF;
+  --magenta-claro: #FF76FF;
+  --ciano: #00F9FF;
+  --azul: #2A4FDA;
+  --azul-claro: #5680FF;
+  --branco: #FFFFFF;
+  --pele: #FFD9B3;
+  --navy: #0A0F36;
+  --navy-deep: #050822;
+  --vermelho: #FF3060;
+  --amarelo: #FFD93D;
+  --laranja: #FF8C42;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  width: 100%;
+  background: var(--navy-deep);
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--branco);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+#game {
+  position: relative;
+  height: 100vh;
+  max-height: 100vh;
+  max-width: 540px;
+  margin: 0 auto;
+  background: var(--navy-deep);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* CRT effect */
+#game::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px);
+  z-index: 200;
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, var(--navy-deep) 0%, var(--navy) 60%, #1A1F4E 100%),
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,249,255,0.05) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,249,255,0.05) 40px);
+  z-index: 0;
+  transition: filter 0.6s;
+}
+#game.phase-2 .bg-grid { filter: hue-rotate(20deg) brightness(0.85); }
+#game.phase-3 .bg-grid { filter: hue-rotate(-30deg) brightness(0.7) saturate(1.4); animation: glitchBg 0.4s steps(2) infinite; }
+@keyframes glitchBg {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(2px, -1px); }
+}
+
+.bg-mountain {
+  position: absolute;
+  bottom: 18%;
+  left: 0; right: 0;
+  height: 20%;
+  background: linear-gradient(180deg, transparent 0%, var(--navy) 80%);
+  z-index: 1;
+  clip-path: polygon(
+    0% 100%, 8% 60%, 18% 80%, 28% 40%, 38% 70%,
+    48% 30%, 58% 65%, 68% 45%, 78% 75%, 88% 50%, 100% 70%, 100% 100%
+  );
+  opacity: 0.4;
+}
+.bg-stars {
+  position: absolute; inset: 0; z-index: 0; opacity: 0.7;
+}
+.bg-stars::before, .bg-stars::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(2px 2px at 20% 15%, var(--branco) 50%, transparent 50%),
+    radial-gradient(1px 1px at 60% 25%, var(--ciano) 50%, transparent 50%),
+    radial-gradient(2px 2px at 85% 10%, var(--branco) 50%, transparent 50%),
+    radial-gradient(1px 1px at 40% 35%, var(--branco) 50%, transparent 50%),
+    radial-gradient(1px 1px at 75% 40%, var(--magenta-claro) 50%, transparent 50%),
+    radial-gradient(2px 2px at 15% 50%, var(--ciano) 50%, transparent 50%),
+    radial-gradient(1px 1px at 90% 55%, var(--branco) 50%, transparent 50%);
+  animation: twinkle 4s ease-in-out infinite alternate;
+}
+.bg-stars::after { animation-delay: -2s; opacity: 0.5; }
+@keyframes twinkle { from { opacity: 0.3; } to { opacity: 1; } }
+
+.header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px 6px;
+}
+.header img { height: 22px; }
+.header .badge {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--ciano);
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px var(--ciano);
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+  overflow-y: auto;
+}
+.screen[hidden] { display: none; }
+
+#screen-start { background: radial-gradient(ellipse at center, rgba(255, 0, 255, 0.15) 0%, transparent 60%); }
+.start-monster-wrap { margin-bottom: 16px; }
+.start-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 20px;
+  color: var(--magenta-claro);
+  text-shadow: 0 0 12px var(--magenta), 3px 3px 0 var(--navy-deep);
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+.start-subtitle {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--ciano);
+  letter-spacing: 1.5px;
+  margin-bottom: 20px;
+  text-shadow: 0 0 8px var(--ciano);
+}
+
+.highscore-table {
+  background: rgba(10, 15, 54, 0.7);
+  border: 2px solid var(--amarelo);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  box-shadow: 0 0 16px rgba(255, 217, 61, 0.4);
+  max-width: 260px;
+  width: 100%;
+}
+.highscore-table .hs-title {
+  color: var(--amarelo);
+  text-shadow: 0 0 8px var(--amarelo);
+  margin-bottom: 8px;
+  font-size: 11px;
+}
+.hs-row {
+  display: grid;
+  grid-template-columns: 24px 60px 1fr 32px;
+  gap: 6px;
+  padding: 4px 0;
+  align-items: center;
+  font-size: 10px;
+  color: var(--branco);
+}
+.hs-row .rank { color: var(--ciano); }
+.hs-row .name { color: var(--verde-claro); letter-spacing: 2px; }
+.hs-row .score { text-align: right; color: var(--amarelo); }
+.hs-row .stage { text-align: right; font-size: 8px; color: var(--magenta-claro); }
+.hs-empty { color: rgba(255,255,255,0.4); padding: 10px 0; }
+
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.start-button, .end-button, .choice-button {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  background: var(--verde);
+  color: var(--navy-deep);
+  border: none;
+  padding: 14px 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  letter-spacing: 1.5px;
+  box-shadow: 0 0 24px rgba(0, 217, 92, 0.6), 4px 4px 0 var(--navy-deep);
+  transition: transform 0.1s;
+  margin: 4px;
+}
+.start-button:active, .end-button:active, .choice-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 24px rgba(0, 217, 92, 0.6), 2px 2px 0 var(--navy-deep);
+}
+
+#screen-play { background: transparent; padding: 0; }
+
+.hud {
+  position: absolute;
+  top: 44px;
+  left: 0; right: 0;
+  z-index: 10;
+  padding: 0 14px;
+}
+.phase-badge {
+  text-align: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--amarelo);
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 8px var(--amarelo);
+  margin-bottom: 6px;
+}
+.hp-bar { margin-bottom: 5px; }
+.hp-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  letter-spacing: 1px;
+  margin-bottom: 3px;
+  display: flex;
+  justify-content: space-between;
+}
+.hp-label .boss-name { color: var(--magenta-claro); text-shadow: 0 0 6px var(--magenta); }
+.hp-label .you-name { color: var(--verde-claro); text-shadow: 0 0 6px var(--verde); }
+.hp-track {
+  width: 100%;
+  height: 10px;
+  background: rgba(10, 15, 54, 0.8);
+  border: 2px solid var(--branco);
+  position: relative;
+}
+.hp-fill { height: 100%; transition: width 0.3s ease-out; }
+.hp-fill.boss { background: linear-gradient(90deg, var(--magenta) 0%, var(--magenta-claro) 100%); }
+.hp-fill.you { background: linear-gradient(90deg, var(--verde) 0%, var(--verde-claro) 100%); }
+.hp-fill.infinito { background: linear-gradient(90deg, var(--vermelho) 0%, var(--magenta) 50%, var(--vermelho) 100%); animation: infiniteFlow 1.5s linear infinite; background-size: 200% 100%; }
+@keyframes infiniteFlow { from { background-position: 0% 0; } to { background-position: 200% 0; } }
+
+.timer-combo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  gap: 8px;
+}
+.timer {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: var(--ciano);
+  text-shadow: 0 0 10px var(--ciano);
+}
+.timer.infinite { color: var(--vermelho); text-shadow: 0 0 10px var(--vermelho); }
+.score-display {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: var(--amarelo);
+  text-shadow: 0 0 8px var(--amarelo);
+}
+.combo-display {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  color: var(--amarelo);
+  text-shadow: 0 0 10px var(--amarelo);
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+}
+.combo-display.show { opacity: 1; transform: scale(1.15); }
+
+/* ARENA */
+.arena {
+  flex: 1;
+  position: relative;
+  z-index: 5;
+  margin-top: 130px;
+  margin-bottom: 180px;
+}
+.arena.shake { animation: shake 0.3s; }
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-8px, 4px); }
+  40% { transform: translate(8px, -4px); }
+  60% { transform: translate(-6px, 6px); }
+  80% { transform: translate(6px, -2px); }
+}
+
+.boss-wrap {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110px;
+  height: 110px;
+}
+.boss-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 14px var(--magenta));
+  animation: bossFloat 2.5s ease-in-out infinite;
+  transition: transform 0.4s;
+}
+.boss-svg.hit { animation: bossHit 0.3s ease-out; }
+
+#game.phase-2 .boss-svg { filter: drop-shadow(0 0 18px var(--magenta)) brightness(0.9) contrast(1.2); }
+#game.phase-3 .boss-svg { filter: drop-shadow(0 0 28px var(--vermelho)) brightness(1.1) hue-rotate(-20deg) saturate(1.5); animation: bossFury 1.5s ease-in-out infinite; }
+@keyframes bossFury {
+  0%, 100% { transform: translateY(0) rotate(-3deg) scale(1.05); }
+  50% { transform: translateY(-10px) rotate(3deg) scale(1.1); }
+}
+
+@keyframes bossFloat {
+  0%, 100% { transform: translateY(0px) rotate(-2deg); }
+  50% { transform: translateY(-8px) rotate(2deg); }
+}
+@keyframes bossHit {
+  0%, 100% { transform: translateX(0) scale(1); }
+  25% { transform: translateX(-10px) scale(0.92); filter: brightness(2.5); }
+  75% { transform: translateX(10px) scale(0.92); filter: brightness(2.5); }
+}
+
+/* FLOOR (danger zone) */
+.danger-zone {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 90px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--vermelho), transparent);
+  z-index: 9;
+  opacity: 0.6;
+  box-shadow: 0 0 10px var(--vermelho);
+  animation: dangerPulse 1s ease-in-out infinite;
+}
+@keyframes dangerPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.9; }
+}
+
+/* PLAYER (small, at bottom corner) */
+.player-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 80px;
+  z-index: 8;
+}
+.player-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 10px rgba(0,217,92,0.6));
+  animation: playerClimb 1.4s steps(2) infinite;
+}
+.player-svg.hit { animation: playerHit 0.4s ease-out; }
+.player-svg.success { animation: playerSuccess 0.4s ease-out; }
+@keyframes playerClimb {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-3px); }
+}
+@keyframes playerHit {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); filter: drop-shadow(0 0 10px var(--vermelho)) brightness(1.5); }
+  75% { transform: translateX(8px); filter: drop-shadow(0 0 10px var(--vermelho)) brightness(1.5); }
+}
+@keyframes playerSuccess {
+  0% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.18) translateY(-10px); filter: drop-shadow(0 0 14px var(--verde-claro)) brightness(1.4); }
+  100% { transform: scale(1) translateY(0); }
+}
+
+/* FALLING BLOCKS */
+.fall-block {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-family: sans-serif;
+  z-index: 7;
+  box-shadow: 0 0 16px currentColor;
+  border: 3px solid currentColor;
+  background: rgba(10, 15, 54, 0.85);
+  transition: transform 0.1s;
+}
+.fall-block.color-plano    { color: var(--azul-claro); }
+.fall-block.color-foco     { color: var(--ciano); }
+.fall-block.color-coragem  { color: var(--laranja); }
+.fall-block.color-apoio    { color: var(--verde); }
+.fall-block.danger {
+  animation: blockDanger 0.3s ease-in-out infinite;
+}
+@keyframes blockDanger {
+  0%, 100% { transform: scale(1) rotate(-1deg); }
+  50% { transform: scale(1.08) rotate(1deg); box-shadow: 0 0 28px currentColor, 0 0 50px currentColor; }
+}
+.fall-block.detonate {
+  animation: blockDetonate 0.5s ease-out forwards;
+}
+@keyframes blockDetonate {
+  0% { transform: scale(1); opacity: 1; filter: brightness(1); }
+  18% { transform: scale(1.35); opacity: 1; filter: brightness(3); box-shadow: 0 0 60px currentColor, 0 0 100px currentColor; }
+  55% { transform: scale(2); opacity: 0.6; filter: brightness(1.8); }
+  100% { transform: scale(0); opacity: 0; }
+}
+.fall-block .fb-label {
+  position: absolute;
+  bottom: -20px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  text-shadow: 0 0 4px var(--navy-deep);
+  color: var(--branco);
+}
+
+/* TUTORIAL ARROW */
+.hint-arrow {
+  position: absolute;
+  font-size: 44px;
+  color: var(--amarelo);
+  text-shadow: 0 0 16px var(--amarelo);
+  animation: bounceDown 0.6s ease-in-out infinite;
+  z-index: 30;
+  pointer-events: none;
+}
+@keyframes bounceDown {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(12px); }
+}
+
+/* FLASHES */
+.flash {
+  position: absolute;
+  z-index: 25;
+  font-family: 'Press Start 2P', monospace;
+  font-weight: bold;
+  text-shadow: 3px 3px 0 var(--navy-deep), 0 0 16px currentColor;
+  pointer-events: none;
+  animation: flashOut 0.9s ease-out forwards;
+  white-space: nowrap;
+  font-size: 20px;
+}
+.flash.perfect  { color: var(--amarelo); }
+.flash.good     { color: var(--verde-claro); }
+.flash.late     { color: var(--laranja); }
+.flash.fail     { color: var(--vermelho); }
+.flash.phase    { color: var(--amarelo); font-size: 18px; text-align: center; }
+.flash.phase div { line-height: 1.4; }
+.flash.combo-fire { color: var(--laranja); font-size: 22px; }
+.flash.combo-master { color: var(--verde-claro); font-size: 24px; text-shadow: 3px 3px 0 var(--navy-deep), 0 0 24px var(--verde-claro); }
+@keyframes flashOut {
+  0% { transform: translate(-50%, 0) scale(0.5); opacity: 0; }
+  20% { transform: translate(-50%, 0) scale(1.2); opacity: 1; }
+  100% { transform: translate(-50%, -30px) scale(1); opacity: 0; }
+}
+
+/* HIT POINTS POPUP */
+.points-popup {
+  position: absolute;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: var(--amarelo);
+  text-shadow: 2px 2px 0 var(--navy-deep), 0 0 10px var(--amarelo);
+  pointer-events: none;
+  z-index: 26;
+  animation: pointsRise 0.9s ease-out forwards;
+}
+@keyframes pointsRise {
+  0% { transform: translate(-50%, 0) scale(0.8); opacity: 0; }
+  20% { transform: translate(-50%, -10px) scale(1.1); opacity: 1; }
+  100% { transform: translate(-50%, -50px) scale(0.9); opacity: 0; }
+}
+
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  pointer-events: none;
+  z-index: 22;
+  animation: particleFly 0.7s ease-out forwards;
+}
+@keyframes particleFly {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; }
+}
+
+.actions {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 15;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 6px;
+  padding: 10px;
+  background: linear-gradient(180deg, transparent 0%, var(--navy-deep) 30%);
+}
+.action-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  border: 3px solid;
+  border-radius: 8px;
+  padding: 12px 4px;
+  cursor: pointer;
+  background: var(--navy);
+  color: var(--branco);
+  letter-spacing: 1px;
+  position: relative;
+  transition: transform 0.08s;
+  touch-action: manipulation;
+}
+.action-btn .icon { display: block; font-size: 22px; margin-bottom: 4px; font-family: sans-serif; }
+.action-btn[data-action="plano"]    { border-color: var(--azul-claro); box-shadow: 0 0 12px rgba(86,128,255,0.5); }
+.action-btn[data-action="foco"]     { border-color: var(--ciano);      box-shadow: 0 0 12px rgba(0,249,255,0.5);  }
+.action-btn[data-action="coragem"]  { border-color: var(--laranja);    box-shadow: 0 0 12px rgba(255,140,66,0.5); }
+.action-btn[data-action="apoio"]    { border-color: var(--verde);      box-shadow: 0 0 12px rgba(0,217,92,0.5);   }
+.action-btn:active { transform: scale(0.94); }
+.action-btn.highlight { animation: btnHighlight 0.6s ease-in-out infinite; }
+@keyframes btnHighlight {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 12px currentColor; }
+  50% { transform: scale(1.1); box-shadow: 0 0 30px currentColor, 0 0 50px currentColor; }
+}
+
+/* END / CHOICE / SHARE */
+#screen-choice, #screen-share, #screen-input-initials {
+  background: rgba(5, 8, 34, 0.96);
+  backdrop-filter: blur(6px);
+}
+.choice-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: var(--amarelo);
+  text-shadow: 0 0 12px var(--amarelo);
+  margin-bottom: 6px;
+  text-align: center;
+  line-height: 1.4;
+}
+.choice-sub {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--ciano);
+  letter-spacing: 1.5px;
+  margin-bottom: 22px;
+  text-align: center;
+  text-shadow: 0 0 6px var(--ciano);
+}
+.choice-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  max-width: 340px;
+  margin-bottom: 18px;
+}
+.choice-card {
+  background: rgba(10, 15, 54, 0.7);
+  border: 3px solid;
+  border-radius: 10px;
+  padding: 16px 8px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--branco);
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.2s;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+}
+.choice-card .ci { display: block; font-size: 32px; font-family: sans-serif; margin-bottom: 6px; }
+.choice-card[data-fear="procrastinacao"] { border-color: var(--azul-claro); box-shadow: 0 0 14px rgba(86,128,255,0.4); }
+.choice-card[data-fear="comparacao"]     { border-color: var(--ciano);      box-shadow: 0 0 14px rgba(0,249,255,0.4); }
+.choice-card[data-fear="autocobranca"]   { border-color: var(--laranja);    box-shadow: 0 0 14px rgba(255,140,66,0.4); }
+.choice-card[data-fear="paralisia"]      { border-color: var(--verde);      box-shadow: 0 0 14px rgba(0,217,92,0.4); }
+.choice-card:active { transform: scale(0.95); }
+.choice-card:hover { box-shadow: 0 0 28px currentColor; }
+
+/* SHARE / RESULT */
+.share-card {
+  width: 340px;
+  max-width: 94vw;
+  background: linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
+  border: 4px solid var(--amarelo);
+  border-radius: 14px;
+  padding: 18px 14px 16px;
+  box-shadow: 0 0 36px rgba(255, 217, 61, 0.4);
+  margin-bottom: 14px;
+  text-align: center;
+}
+.share-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 10px;
+}
+.share-logo { height: 18px; }
+.share-title-card {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--magenta-claro);
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px var(--magenta);
+}
+.share-score {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 28px;
+  color: var(--amarelo);
+  text-shadow: 0 0 14px var(--amarelo);
+  margin-bottom: 4px;
+}
+.share-stage {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--ciano);
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+}
+.share-svg {
+  width: 76px;
+  height: 86px;
+  margin: 0 auto 10px;
+  display: block;
+}
+.share-quote {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--branco);
+  line-height: 1.35;
+  margin-bottom: 6px;
+  padding: 0 4px;
+}
+.share-trail {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--magenta-claro);
+  letter-spacing: 1.5px;
+  margin-bottom: 14px;
+}
+.share-reflection-box, .share-practice-box {
+  background: rgba(10, 15, 54, 0.6);
+  border-left: 3px solid var(--ciano);
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  text-align: left;
+  border-radius: 4px;
+}
+.share-practice-box { border-left-color: var(--verde-claro); }
+.share-reflection-label, .share-practice-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: var(--ciano);
+  letter-spacing: 1.5px;
+  margin-bottom: 5px;
+  text-shadow: 0 0 4px var(--ciano);
+}
+.share-practice-label { color: var(--verde-claro); text-shadow: 0 0 4px var(--verde-claro); }
+.share-reflection, .share-practice {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--branco);
+  line-height: 1.4;
+}
+.share-tags {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 2px dashed rgba(255, 217, 61, 0.4);
+}
+.tag-line {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--verde-claro);
+  letter-spacing: 1px;
+  margin: 3px 0;
+  text-shadow: 0 0 6px var(--verde-claro);
+}
+.tag-line:nth-child(2) { color: var(--amarelo); text-shadow: 0 0 6px var(--amarelo); }
+.share-hint {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--amarelo);
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+  text-align: center;
+  text-shadow: 0 0 8px var(--amarelo);
+  animation: hintBlink 1.5s ease-in-out infinite;
+}
+@keyframes hintBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* INITIALS INPUT */
+.initials-prompt {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  color: var(--amarelo);
+  margin-bottom: 16px;
+  text-shadow: 0 0 8px var(--amarelo);
+  letter-spacing: 1px;
+}
+.initials-score {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 16px;
+  color: var(--ciano);
+  margin-bottom: 24px;
+  text-shadow: 0 0 8px var(--ciano);
+}
+.initials-row { display: flex; gap: 14px; margin-bottom: 20px; }
+.initial-slot { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.initial-slot .arrow {
+  background: transparent;
+  border: 2px solid var(--ciano);
+  color: var(--ciano);
+  width: 40px; height: 30px;
+  font-size: 16px;
+  font-family: 'Press Start 2P', monospace;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.initial-slot .arrow:active { background: rgba(0,249,255,0.2); }
+.initial-slot .letter {
+  width: 56px; height: 64px;
+  border: 3px solid var(--amarelo);
+  background: var(--navy);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 38px;
+  color: var(--amarelo);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-shadow: 0 0 10px var(--amarelo);
+  border-radius: 6px;
+  box-shadow: 0 0 18px rgba(255, 217, 61, 0.4);
+}
+.initial-slot.active .letter { border-color: var(--verde-claro); color: var(--verde-claro); text-shadow: 0 0 12px var(--verde-claro); }
+
+.totem-hint {
+  position: absolute;
+  bottom: 6px;
+  left: 0; right: 0;
+  z-index: 100;
+  text-align: center;
+  font-size: 9px;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 1px;
+  pointer-events: none;
+}
+
+/* CARAVANA BADGE */
+.caravana-badge {
+  position: absolute;
+  top: 38px;
+  left: 14px;
+  z-index: 11;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--verde-claro);
+  background: rgba(10, 15, 54, 0.7);
+  border: 1px solid var(--verde-claro);
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-shadow: 0 0 4px var(--verde-claro);
+  letter-spacing: 1px;
+}
+
+/* OPERATOR BUTTON & SCREEN */
+.op-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.25);
+  color: rgba(255,255,255,0.6);
+  font-size: 16px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s;
+  padding: 0;
+}
+.op-btn:hover { color: var(--branco); border-color: var(--branco); }
+.op-btn:active { transform: scale(0.9) rotate(60deg); background: rgba(255,255,255,0.1); }
+#game.is-playing .op-btn { display: none; }
+
+#screen-operator {
+  background: rgba(5, 8, 34, 0.97);
+  backdrop-filter: blur(6px);
+}
+.op-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: var(--amarelo);
+  text-shadow: 0 0 10px var(--amarelo);
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+.op-sub {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--ciano);
+  letter-spacing: 1.5px;
+  margin-bottom: 24px;
+  text-shadow: 0 0 6px var(--ciano);
+}
+.op-code-display {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 28px;
+  letter-spacing: 14px;
+  color: var(--verde-claro);
+  text-shadow: 0 0 10px var(--verde-claro);
+  background: var(--navy);
+  border: 3px solid var(--amarelo);
+  padding: 14px 22px 14px 36px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  min-width: 200px;
+  text-align: center;
+}
+.op-numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 64px);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.op-key {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 18px;
+  background: var(--navy);
+  border: 2px solid var(--ciano);
+  color: var(--branco);
+  padding: 16px 0;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(0,249,255,0.3);
+}
+.op-key:active { transform: scale(0.94); background: rgba(0,249,255,0.15); }
+.op-key.clear { border-color: var(--vermelho); color: var(--vermelho); }
+.op-key.confirm { border-color: var(--verde); color: var(--verde); }
+.op-error {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--vermelho);
+  margin-top: 8px;
+  text-shadow: 0 0 6px var(--vermelho);
+  min-height: 12px;
+}
+
+.op-menu-card {
+  background: rgba(10, 15, 54, 0.7);
+  border: 2px solid var(--ciano);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 6px 0;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--branco);
+  cursor: pointer;
+  min-width: 280px;
+  text-align: left;
+  letter-spacing: 1px;
+  line-height: 1.4;
+}
+.op-menu-card:active { background: rgba(0,249,255,0.1); }
+.op-menu-card .menu-icon { display: inline-block; margin-right: 8px; font-family: sans-serif; }
+
+.op-history-list {
+  max-height: 50vh;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 380px;
+  margin-bottom: 18px;
+}
+.op-history-row {
+  background: rgba(10, 15, 54, 0.6);
+  border: 1px solid var(--ciano);
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  border-radius: 6px;
+  text-align: left;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+}
+.op-history-row .car-id { color: var(--amarelo); font-size: 11px; margin-bottom: 6px; text-shadow: 0 0 6px var(--amarelo); }
+.op-history-row .top-line { color: var(--branco); padding: 2px 0; display: flex; justify-content: space-between; }
+.op-history-row .top-line .name { color: var(--verde-claro); }
+.op-history-row .top-line .pts { color: var(--amarelo); }
+
+.op-confirm {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  color: var(--branco);
+  line-height: 1.5;
+  margin-bottom: 18px;
+  max-width: 320px;
+}
+.op-confirm strong { color: var(--amarelo); }
+</style>
+</head>
+
+<body>
+<div id="game">
+  <div class="bg-grid"></div>
+  <div class="bg-stars"></div>
+  <div class="bg-mountain"></div>
+
+  <div class="header">
+    <img src="../../assets/logo-escalada.svg" alt="Escalada" />
+    <button class="op-btn" id="btn-operator" title="Operador">⚙️</button>
+  </div>
+
+  <div class="caravana-badge" id="caravana-badge">CARAVANA 01</div>
+
+  <!-- START -->
+  <div class="screen" id="screen-start">
+    <div class="start-monster-wrap">
+      <svg viewBox="0 0 16 16" shape-rendering="crispEdges" style="width:90px;height:90px;filter:drop-shadow(0 0 16px var(--magenta));animation:bossFloat 3s ease-in-out infinite;">
+        <rect x="2" y="3" width="12" height="10" fill="#FF00FF"/>
+        <rect x="3" y="2" width="10" height="1" fill="#FF00FF"/>
+        <rect x="1" y="4" width="1" height="8" fill="#A800A8"/>
+        <rect x="14" y="4" width="1" height="8" fill="#A800A8"/>
+        <rect x="3" y="13" width="10" height="1" fill="#A800A8"/>
+        <rect x="3" y="1" width="1" height="2" fill="#A800A8"/>
+        <rect x="12" y="1" width="1" height="2" fill="#A800A8"/>
+        <rect x="2" y="0" width="1" height="1" fill="#A800A8"/>
+        <rect x="13" y="0" width="1" height="1" fill="#A800A8"/>
+        <rect x="4" y="5" width="2" height="2" fill="#FFFFFF"/>
+        <rect x="10" y="5" width="2" height="2" fill="#FFFFFF"/>
+        <rect x="5" y="5" width="1" height="2" fill="#FF3060"/>
+        <rect x="11" y="5" width="1" height="2" fill="#FF3060"/>
+        <rect x="5" y="9" width="6" height="2" fill="#0A0F36"/>
+        <rect x="5" y="9" width="1" height="1" fill="#FFFFFF"/>
+        <rect x="7" y="9" width="1" height="1" fill="#FFFFFF"/>
+        <rect x="9" y="9" width="1" height="1" fill="#FFFFFF"/>
+        <rect x="0" y="6" width="1" height="2" fill="#FF00FF"/>
+        <rect x="15" y="6" width="1" height="2" fill="#FF00FF"/>
+      </svg>
+    </div>
+    <h1 class="start-title">O MONSTRO<br>DO PRÓXIMO PASSO</h1>
+    <p class="start-subtitle">OS MEDOS CAEM. SEUS RECURSOS DERRUBAM.</p>
+
+    <div class="highscore-table" id="hs-table">
+      <div class="hs-title">🏆 TOP 5</div>
+      <div id="hs-list"></div>
+    </div>
+
+    <div class="btn-row">
+      <button class="start-button" id="btn-start">▶ COMEÇAR</button>
+    </div>
+  </div>
+
+  <!-- PLAY -->
+  <div class="screen" id="screen-play" hidden>
+    <div class="hud">
+      <div class="phase-badge" id="phase-badge">FASE 1 · O VAZIO</div>
+      <div class="hp-bar">
+        <div class="hp-label"><span class="boss-name" id="boss-label">MONSTRO</span><span id="boss-hp-text">100</span></div>
+        <div class="hp-track"><div class="hp-fill boss" id="hp-boss" style="width:100%"></div></div>
+      </div>
+      <div class="hp-bar">
+        <div class="hp-label"><span class="you-name">VOCÊ</span><span id="you-hp-text">100</span></div>
+        <div class="hp-track"><div class="hp-fill you" id="hp-you" style="width:100%"></div></div>
+      </div>
+      <div class="timer-combo">
+        <div class="timer" id="timer">25</div>
+        <div class="score-display" id="score">000000</div>
+        <div class="combo-display" id="combo">x0</div>
+      </div>
+    </div>
+
+    <div class="arena" id="arena">
+      <div class="boss-wrap">
+        <svg id="boss-sprite" class="boss-svg" viewBox="0 0 16 16" shape-rendering="crispEdges">
+          <rect x="2" y="3" width="12" height="10" fill="#FF00FF"/>
+          <rect x="3" y="2" width="10" height="1" fill="#FF00FF"/>
+          <rect x="1" y="4" width="1" height="8" fill="#A800A8"/>
+          <rect x="14" y="4" width="1" height="8" fill="#A800A8"/>
+          <rect x="3" y="13" width="10" height="1" fill="#A800A8"/>
+          <rect x="3" y="1" width="1" height="2" fill="#A800A8"/>
+          <rect x="12" y="1" width="1" height="2" fill="#A800A8"/>
+          <rect x="2" y="0" width="1" height="1" fill="#A800A8"/>
+          <rect x="13" y="0" width="1" height="1" fill="#A800A8"/>
+          <rect x="4" y="5" width="2" height="2" fill="#FFFFFF"/>
+          <rect x="10" y="5" width="2" height="2" fill="#FFFFFF"/>
+          <rect x="5" y="5" width="1" height="2" fill="#FF3060"/>
+          <rect x="11" y="5" width="1" height="2" fill="#FF3060"/>
+          <rect x="5" y="9" width="6" height="2" fill="#0A0F36"/>
+          <rect x="5" y="9" width="1" height="1" fill="#FFFFFF"/>
+          <rect x="7" y="9" width="1" height="1" fill="#FFFFFF"/>
+          <rect x="9" y="9" width="1" height="1" fill="#FFFFFF"/>
+          <rect x="0" y="6" width="1" height="2" fill="#FF00FF"/>
+          <rect x="15" y="6" width="1" height="2" fill="#FF00FF"/>
+          <g class="extra-horns" opacity="0">
+            <rect x="6" y="0" width="1" height="2" fill="#A800A8"/>
+            <rect x="9" y="0" width="1" height="2" fill="#A800A8"/>
+          </g>
+          <g class="extra-eyes" opacity="0">
+            <rect x="7" y="3" width="2" height="1" fill="#FF3060"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="danger-zone" id="danger-zone"></div>
+
+      <div class="player-wrap">
+        <svg id="player-sprite" class="player-svg" viewBox="0 0 16 20" shape-rendering="crispEdges">
+          <rect x="5" y="0" width="6" height="1" fill="#00D95C"/>
+          <rect x="4" y="1" width="8" height="2" fill="#00D95C"/>
+          <rect x="4" y="3" width="2" height="1" fill="#00D95C"/>
+          <rect x="10" y="3" width="2" height="1" fill="#00D95C"/>
+          <rect x="6" y="2" width="4" height="3" fill="#FFD9B3"/>
+          <rect x="6" y="3" width="1" height="1" fill="#0A0F36"/>
+          <rect x="9" y="3" width="1" height="1" fill="#0A0F36"/>
+          <rect x="7" y="4" width="2" height="1" fill="#FF76FF"/>
+          <rect x="7" y="5" width="2" height="1" fill="#FFD9B3"/>
+          <rect x="5" y="6" width="5" height="5" fill="#FFFFFF"/>
+          <rect x="4" y="6" width="1" height="1" fill="#FFFFFF"/>
+          <rect x="3" y="5" width="1" height="1" fill="#FFFFFF"/>
+          <rect x="2" y="4" width="1" height="1" fill="#FFFFFF"/>
+          <rect x="2" y="3" width="1" height="1" fill="#FFD9B3"/>
+          <rect x="10" y="7" width="3" height="4" fill="#FF00FF"/>
+          <rect x="10" y="7" width="3" height="1" fill="#FF76FF"/>
+          <rect x="11" y="6" width="1" height="2" fill="#FFFFFF"/>
+          <rect x="5" y="11" width="5" height="1" fill="#2A4FDA"/>
+          <rect x="5" y="12" width="5" height="3" fill="#2A4FDA"/>
+          <rect x="5" y="15" width="2" height="3" fill="#2A4FDA"/>
+          <rect x="4" y="18" width="3" height="1" fill="#FFD9B3"/>
+          <rect x="8" y="15" width="2" height="2" fill="#2A4FDA"/>
+          <rect x="8" y="17" width="2" height="1" fill="#FFD9B3"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="hint-arrow" id="hint-arrow" hidden>👇</div>
+
+    <div class="actions">
+      <button class="action-btn" data-action="plano">   <span class="icon">⚙️</span>PLANO</button>
+      <button class="action-btn" data-action="foco">    <span class="icon">🎯</span>FOCO</button>
+      <button class="action-btn" data-action="coragem"> <span class="icon">🔥</span>CORAGEM</button>
+      <button class="action-btn" data-action="apoio">   <span class="icon">🤝</span>APOIO</button>
+    </div>
+  </div>
+
+  <!-- CHOICE: qual medo te pegou mais? -->
+  <div class="screen" id="screen-choice" hidden>
+    <p class="choice-title">QUAL DESSES<br>TE PEGOU MAIS HOJE?</p>
+    <p class="choice-sub">ESCOLHE 1</p>
+    <div class="choice-grid">
+      <div class="choice-card" data-fear="procrastinacao"><span class="ci">📋</span>PROCRASTINAÇÃO</div>
+      <div class="choice-card" data-fear="comparacao"><span class="ci">👥</span>COMPARAÇÃO</div>
+      <div class="choice-card" data-fear="autocobranca"><span class="ci">💔</span>AUTO<br>COBRANÇA</div>
+      <div class="choice-card" data-fear="paralisia"><span class="ci">🧊</span>PARALISIA</div>
+    </div>
+  </div>
+
+  <!-- SHARE / RESULT -->
+  <div class="screen" id="screen-share" hidden>
+    <p class="share-hint">📸 TIRA FOTO E POSTA. MARCA A GENTE.</p>
+    <div class="share-card" id="share-card">
+      <div class="share-top">
+        <img class="share-logo" src="../../assets/logo-escalada.svg" alt="Escalada" />
+        <div class="share-title-card">EU FUI NO NEON</div>
+      </div>
+      <div class="share-score" id="share-score">000000</div>
+      <div class="share-stage" id="share-stage">FASE 1 · O VAZIO</div>
+      <svg class="share-svg" viewBox="0 0 16 20" shape-rendering="crispEdges">
+        <rect x="5" y="0" width="6" height="1" fill="#00FF85"/>
+        <rect x="4" y="1" width="8" height="2" fill="#00FF85"/>
+        <rect x="6" y="2" width="4" height="3" fill="#FFD9B3"/>
+        <rect x="7" y="3" width="2" height="1" fill="#0A0F36"/>
+        <rect x="7" y="4" width="2" height="1" fill="#00FF85"/>
+        <rect x="5" y="6" width="6" height="5" fill="#FFFFFF"/>
+        <rect x="10" y="7" width="3" height="4" fill="#FF00FF"/>
+        <rect x="5" y="11" width="6" height="4" fill="#2A4FDA"/>
+        <rect x="3" y="2" width="2" height="4" fill="#FFFFFF"/>
+        <rect x="11" y="2" width="2" height="4" fill="#FFFFFF"/>
+        <rect x="3" y="1" width="2" height="1" fill="#FFD9B3"/>
+        <rect x="11" y="1" width="2" height="1" fill="#FFD9B3"/>
+        <rect x="5" y="15" width="2" height="4" fill="#2A4FDA"/>
+        <rect x="9" y="15" width="2" height="4" fill="#2A4FDA"/>
+      </svg>
+      <div class="share-quote" id="share-quote">"Plano não é gigante. É o próximo passo."</div>
+      <div class="share-trail" id="share-trail">SOBRE PROCRASTINAÇÃO · DP7+</div>
+      <div class="share-reflection-box">
+        <div class="share-reflection-label">REFLETE COM A GENTE</div>
+        <div class="share-reflection" id="share-reflection">...</div>
+      </div>
+      <div class="share-practice-box">
+        <div class="share-practice-label">💡 LEVA PRA ESSA SEMANA</div>
+        <div class="share-practice" id="share-practice">...</div>
+      </div>
+      <div class="share-tags">
+        <div class="tag-line">#ToNoNeon #EscaladaSebrae</div>
+        <div class="tag-line">@sebraealagoas</div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="end-button" id="btn-replay">▶ DE NOVO</button>
+      <button class="end-button" id="btn-rank" hidden style="background:var(--amarelo);box-shadow:0 0 24px rgba(255,217,61,0.6), 4px 4px 0 var(--navy-deep);">🏆 RANKING</button>
+    </div>
+  </div>
+
+  <!-- INITIALS INPUT -->
+  <div class="screen" id="screen-input-initials" hidden>
+    <p class="initials-prompt">🏆 NEW HIGH SCORE 🏆</p>
+    <p class="initials-score" id="initials-score-display">000000</p>
+    <div class="initials-row" id="initials-row">
+      <div class="initial-slot active" data-slot="0">
+        <button class="arrow" data-dir="up" data-slot="0">▲</button>
+        <div class="letter">A</div>
+        <button class="arrow" data-dir="down" data-slot="0">▼</button>
+      </div>
+      <div class="initial-slot" data-slot="1">
+        <button class="arrow" data-dir="up" data-slot="1">▲</button>
+        <div class="letter">A</div>
+        <button class="arrow" data-dir="down" data-slot="1">▼</button>
+      </div>
+      <div class="initial-slot" data-slot="2">
+        <button class="arrow" data-dir="up" data-slot="2">▲</button>
+        <div class="letter">A</div>
+        <button class="arrow" data-dir="down" data-slot="2">▼</button>
+      </div>
+    </div>
+    <button class="end-button" id="btn-save-initials">▶ SALVAR</button>
+  </div>
+
+  <div class="totem-hint">CADA MEDO CAI. APERTA SEU RECURSO ANTES QUE CHEGUE NO CHÃO.</div>
+
+  <!-- OPERATOR -->
+  <div class="screen" id="screen-operator" hidden>
+    <div id="op-view-code">
+      <p class="op-title">🔧 OPERADOR</p>
+      <p class="op-sub">DIGITA O CÓDIGO</p>
+      <div class="op-code-display" id="op-code-display">----</div>
+      <div class="op-numpad">
+        <button class="op-key" data-key="1">1</button>
+        <button class="op-key" data-key="2">2</button>
+        <button class="op-key" data-key="3">3</button>
+        <button class="op-key" data-key="4">4</button>
+        <button class="op-key" data-key="5">5</button>
+        <button class="op-key" data-key="6">6</button>
+        <button class="op-key" data-key="7">7</button>
+        <button class="op-key" data-key="8">8</button>
+        <button class="op-key" data-key="9">9</button>
+        <button class="op-key clear" data-key="C">C</button>
+        <button class="op-key" data-key="0">0</button>
+        <button class="op-key confirm" data-key="OK">OK</button>
+      </div>
+      <div class="op-error" id="op-error"></div>
+      <button class="skip-button" id="op-cancel" style="margin-top:18px;">VOLTAR</button>
+    </div>
+
+    <div id="op-view-menu" hidden>
+      <p class="op-title">🔧 OPERADOR</p>
+      <p class="op-sub" id="op-current-caravana">CARAVANA 01 EM ANDAMENTO</p>
+      <button class="op-menu-card" id="op-action-next"><span class="menu-icon">📝</span>ENCERRAR E INICIAR NOVA CARAVANA</button>
+      <button class="op-menu-card" id="op-action-history"><span class="menu-icon">📊</span>VER CARAVANAS ANTERIORES</button>
+      <button class="op-menu-card" id="op-action-reset" style="border-color: var(--vermelho); color: var(--vermelho);"><span class="menu-icon">🗑️</span>APAGAR TUDO</button>
+      <button class="skip-button" id="op-menu-back" style="margin-top:8px;">VOLTAR PRO JOGO</button>
+    </div>
+
+    <div id="op-view-confirm" hidden>
+      <p class="op-title">ENCERRAR CARAVANA?</p>
+      <p class="op-confirm" id="op-confirm-text">Vai encerrar a <strong>Caravana 01</strong> e iniciar a <strong>Caravana 02</strong>. O ranking atual vai pro histórico.</p>
+      <div class="btn-row">
+        <button class="end-button" id="op-confirm-yes" style="background:var(--amarelo);">✓ ENCERRAR</button>
+        <button class="skip-button" id="op-confirm-no">VOLTAR</button>
+      </div>
+    </div>
+
+    <div id="op-view-history" hidden>
+      <p class="op-title">CARAVANAS ANTERIORES</p>
+      <div class="op-history-list" id="op-history-list"></div>
+      <button class="skip-button" id="op-history-back">VOLTAR</button>
+    </div>
+
+    <div id="op-view-confirm-reset" hidden>
+      <p class="op-title" style="color: var(--vermelho); text-shadow: 0 0 10px var(--vermelho);">APAGAR TUDO?</p>
+      <p class="op-confirm">Isso apaga <strong>todo o histórico</strong> de caravanas e zera o sistema. Não dá pra desfazer.</p>
+      <div class="btn-row">
+        <button class="end-button" id="op-reset-yes" style="background:var(--vermelho); color: var(--branco);">✓ APAGAR</button>
+        <button class="skip-button" id="op-reset-no">VOLTAR</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const FEARS = {
+  procrastinacao: { icon: '📋', label: 'PROCRASTINAÇÃO', resource: 'plano',   color: 'plano',   freq: 392 },
+  comparacao:     { icon: '👥', label: 'COMPARAÇÃO',     resource: 'foco',    color: 'foco',    freq: 523 },
+  autocobranca:   { icon: '💔', label: 'AUTOCOBRANÇA',   resource: 'coragem', color: 'coragem', freq: 659 },
+  paralisia:      { icon: '🧊', label: 'PARALISIA',      resource: 'apoio',   color: 'apoio',   freq: 494 }
+};
+const FEAR_KEYS = Object.keys(FEARS);
+const RESOURCE_TO_FEAR = {
+  plano: 'procrastinacao',
+  foco: 'comparacao',
+  coragem: 'autocobranca',
+  apoio: 'paralisia'
+};
+
+const LESSONS = {
+  procrastinacao: {
+    quote: '"Plano não é gigante. É o próximo passo."',
+    reflection: 'Você não tá travado por preguiça. Tá travado porque o passo que você imagina é maior do que cabe no seu dia. Quebra esse passo até caber em 5 minutos.',
+    practice: 'Hoje, faça a versão de 5 minutos do que você vinha adiando.',
+    trail: 'DP7+'
+  },
+  comparacao: {
+    quote: '"O referencial é piloto. Você é quem pilota."',
+    reflection: 'Olhar pro lado pode inspirar ou travar. A diferença é o que você faz com o que viu: anota e aplica, ou compara e desiste.',
+    practice: 'Hoje, vira pra dentro. O que VOCÊ avançou? Anota 3 coisas.',
+    trail: 'DP1'
+  },
+  autocobranca: {
+    quote: '"Falhou? Marca o erro, não você."',
+    reflection: 'Erro é dado. Você é quem coleta o dado. Quando você confunde os dois, o erro vira identidade e você para. Quando você separa, o erro vira instrução e você anda.',
+    practice: 'Hoje, releia uma falha recente como bilhete: o que ela está te avisando?',
+    trail: 'TR6'
+  },
+  paralisia: {
+    quote: '"Não sabe? Pergunta. Curto e simples."',
+    reflection: 'Quase tudo que trava você já foi resolvido por alguém. A internet acha pra você. Uma mensagem direta acha pra você. O silêncio é que não acha.',
+    practice: 'Hoje, manda UMA pergunta pra UMA pessoa. Pode ser pelo WhatsApp.',
+    trail: 'TR5'
+  }
+};
+
+const PHASES = [
+  { id: 1, name: 'O VAZIO',  duration: 25, fallSpeed: 70,  spawnMin: 1800, spawnMax: 2400, maxSimul: 1, bossHp: 80,  cls: '' },
+  { id: 2, name: 'A SUBIDA', duration: 30, fallSpeed: 100, spawnMin: 1200, spawnMax: 1800, maxSimul: 2, bossHp: 120, cls: 'phase-2' },
+  { id: 3, name: 'O TOPO',   duration: 0,  fallSpeed: 120, spawnMin: 900,  spawnMax: 1400, maxSimul: 3, bossHp: 0,   cls: 'phase-3', infinite: true }
+];
+
+const HS_KEY = 'escalada-boss-ranking-v2';
+const CARAVAN_KEY = 'escalada-boss-caravan-v1';
+const OP_CODE = '1234';
+
+const state = {
+  bossHp: 80,
+  bossHpMax: 80,
+  youHp: 100,
+  hits: 0,
+  combo: 0,
+  maxCombo: 0,
+  score: 0,
+  phaseIndex: 0,
+  phaseTimeLeft: 25,
+  gameRunning: false,
+  mode: 'idle',
+  tutorialStep: 0,
+  tutorialSequence: ['plano', 'foco', 'coragem', 'apoio'],
+  fallingBlocks: [],
+  spawnTimer: 0,
+  nextSpawn: 1000,
+  lastFrame: 0,
+  rafRef: null,
+  loopRef: null,
+  audioCtx: null,
+  initials: ['A', 'A', 'A'],
+  activeInitialSlot: 0,
+  pendingScore: 0,
+  pendingStage: 1,
+  chosenFear: null,
+  infinitWave: 1,
+  infinitHitsThisWave: 0
+};
+
+function initAudio() {
+  if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+function beep(freq, duration, type, vol) {
+  duration = duration || 0.08; type = type || 'square'; vol = vol || 0.08;
+  if (!state.audioCtx) return;
+  const osc = state.audioCtx.createOscillator();
+  const gain = state.audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(vol, state.audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, state.audioCtx.currentTime + duration);
+  osc.connect(gain);
+  gain.connect(state.audioCtx.destination);
+  osc.start();
+  osc.stop(state.audioCtx.currentTime + duration);
+}
+function sfxFear(freq) { beep(freq, 0.08, 'square', 0.06); }
+function sfxSuccess() { beep(660, 0.06); setTimeout(() => beep(880, 0.06), 60); setTimeout(() => beep(1320, 0.1), 120); }
+function sfxPerfect() { beep(880, 0.05); setTimeout(() => beep(1175, 0.05), 50); setTimeout(() => beep(1568, 0.08), 100); setTimeout(() => beep(1976, 0.12), 160); }
+function sfxFail() { beep(110, 0.2, 'sawtooth', 0.1); }
+function sfxHit() { beep(180, 0.12, 'sawtooth', 0.1); setTimeout(() => beep(120, 0.08, 'sawtooth', 0.08), 60); }
+function sfxWin() { [523, 659, 784, 1047, 1318].forEach((f, i) => setTimeout(() => beep(f, 0.16), i * 90)); }
+function sfxLose() { [330, 220, 110].forEach((f, i) => setTimeout(() => beep(f, 0.2, 'sawtooth'), i * 150)); }
+function sfxPhase() { [659, 784, 988, 1175].forEach((f, i) => setTimeout(() => beep(f, 0.1), i * 60)); }
+
+let musicInterval = null;
+function startMusic(phaseIdx) {
+  if (!state.audioCtx) return;
+  stopMusic();
+  const themes = [
+    [220, 220, 277, 330, 277, 330, 369, 330],
+    [220, 247, 277, 330, 277, 247, 220, 196],
+    [196, 247, 294, 370, 294, 247, 196, 165]
+  ];
+  const theme = themes[phaseIdx] || themes[0];
+  const tempo = [240, 200, 150][phaseIdx] || 240;
+  let i = 0;
+  musicInterval = setInterval(() => {
+    if (!state.gameRunning) return;
+    beep(theme[i % theme.length], 0.12, 'triangle', 0.03);
+    i++;
+  }, tempo);
+}
+function stopMusic() { if (musicInterval) { clearInterval(musicInterval); musicInterval = null; } }
+
+const $ = id => document.getElementById(id);
+const screens = {
+  start: $('screen-start'),
+  play: $('screen-play'),
+  choice: $('screen-choice'),
+  share: $('screen-share'),
+  initials: $('screen-input-initials'),
+  operator: $('screen-operator')
+};
+function showScreen(name) {
+  Object.entries(screens).forEach(([k, el]) => el.hidden = k !== name);
+  // engrenagem visível só fora do jogo (não distrai)
+  const game = $('game');
+  game.classList.toggle('is-playing', name === 'play');
+}
+
+// ============ STORAGE (abstrai pra trocar por Supabase depois) ============
+function loadCaravanData() {
+  try {
+    const raw = localStorage.getItem(CARAVAN_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return { current: 1, history: {} };
+}
+function saveCaravanData(data) {
+  try { localStorage.setItem(CARAVAN_KEY, JSON.stringify(data)); } catch {}
+}
+function getCurrentCaravana() {
+  return loadCaravanData().current;
+}
+function formatCaravana(n) {
+  return 'CARAVANA ' + String(n).padStart(2, '0');
+}
+function updateCaravanaBadge() {
+  $('caravana-badge').textContent = formatCaravana(getCurrentCaravana());
+}
+function closeCurrentCaravana() {
+  const data = loadCaravanData();
+  const list = loadRanking();
+  data.history[data.current] = {
+    encerradaEm: new Date().toISOString(),
+    top: list.slice(0, 5)
+  };
+  data.current++;
+  saveCaravanData(data);
+  saveRanking([]);
+  renderRanking();
+  updateCaravanaBadge();
+}
+function resetAllCaravan() {
+  try {
+    localStorage.removeItem(CARAVAN_KEY);
+    localStorage.removeItem(HS_KEY);
+  } catch {}
+  renderRanking();
+  updateCaravanaBadge();
+}
+
+function loadRanking() {
+  try { return JSON.parse(localStorage.getItem(HS_KEY)) || []; } catch { return []; }
+}
+function saveRanking(rank) {
+  try { localStorage.setItem(HS_KEY, JSON.stringify(rank)); } catch {}
+}
+function renderRanking() {
+  const list = loadRanking();
+  const c = $('hs-list');
+  if (list.length === 0) {
+    c.innerHTML = '<div class="hs-empty">--- VAZIO ---</div>';
+    return;
+  }
+  c.innerHTML = list.slice(0, 5).map((r, i) => {
+    return '<div class="hs-row">'
+      + '<span class="rank">' + String(i + 1).padStart(2, '0') + '</span>'
+      + '<span class="name">' + r.name + '</span>'
+      + '<span class="score">' + String(r.score).padStart(6, '0') + '</span>'
+      + '<span class="stage">F' + r.stage + '</span>'
+      + '</div>';
+  }).join('');
+}
+function isHighScore(score) {
+  const list = loadRanking();
+  if (list.length < 5) return true;
+  return score > (list[list.length - 1] ? list[list.length - 1].score : 0);
+}
+function addToRanking(name, score, stage) {
+  const list = loadRanking();
+  list.push({ name: name, score: score, stage: stage, date: new Date().toISOString() });
+  list.sort((a, b) => b.score - a.score);
+  saveRanking(list.slice(0, 10));
+}
+
+function startGame() {
+  initAudio();
+  state.bossHp = 80;
+  state.bossHpMax = 80;
+  state.youHp = 100;
+  state.hits = 0;
+  state.combo = 0;
+  state.maxCombo = 0;
+  state.score = 0;
+  state.phaseIndex = 0;
+  state.fallingBlocks = [];
+  state.spawnTimer = 0;
+  state.nextSpawn = 1500;
+  state.gameRunning = true;
+  state.mode = 'tutorial';
+  state.tutorialStep = 0;
+  state.chosenFear = null;
+  state.infinitWave = 1;
+  state.infinitHitsThisWave = 0;
+  // clear blocks in DOM
+  document.querySelectorAll('.fall-block').forEach(el => el.remove());
+  updateHUD();
+  applyPhaseVisual(0);
+  showScreen('play');
+  showFlash('TREINO', 'phase');
+  setTimeout(nextTutorialStep, 900);
+}
+
+function applyPhaseVisual(idx) {
+  const phase = PHASES[idx];
+  const game = $('game');
+  game.classList.remove('phase-1', 'phase-2', 'phase-3');
+  if (phase.cls) game.classList.add(phase.cls);
+  $('phase-badge').textContent = 'FASE ' + phase.id + ' · ' + phase.name;
+  const sprite = $('boss-sprite');
+  if (sprite) {
+    const horns = sprite.querySelector('.extra-horns');
+    const eyes = sprite.querySelector('.extra-eyes');
+    if (horns) horns.setAttribute('opacity', idx >= 1 ? '1' : '0');
+    if (eyes) eyes.setAttribute('opacity', idx >= 2 ? '1' : '0');
+  }
+  // hp bar style
+  const bossHp = $('hp-boss');
+  bossHp.classList.toggle('infinito', !!phase.infinite);
+  $('boss-label').textContent = phase.infinite ? 'MONSTRO · INFINITO' : 'MONSTRO';
+  // timer
+  const t = $('timer');
+  t.classList.toggle('infinite', !!phase.infinite);
+}
+
+function nextTutorialStep() {
+  if (state.tutorialStep >= state.tutorialSequence.length) {
+    hideArrow();
+    document.querySelectorAll('.action-btn').forEach(btn => btn.classList.remove('highlight'));
+    showFlash('BORA PRA VALER!', 'phase');
+    setTimeout(startPhase, 1100);
+    return;
+  }
+  const resource = state.tutorialSequence[state.tutorialStep];
+  state.tutorialStep++;
+  const fearKey = RESOURCE_TO_FEAR[resource];
+  spawnBlock(fearKey, true);
+}
+
+function startPhase() {
+  state.mode = 'playing';
+  const phase = PHASES[state.phaseIndex];
+  state.phaseTimeLeft = phase.duration;
+  state.bossHp = phase.bossHp;
+  state.bossHpMax = phase.bossHp;
+  state.infinitHitsThisWave = 0;
+  applyPhaseVisual(state.phaseIndex);
+  $('timer').textContent = phase.infinite ? '∞' : state.phaseTimeLeft;
+  showFlash('FASE ' + phase.id + '\n' + phase.name, 'phase');
+  startMusic(state.phaseIndex);
+  setTimeout(() => {
+    state.spawnTimer = 0;
+    state.nextSpawn = 1000;
+    state.lastFrame = performance.now();
+    state.loopRef = setInterval(tick, 1000);
+    state.rafRef = requestAnimationFrame(gameLoop);
+  }, 1100);
+  updateHUD();
+}
+
+function advancePhase() {
+  state.mode = 'transition';
+  clearInterval(state.loopRef);
+  cancelAnimationFrame(state.rafRef);
+  hideArrow();
+  document.querySelectorAll('.action-btn').forEach(btn => btn.classList.remove('highlight'));
+  state.fallingBlocks.forEach(b => { if (b.el) b.el.remove(); });
+  state.fallingBlocks = [];
+  stopMusic();
+  state.phaseIndex++;
+  if (state.phaseIndex >= PHASES.length) {
+    endGame(true);
+    return;
+  }
+  sfxPhase();
+  startPhase();
+}
+
+function tick() {
+  if (!state.gameRunning || state.mode !== 'playing') return;
+  const phase = PHASES[state.phaseIndex];
+  if (phase.infinite) return;
+  state.phaseTimeLeft--;
+  $('timer').textContent = state.phaseTimeLeft;
+  if (state.phaseTimeLeft <= 0) {
+    if (state.bossHp > 0) {
+      endGame(false);
+    } else {
+      advancePhase();
+    }
+  }
+}
+
+function gameLoop(t) {
+  if (!state.gameRunning) { state.rafRef = null; return; }
+  if (state.mode !== 'playing') {
+    state.rafRef = requestAnimationFrame(gameLoop);
+    return;
+  }
+  const dt = (t - state.lastFrame) / 1000;
+  state.lastFrame = t;
+
+  const arena = $('arena');
+  const arenaRect = arena.getBoundingClientRect();
+  const dangerEl = $('danger-zone');
+  const dangerRect = dangerEl.getBoundingClientRect();
+  const dangerY = dangerRect.top - arenaRect.top;
+  const phase = PHASES[state.phaseIndex];
+  const fallSpeed = phase.fallSpeed * (phase.infinite ? (1 + state.infinitWave * 0.12) : 1);
+
+  // mover blocos
+  state.fallingBlocks.forEach(b => {
+    if (b.destroyed) return;
+    b.y += fallSpeed * dt;
+    b.el.style.top = b.y + 'px';
+    // marca perigoso
+    if (b.y > dangerY * 0.7) b.el.classList.add('danger');
+    if (b.y >= dangerY) {
+      b.destroyed = true;
+      onBlockHitFloor(b);
+    }
+  });
+
+  // limpa
+  state.fallingBlocks = state.fallingBlocks.filter(b => !b.destroyed);
+
+  // spawn
+  state.spawnTimer += dt * 1000;
+  if (state.spawnTimer >= state.nextSpawn && state.fallingBlocks.length < phase.maxSimul) {
+    state.spawnTimer = 0;
+    const wave = phase.infinite ? state.infinitWave : 1;
+    const minS = Math.max(400, phase.spawnMin - (wave - 1) * 80);
+    const maxS = Math.max(700, phase.spawnMax - (wave - 1) * 100);
+    state.nextSpawn = minS + Math.random() * (maxS - minS);
+    spawnBlock(null, false);
+  }
+
+  state.rafRef = requestAnimationFrame(gameLoop);
+}
+
+function spawnBlock(forcedFearKey, isTutorial) {
+  const arena = $('arena');
+  const fearKey = forcedFearKey || FEAR_KEYS[Math.floor(Math.random() * FEAR_KEYS.length)];
+  const fear = FEARS[fearKey];
+  sfxFear(fear.freq);
+  const arenaW = arena.clientWidth;
+  const blockW = 56;
+  const xMin = 20, xMax = arenaW - blockW - 20;
+  const x = xMin + Math.random() * (xMax - xMin);
+  const el = document.createElement('div');
+  el.className = 'fall-block color-' + fear.color;
+  el.innerHTML = fear.icon + '<div class="fb-label">' + fear.label + '</div>';
+  el.style.left = x + 'px';
+  el.style.top = '0px';
+  arena.appendChild(el);
+
+  const block = {
+    el: el,
+    fearKey: fearKey,
+    resource: fear.resource,
+    color: fear.color,
+    y: 0,
+    isTutorial: !!isTutorial,
+    destroyed: false
+  };
+  state.fallingBlocks.push(block);
+
+  // highlight do botão acende sempre que tem bloco do tipo caindo. Dedo só no tutorial.
+  const tgt = document.querySelector('.action-btn[data-action="' + fear.resource + '"]');
+  if (tgt) tgt.classList.add('highlight');
+  if (isTutorial) {
+    const arrow = $('hint-arrow');
+    arrow.hidden = false;
+    const rect = tgt.getBoundingClientRect();
+    const gameRect = $('game').getBoundingClientRect();
+    arrow.style.left = (rect.left - gameRect.left + rect.width / 2 - 22) + 'px';
+    arrow.style.bottom = (gameRect.bottom - rect.top + 8) + 'px';
+
+    // mover bloco manualmente (lento) durante tutorial
+    let tutY = 0;
+    const arenaRect = arena.getBoundingClientRect();
+    const dangerRect = $('danger-zone').getBoundingClientRect();
+    const dangerY = dangerRect.top - arenaRect.top;
+    function tutorialFall() {
+      if (block.destroyed) return;
+      tutY += 0.5;
+      block.y = tutY;
+      block.el.style.top = tutY + 'px';
+      if (tutY >= dangerY * 0.8) {
+        // não deixa chegar no chão no tutorial, espera resposta
+        return;
+      }
+      requestAnimationFrame(tutorialFall);
+    }
+    tutorialFall();
+  }
+}
+
+function destroyBlock(block, hitOk) {
+  block.destroyed = true;
+  block.el.classList.add('detonate');
+  setTimeout(() => block.el.remove(), 400);
+  // limpa highlight se não há mais blocos do tipo (relevante só no tutorial)
+  const stillHas = state.fallingBlocks.some(b => !b.destroyed && b.resource === block.resource && b !== block);
+  if (!stillHas) {
+    const btn = document.querySelector('.action-btn[data-action="' + block.resource + '"]');
+    if (btn) btn.classList.remove('highlight');
+  }
+  // se acabaram TODOS os blocos, garante que o dedo some
+  const anyLeft = state.fallingBlocks.some(b => !b.destroyed && b !== block);
+  if (!anyLeft) hideArrow();
+}
+
+function hideArrow() {
+  const arrow = $('hint-arrow');
+  if (arrow) arrow.hidden = true;
+}
+
+function onBlockHitFloor(block) {
+  // perdeu
+  if (state.mode === 'tutorial') {
+    block.el.remove();
+    showFlash('CHEGOU NO CHÃO. DE NOVO!', 'phase');
+    setTimeout(() => {
+      state.tutorialStep--;
+      nextTutorialStep();
+    }, 700);
+    return;
+  }
+  block.el.classList.add('detonate');
+  setTimeout(() => block.el.remove(), 400);
+  state.combo = 0;
+  state.youHp = Math.max(0, state.youHp - 10);
+  sfxFail();
+  showFlash('PERDEU O TIMING', 'fail');
+  shakeArena();
+  const player = $('player-sprite');
+  player.classList.remove('hit');
+  void player.offsetWidth;
+  player.classList.add('hit');
+  updateCombo();
+  updateHUD();
+  checkEnd();
+}
+
+function handleAction(action) {
+  if (!state.gameRunning) return;
+  if (state.mode === 'transition') return;
+
+  // encontra bloco do tipo, mais baixo
+  const candidates = state.fallingBlocks.filter(b => !b.destroyed && b.resource === action);
+  if (candidates.length === 0) {
+    sfxFail();
+    showFlash('NÃO TEM DESSE', 'fail');
+    // penalidade leve fora do tutorial pra evitar spam aleatório
+    if (state.mode === 'playing') {
+      state.youHp = Math.max(0, state.youHp - 4);
+      state.combo = 0;
+      updateCombo();
+      updateHUD();
+      checkEnd();
+    }
+    return;
+  }
+  candidates.sort((a, b) => b.y - a.y);
+  const block = candidates[0];
+
+  const inTutorial = state.mode === 'tutorial' || block.isTutorial;
+
+  // calcula altura relativa
+  const arena = $('arena');
+  const dangerRect = $('danger-zone').getBoundingClientRect();
+  const arenaRect = arena.getBoundingClientRect();
+  const dangerY = dangerRect.top - arenaRect.top;
+  const ratio = block.y / dangerY;
+  let label, pts, klass;
+  if (ratio < 0.4) { label = 'PERFECT!'; pts = 250; klass = 'perfect'; }
+  else if (ratio < 0.75) { label = 'CERTO!'; pts = 150; klass = 'good'; }
+  else { label = 'IN EXTREMIS!'; pts = 80; klass = 'late'; }
+
+  destroyBlock(block, true);
+  state.hits++;
+  state.combo++;
+  if (state.combo > state.maxCombo) state.maxCombo = state.combo;
+
+  if (!inTutorial) {
+    state.score += pts + state.combo * 15;
+    if (state.bossHp > 0) {
+      state.bossHp = Math.max(0, state.bossHp - Math.floor(pts / 10));
+    } else if (PHASES[state.phaseIndex].infinite) {
+      state.infinitHitsThisWave++;
+      if (state.infinitHitsThisWave >= 5) {
+        state.infinitHitsThisWave = 0;
+        state.infinitWave++;
+        showFlash('ONDA ' + state.infinitWave, 'combo-master');
+        sfxPhase();
+      }
+    }
+  }
+
+  if (klass === 'perfect') sfxPerfect();
+  else sfxSuccess();
+
+  // popup pontos
+  showPointsPopup(pts, block.el);
+
+  showFlash(label, klass);
+
+  // combo escalonado
+  if (!inTutorial) {
+    if (state.combo === 3) showFlash('PERFECT!', 'perfect');
+    else if (state.combo === 5) showFlash('EM CHAMAS!', 'combo-fire');
+    else if (state.combo === 7) showFlash('ON FIRE!', 'combo-fire');
+    else if (state.combo === 10) showFlash('MESTRE DA ESCALADA!', 'combo-master');
+    else if (state.combo === 15) showFlash('LENDÁRIO!', 'combo-master');
+  }
+
+  showParticles(block.el);
+  const boss = $('boss-sprite');
+  boss.classList.remove('hit');
+  void boss.offsetWidth;
+  boss.classList.add('hit');
+  const player = $('player-sprite');
+  player.classList.remove('success');
+  void player.offsetWidth;
+  player.classList.add('success');
+
+  updateCombo();
+  updateHUD();
+
+  if (state.mode === 'tutorial') {
+    setTimeout(nextTutorialStep, 700);
+    return;
+  }
+
+  checkEnd();
+}
+
+function showPointsPopup(pts, anchorEl) {
+  const rect = anchorEl.getBoundingClientRect();
+  const gameRect = $('game').getBoundingClientRect();
+  const p = document.createElement('div');
+  p.className = 'points-popup';
+  p.textContent = '+' + pts;
+  p.style.left = (rect.left - gameRect.left + rect.width / 2) + 'px';
+  p.style.top = (rect.top - gameRect.top - 12) + 'px';
+  $('game').appendChild(p);
+  setTimeout(() => p.remove(), 900);
+}
+
+function showFlash(text, type) {
+  const f = document.createElement('div');
+  f.className = 'flash ' + type;
+  f.style.left = '50%';
+  f.style.top = '45%';
+  if (text.indexOf('\n') >= 0) {
+    f.innerHTML = text.split('\n').map(l => '<div>' + l + '</div>').join('');
+  } else {
+    f.textContent = text;
+  }
+  $('screen-play').appendChild(f);
+  setTimeout(() => f.remove(), 900);
+}
+
+function showParticles(anchorEl) {
+  const rect = anchorEl.getBoundingClientRect();
+  const gameRect = $('game').getBoundingClientRect();
+  const cx = rect.left - gameRect.left + rect.width / 2;
+  const cy = rect.top - gameRect.top + rect.height / 2;
+  const colors = ['#FFD93D', '#00FF85', '#FF76FF', '#00F9FF'];
+  for (let i = 0; i < 14; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = cx + 'px';
+    p.style.top = cy + 'px';
+    p.style.background = colors[i % colors.length];
+    p.style.boxShadow = '0 0 8px ' + colors[i % colors.length];
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 40 + Math.random() * 60;
+    p.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
+    p.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
+    $('game').appendChild(p);
+    setTimeout(() => p.remove(), 700);
+  }
+}
+
+function shakeArena() {
+  const a = $('arena');
+  a.classList.remove('shake');
+  void a.offsetWidth;
+  a.classList.add('shake');
+}
+
+function updateCombo() {
+  const c = $('combo');
+  c.textContent = 'x' + state.combo;
+  if (state.combo >= 2) c.classList.add('show');
+  else c.classList.remove('show');
+}
+
+function updateHUD() {
+  const phase = PHASES[state.phaseIndex];
+  if (phase.infinite) {
+    $('hp-boss').style.width = '100%';
+    $('boss-hp-text').textContent = 'ONDA ' + state.infinitWave;
+    $('boss-label').textContent = 'INFINITO';
+  } else {
+    $('hp-boss').style.width = (state.bossHp / state.bossHpMax * 100) + '%';
+    $('boss-hp-text').textContent = state.bossHp;
+    $('boss-label').textContent = 'MONSTRO';
+  }
+  $('hp-you').style.width = state.youHp + '%';
+  $('you-hp-text').textContent = state.youHp;
+  $('score').textContent = String(state.score).padStart(6, '0');
+}
+
+function checkEnd() {
+  if (state.youHp <= 0) {
+    endGame(false);
+    return true;
+  }
+  const phase = PHASES[state.phaseIndex];
+  if (!phase.infinite && state.bossHp <= 0) {
+    if (state.phaseIndex < PHASES.length - 1) {
+      advancePhase();
+    } else {
+      endGame(true);
+    }
+    return true;
+  }
+  return false;
+}
+
+function endGame(won) {
+  state.gameRunning = false;
+  state.mode = 'ended';
+  clearInterval(state.loopRef);
+  cancelAnimationFrame(state.rafRef);
+  hideArrow();
+  document.querySelectorAll('.action-btn').forEach(btn => btn.classList.remove('highlight'));
+  state.fallingBlocks.forEach(b => { if (b.el) b.el.remove(); });
+  state.fallingBlocks = [];
+  stopMusic();
+
+  const stage = state.phaseIndex + 1;
+  state.pendingScore = state.score;
+  state.pendingStage = stage;
+
+  if (won) sfxWin(); else sfxLose();
+
+  setTimeout(() => showScreen('choice'), 1500);
+}
+
+function chooseFear(fearKey) {
+  state.chosenFear = fearKey;
+  const lesson = LESSONS[fearKey];
+  const fear = FEARS[fearKey];
+  $('share-score').textContent = String(state.pendingScore).padStart(6, '0');
+  const phase = PHASES[state.pendingStage - 1];
+  $('share-stage').textContent = 'FASE ' + state.pendingStage + ' · ' + phase.name;
+  $('share-quote').textContent = lesson.quote;
+  $('share-reflection').textContent = lesson.reflection;
+  $('share-practice').textContent = lesson.practice;
+  $('share-trail').textContent = 'SOBRE ' + fear.label + ' · ' + lesson.trail;
+  // mostra botão de ranking só se high score
+  const rankBtn = $('btn-rank');
+  if (isHighScore(state.pendingScore) && state.pendingScore > 0) {
+    rankBtn.hidden = false;
+  } else {
+    rankBtn.hidden = true;
+  }
+  showScreen('share');
+}
+
+function askInitials(score, stage) {
+  state.initials = ['A', 'A', 'A'];
+  state.activeInitialSlot = 0;
+  state.pendingScore = score;
+  state.pendingStage = stage;
+  updateInitialsUI();
+  $('initials-score-display').textContent = String(score).padStart(6, '0');
+  showScreen('initials');
+}
+
+function updateInitialsUI() {
+  document.querySelectorAll('.initial-slot').forEach((el, i) => {
+    el.querySelector('.letter').textContent = state.initials[i];
+    el.classList.toggle('active', i === state.activeInitialSlot);
+  });
+}
+
+function changeInitial(slot, dir) {
+  const current = state.initials[slot].charCodeAt(0);
+  let next = current + (dir === 'up' ? 1 : -1);
+  if (next > 90) next = 65;
+  if (next < 65) next = 90;
+  state.initials[slot] = String.fromCharCode(next);
+  state.activeInitialSlot = slot;
+  updateInitialsUI();
+}
+
+function saveInitials() {
+  const name = state.initials.join('');
+  addToRanking(name, state.pendingScore, state.pendingStage);
+  renderRanking();
+  showScreen('start');
+}
+
+// ============ EVENTS ============
+$('btn-start').addEventListener('click', startGame);
+$('btn-replay').addEventListener('click', startGame);
+$('btn-rank').addEventListener('click', () => askInitials(state.pendingScore, state.pendingStage));
+$('btn-save-initials').addEventListener('click', saveInitials);
+
+document.querySelectorAll('.action-btn').forEach(btn => {
+  btn.addEventListener('click', () => handleAction(btn.dataset.action));
+});
+
+document.querySelectorAll('.choice-card').forEach(card => {
+  card.addEventListener('click', () => chooseFear(card.dataset.fear));
+});
+
+document.querySelectorAll('.initials-row .arrow').forEach(btn => {
+  btn.addEventListener('click', () => changeInitial(parseInt(btn.dataset.slot), btn.dataset.dir));
+});
+
+document.addEventListener('keydown', e => {
+  if (!state.gameRunning) return;
+  if (e.key === '1' || e.key.toLowerCase() === 'q') handleAction('plano');
+  if (e.key === '2' || e.key.toLowerCase() === 'w') handleAction('foco');
+  if (e.key === '3' || e.key.toLowerCase() === 'a') handleAction('coragem');
+  if (e.key === '4' || e.key.toLowerCase() === 's') handleAction('apoio');
+});
+
+// ============ OPERATOR FLOW ============
+let opCode = '';
+
+function showOpView(viewId) {
+  ['op-view-code', 'op-view-menu', 'op-view-confirm', 'op-view-history', 'op-view-confirm-reset']
+    .forEach(id => { const el = $(id); if (el) el.hidden = id !== viewId; });
+}
+
+function openOperator() {
+  opCode = '';
+  updateOpCodeDisplay();
+  $('op-error').textContent = '';
+  showOpView('op-view-code');
+  showScreen('operator');
+}
+
+function updateOpCodeDisplay() {
+  const padded = (opCode + '----').slice(0, 4).split('').map(c => c === '-' ? '-' : '•').join('');
+  $('op-code-display').textContent = padded;
+}
+
+function pressOpKey(k) {
+  if (k === 'C') {
+    opCode = '';
+    $('op-error').textContent = '';
+  } else if (k === 'OK') {
+    if (opCode === OP_CODE) {
+      showOpView('op-view-menu');
+      $('op-current-caravana').textContent = formatCaravana(getCurrentCaravana()) + ' EM ANDAMENTO';
+    } else {
+      $('op-error').textContent = 'CÓDIGO ERRADO';
+      opCode = '';
+    }
+  } else if (opCode.length < 4) {
+    opCode += k;
+  }
+  updateOpCodeDisplay();
+}
+
+function renderHistory() {
+  const data = loadCaravanData();
+  const c = $('op-history-list');
+  const keys = Object.keys(data.history).sort((a, b) => Number(b) - Number(a));
+  if (keys.length === 0) {
+    c.innerHTML = '<div class="hs-empty" style="text-align:center; padding:20px;">NENHUMA CARAVANA ENCERRADA AINDA</div>';
+    return;
+  }
+  c.innerHTML = keys.map(k => {
+    const car = data.history[k];
+    const date = new Date(car.encerradaEm).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    const topHtml = car.top.length > 0
+      ? car.top.map((r, i) => '<div class="top-line"><span class="name">' + String(i+1).padStart(2,'0') + ' ' + r.name + '</span><span class="pts">' + String(r.score).padStart(6,'0') + '</span></div>').join('')
+      : '<div class="top-line" style="color: rgba(255,255,255,0.4);">SEM REGISTROS</div>';
+    return '<div class="op-history-row">'
+      + '<div class="car-id">' + formatCaravana(Number(k)) + ' · ' + date + '</div>'
+      + topHtml
+      + '</div>';
+  }).join('');
+}
+
+$('btn-operator').addEventListener('click', openOperator);
+document.querySelectorAll('.op-key').forEach(btn => {
+  btn.addEventListener('click', () => pressOpKey(btn.dataset.key));
+});
+$('op-cancel').addEventListener('click', () => showScreen('start'));
+$('op-menu-back').addEventListener('click', () => showScreen('start'));
+$('op-action-next').addEventListener('click', () => {
+  const cur = getCurrentCaravana();
+  $('op-confirm-text').innerHTML = 'Vai encerrar a <strong>' + formatCaravana(cur) + '</strong> e iniciar a <strong>' + formatCaravana(cur + 1) + '</strong>. O ranking atual vai pro histórico.';
+  showOpView('op-view-confirm');
+});
+$('op-confirm-yes').addEventListener('click', () => {
+  closeCurrentCaravana();
+  showScreen('start');
+});
+$('op-confirm-no').addEventListener('click', () => showOpView('op-view-menu'));
+$('op-action-history').addEventListener('click', () => {
+  renderHistory();
+  showOpView('op-view-history');
+});
+$('op-history-back').addEventListener('click', () => showOpView('op-view-menu'));
+$('op-action-reset').addEventListener('click', () => showOpView('op-view-confirm-reset'));
+$('op-reset-yes').addEventListener('click', () => {
+  resetAllCaravan();
+  showScreen('start');
+});
+$('op-reset-no').addEventListener('click', () => showOpView('op-view-menu'));
+
+renderRanking();
+updateCaravanaBadge();
+showScreen('start');
+</script>
+</body>
+</html>

@@ -9,16 +9,27 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
 
 [[headers]]
-  for = "/*.svg"
+  for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
-[[headers]]
-  for = "/*.png"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
+# Rotas amigáveis
 [[redirects]]
   from = "/jogar"
-  to = "/"
+  to = "/jogar/monstro/"
+  status = 301
+
+[[redirects]]
+  from = "/jogar/monstro"
+  to = "/jogos/monstro-proximo-passo/"
   status = 200
+
+[[redirects]]
+  from = "/jogar/monstro/"
+  to = "/jogos/monstro-proximo-passo/"
+  status = 200
+
+[[redirects]]
+  from = "/placar"
+  to = "/dashboard/"
+  status = 301
