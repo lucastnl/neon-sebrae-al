@@ -1510,8 +1510,27 @@ const state = {
 };
 
 function initAudio() {
-  if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (!state.audioCtx) {
+    state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  // iOS Safari inicia o contexto em 'suspended' mesmo dentro de user gesture.
+  // Precisa chamar resume() explicitamente, senao nao toca nada no celular.
+  if (state.audioCtx.state === 'suspended') {
+    state.audioCtx.resume().catch(e => console.warn('[audio] resume falhou:', e));
+  }
 }
+// Garantia extra pra iOS/Android: qualquer toque tenta retomar o audio se travou.
+// Aba em background tambem suspende o contexto, retomar ao voltar.
+document.addEventListener('touchstart', () => {
+  if (state.audioCtx && state.audioCtx.state === 'suspended') {
+    state.audioCtx.resume();
+  }
+}, { passive: true });
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && state.audioCtx && state.audioCtx.state === 'suspended') {
+    state.audioCtx.resume();
+  }
+});
 function beep(freq, duration, type, vol) {
   duration = duration || 0.08; type = type || 'square'; vol = vol || 0.08;
   if (!state.audioCtx) return;
