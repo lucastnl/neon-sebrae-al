@@ -717,6 +717,71 @@ html, body {
   letter-spacing: 1.5px;
   margin-bottom: 14px;
 }
+/* PONTE JOGO ↔ VIDA */
+.share-bridge-box {
+  background: linear-gradient(135deg, rgba(255,217,61,0.08), rgba(10,15,54,0.7));
+  border: 2px solid var(--amarelo);
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  text-align: center;
+  box-shadow: 0 0 14px rgba(255,217,61,0.25);
+}
+.share-bridge-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--amarelo);
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+  text-shadow: 0 0 6px var(--amarelo);
+}
+.share-bridge-pair {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.bridge-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 76px;
+}
+.bridge-icon {
+  font-size: 26px;
+  font-family: sans-serif;
+}
+.bridge-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  letter-spacing: 1px;
+  color: var(--branco);
+  line-height: 1.2;
+}
+.bridge-side.fear .bridge-label { color: var(--magenta-claro); text-shadow: 0 0 6px var(--magenta); }
+.bridge-side.resource .bridge-label { color: var(--verde-claro); text-shadow: 0 0 6px var(--verde-claro); }
+.bridge-arrow {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 20px;
+  color: var(--ciano);
+  text-shadow: 0 0 10px var(--ciano);
+  animation: arrowPulse 1.4s ease-in-out infinite;
+}
+@keyframes arrowPulse {
+  0%, 100% { opacity: 0.7; transform: translateX(0); }
+  50% { opacity: 1; transform: translateX(3px); }
+}
+.share-bridge-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--branco);
+  line-height: 1.45;
+  text-align: left;
+}
+
 .share-reflection-box, .share-practice-box {
   background: rgba(10, 15, 54, 0.6);
   border-left: 3px solid var(--ciano);
@@ -1230,6 +1295,21 @@ html, body {
         <rect x="5" y="15" width="2" height="4" fill="#2A4FDA"/>
         <rect x="9" y="15" width="2" height="4" fill="#2A4FDA"/>
       </svg>
+      <div class="share-bridge-box">
+        <div class="share-bridge-label">🎮 NO JOGO  ↔  NA VIDA</div>
+        <div class="share-bridge-pair">
+          <div class="bridge-side fear">
+            <span class="bridge-icon" id="bridge-fear-icon">💔</span>
+            <span class="bridge-label" id="bridge-fear-label">AUTOCOBRANÇA</span>
+          </div>
+          <span class="bridge-arrow">→</span>
+          <div class="bridge-side resource">
+            <span class="bridge-icon" id="bridge-resource-icon">🔥</span>
+            <span class="bridge-label" id="bridge-resource-label">CORAGEM</span>
+          </div>
+        </div>
+        <div class="share-bridge-text" id="share-bridge">...</div>
+      </div>
       <div class="share-quote" id="share-quote">"Plano não é gigante. É o próximo passo."</div>
       <div class="share-trail" id="share-trail">SOBRE PROCRASTINAÇÃO · DP7+</div>
       <div class="share-reflection-box">
@@ -1351,29 +1431,40 @@ const RESOURCE_TO_FEAR = {
   apoio: 'paralisia'
 };
 
+const RESOURCES = {
+  plano:   { icon: '⚙️', label: 'PLANO',   color: 'var(--azul-claro)' },
+  foco:    { icon: '🎯', label: 'FOCO',    color: 'var(--ciano)' },
+  coragem: { icon: '🔥', label: 'CORAGEM', color: 'var(--laranja)' },
+  apoio:   { icon: '🤝', label: 'APOIO',   color: 'var(--verde-claro)' }
+};
+
 const LESSONS = {
   procrastinacao: {
+    bridge: 'No jogo, PROCRASTINAÇÃO caía e o antídoto era ⚙️ PLANO. Funciona igual fora do jogo: quando o "depois faço" trava, o que destrava é cortar o passo até virar mini. Plano grande é gostoso de ficar olhando. Plano pequeno é o que sai.',
     quote: '"Plano não é gigante. É o próximo passo."',
-    reflection: 'Você não tá travado por preguiça. Tá travado porque o passo que você imagina é maior do que cabe no seu dia. Quebra esse passo até caber em 5 minutos.',
-    practice: 'Hoje, faça a versão de 5 minutos do que você vinha adiando.',
+    reflection: 'Você não tá travado por preguiça. Tá travado porque o passo que você imagina é maior do que cabe no seu dia. Cortar até virar 5 minutos não é vagabundagem, é estratégia.',
+    practice: 'Hoje, faz a versão de 5 minutos daquilo que você vinha adiando. Não precisa ficar bom. Só precisa sair do zero.',
     trail: 'DP7+'
   },
   comparacao: {
+    bridge: 'No jogo, COMPARAÇÃO caía e o antídoto era 🎯 FOCO. Não é coincidência. Comparar puxa o olhar pra fora. Foco volta o olhar pra dentro. Onde você tá olhando agora muda tudo.',
     quote: '"O referencial é piloto. Você é quem pilota."',
-    reflection: 'Olhar pro lado pode inspirar ou travar. A diferença é o que você faz com o que viu: anota e aplica, ou compara e desiste.',
-    practice: 'Hoje, vira pra dentro. O que VOCÊ avançou? Anota 3 coisas.',
+    reflection: 'Olhar pro lado pode inspirar ou travar. A diferença é o que você faz com o que viu: anota e aplica, ou compara e desiste. Foco é decidir que o seu jogo não para porque o jogo do outro tá mais bonito.',
+    practice: 'Hoje, vira pra dentro. O que VOCÊ avançou na última semana? Anota 3 coisas, mesmo as pequenas. Pequena também conta.',
     trail: 'DP1'
   },
   autocobranca: {
+    bridge: 'No jogo, AUTOCOBRANÇA caía e o antídoto era 🔥 CORAGEM. Coragem aqui não é fingir que tá tudo bem. É continuar mesmo sabendo que errou. Sem isso, qualquer escorregada vira motivo pra desistir.',
     quote: '"Falhou? Marca o erro, não você."',
-    reflection: 'Erro é dado. Você é quem coleta o dado. Quando você confunde os dois, o erro vira identidade e você para. Quando você separa, o erro vira instrução e você anda.',
-    practice: 'Hoje, releia uma falha recente como bilhete: o que ela está te avisando?',
+    reflection: 'Erro é dado. Você é quem coleta o dado. Quando você confunde os dois, o erro vira identidade e você para. Quando você separa, o erro vira instrução e você anda. Coragem é fazer essa separação no calor da hora.',
+    practice: 'Hoje, relê uma falha recente como bilhete: o que ela tá te avisando? Anota o bilhete, não o que o crítico interno tá berrando.',
     trail: 'TR6'
   },
   paralisia: {
+    bridge: 'No jogo, PARALISIA caía e o antídoto era 🤝 APOIO. Tem coisa que travado sozinho dura meses. Uma pergunta de 30 segundos pra alguém destrava em 30 segundos. Apoio não é fraqueza, é atalho.',
     quote: '"Não sabe? Pergunta. Curto e simples."',
     reflection: 'Quase tudo que trava você já foi resolvido por alguém. A internet acha pra você. Uma mensagem direta acha pra você. O silêncio é que não acha.',
-    practice: 'Hoje, manda UMA pergunta pra UMA pessoa. Pode ser pelo WhatsApp.',
+    practice: 'Hoje, manda UMA pergunta pra UMA pessoa. WhatsApp, comentário, recado. A primeira é a mais difícil. Depois dela, fica fácil.',
     trail: 'TR5'
   }
 };
@@ -2042,9 +2133,15 @@ async function chooseFear(fearKey) {
   state.chosenFear = fearKey;
   const lesson = LESSONS[fearKey];
   const fear = FEARS[fearKey];
+  const resource = RESOURCES[fear.resource];
   $('share-score').textContent = String(state.pendingScore).padStart(6, '0');
   const phase = PHASES[state.pendingStage - 1];
   $('share-stage').textContent = 'FASE ' + state.pendingStage + ' · ' + phase.name;
+  $('bridge-fear-icon').textContent = fear.icon;
+  $('bridge-fear-label').textContent = fear.label;
+  $('bridge-resource-icon').textContent = resource.icon;
+  $('bridge-resource-label').textContent = resource.label;
+  $('share-bridge').textContent = lesson.bridge;
   $('share-quote').textContent = lesson.quote;
   $('share-reflection').textContent = lesson.reflection;
   $('share-practice').textContent = lesson.practice;
