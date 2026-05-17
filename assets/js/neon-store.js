@@ -129,6 +129,15 @@ async function salvarPartida(partida) {
   const comboMax = Math.max(0, Math.min(9999, Math.floor(Number(partida.combo_max) || 0)));
   const MEDOS_VALIDOS = ['procrastinacao', 'comparacao', 'autocobranca', 'paralisia'];
   const medo = MEDOS_VALIDOS.includes(partida.medo_escolhido) ? partida.medo_escolhido : null;
+  // Anti-bot: partida tem que ter durado pelo menos 10 segundos. Banco rejeita
+  // tambem via CHECK constraint e RLS policy, isso aqui e fail fast no client.
+  const duracao = Math.floor(Number(partida.duracao_segundos) || 0);
+  if (duracao < 10) {
+    return { ok: false, error: 'Partida muito curta (' + duracao + 's). Tempo mínimo: 10s.' };
+  }
+  if (duracao > 3600) {
+    return { ok: false, error: 'Duração inválida (mais de 1h).' };
+  }
 
   const caravana = await getCaravanaAtiva();
   const payload = {
@@ -139,7 +148,8 @@ async function salvarPartida(partida) {
     fase_max: fase,
     medo_escolhido: medo,
     acertos: acertos,
-    combo_max: comboMax
+    combo_max: comboMax,
+    duracao_segundos: duracao
   };
   console.info('[neon-store] salvando partida', { useSupabase, payload });
   if (useSupabase) {

@@ -1671,7 +1671,8 @@ async function addToRanking(name, score, stage) {
       fase_max: stage,
       medo_escolhido: state.chosenFear,
       acertos: state.hits,
-      combo_max: state.maxCombo
+      combo_max: state.maxCombo,
+      duracao_segundos: state.pendingDuration || 0
     });
     if (!res || !res.ok) {
       alert('NAO SALVOU: ' + (res ? res.error : 'sem resposta'));
@@ -1700,6 +1701,7 @@ function startGame() {
   state.nextSpawn = 1500;
   state.gameRunning = true;
   state.mode = 'tutorial';
+  state.gameStartedAt = Date.now();
   state.tutorialStep = 0;
   state.chosenFear = null;
   state.infinitWave = 1;
@@ -2157,6 +2159,10 @@ function endGame(won) {
   const stage = state.phaseIndex + 1;
   state.pendingScore = state.score;
   state.pendingStage = stage;
+  // Duração real da partida em segundos (anti-bot: banco rejeita < 10s)
+  state.pendingDuration = state.gameStartedAt
+    ? Math.floor((Date.now() - state.gameStartedAt) / 1000)
+    : 0;
 
   if (won) sfxWin(); else sfxLose();
 
