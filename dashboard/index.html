@@ -613,6 +613,13 @@ function safeFase(n) {
   const v = Math.max(1, Math.min(3, Number(n) || 1));
   return v;
 }
+// Score de partida individual: clamp em 999999 (6 digitos).
+// Mas score TOTAL de caravana é soma de muitas partidas, pode passar disso.
+// safeScoreTotal: clamp generoso em 9.999.999 (7 digitos), sem corromper somas legítimas.
+function safeScoreTotal(n) {
+  const v = Math.max(0, Math.min(9999999, Number(n) || 0));
+  return String(v).padStart(7, '0');
+}
 
 function renderPodium(ranking) {
   const el = document.getElementById('podium-list');
@@ -633,7 +640,7 @@ function renderPodium(ranking) {
       +   '<div class="escola">' + escola + '</div>'
       +   '<div class="partidas">' + (Number(r.partidas_jogadas) || 0) + ' PARTIDAS</div>'
       + '</div>'
-      + '<div class="podium-pts">' + safeScore(r.pontos_totais) + '</div>'
+      + '<div class="podium-pts">' + safeScoreTotal(r.pontos_totais) + '</div>'
       + '</div>';
   }).join('');
 }
@@ -653,7 +660,7 @@ function renderTable(ranking) {
     return '<div class="table-row' + up + '">'
       + '<span class="pos">' + String(i + 1).padStart(2, '0') + '</span>'
       + '<span class="car-name">' + car + '<small>' + escola + '</small></span>'
-      + '<span class="pts">' + safeScore(r.pontos_totais) + '</span>'
+      + '<span class="pts">' + safeScoreTotal(r.pontos_totais) + '</span>'
       + '<span class="games">' + (Number(r.partidas_jogadas) || 0) + 'P</span>'
       + '</div>';
   }).join('');
