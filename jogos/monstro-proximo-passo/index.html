@@ -1043,6 +1043,93 @@ html, body {
 }
 .op-confirm strong { color: var(--amarelo); }
 
+/* ===== GOTCHA OVERLAY: troll pra quem abrir DevTools ===== */
+#gotcha-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(255, 0, 0, 0.92);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  text-align: center;
+  animation: gotchaIn 0.3s steps(3);
+}
+#gotcha-overlay.show { display: flex; }
+@keyframes gotchaIn {
+  from { opacity: 0; transform: scale(0.8) rotate(-2deg); }
+  to { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+#gotcha-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,0.2) 0, rgba(0,0,0,0.2) 2px, transparent 2px, transparent 4px);
+  pointer-events: none;
+  z-index: 1;
+}
+.gotcha-img {
+  width: min(280px, 60vw);
+  height: min(280px, 60vw);
+  object-fit: cover;
+  border: 6px solid #fff;
+  box-shadow: 0 0 40px rgba(0,0,0,0.6), 0 0 80px rgba(255,255,0,0.4);
+  margin-bottom: 18px;
+  z-index: 2;
+  animation: gotchaShake 0.5s ease-in-out infinite;
+}
+@keyframes gotchaShake {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+.gotcha-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(40px, 12vw, 90px);
+  color: #FFD93D;
+  text-shadow: 6px 6px 0 #000, 0 0 30px rgba(255, 217, 61, 0.8);
+  letter-spacing: 6px;
+  margin-bottom: 16px;
+  z-index: 2;
+}
+.gotcha-line {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(11px, 2.6vw, 16px);
+  color: #fff;
+  letter-spacing: 1px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+  text-shadow: 2px 2px 0 #000;
+  z-index: 2;
+}
+.gotcha-line strong {
+  color: #FFD93D;
+  text-shadow: 2px 2px 0 #000, 0 0 12px var(--amarelo);
+}
+.gotcha-footer {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(13px, 2.4vw, 17px);
+  color: #fff;
+  margin-top: 18px;
+  font-weight: 700;
+  z-index: 2;
+  text-shadow: 2px 2px 0 #000;
+}
+#gotcha-close {
+  margin-top: 18px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  background: #fff;
+  color: #b00020;
+  border: 4px solid #000;
+  padding: 12px 22px;
+  cursor: pointer;
+  z-index: 2;
+  box-shadow: 4px 4px 0 #000;
+}
+#gotcha-close:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #000; }
+
 /* ===== RESPONSIVO MOBILE =====
    Telas com altura curta (celular em portrait, paisagem em tablet pequeno) */
 @media (max-height: 760px) {
@@ -2366,6 +2453,100 @@ $('op-reset-no').addEventListener('click', () => showOpView('op-view-menu'));
   await updateCaravanaBadge();
   await renderRanking();
   showScreen('start');
+})();
+</script>
+
+<!-- GOTCHA overlay: dispara quando DevTools é aberto -->
+<div id="gotcha-overlay">
+  <img class="gotcha-img" src="/assets/gotcha.jpg" alt="GOTCHA" />
+  <div class="gotcha-title">GOTCHA</div>
+  <div class="gotcha-line">VOCÊ É <strong id="gotcha-ip">DETECTANDO...</strong></div>
+  <div class="gotcha-line">DE <strong id="gotcha-loc">...</strong></div>
+  <div class="gotcha-line">USANDO <strong id="gotcha-ua">...</strong></div>
+  <div class="gotcha-footer">Tudo aqui virou log.<br>Os medos te pegaram fora do jogo.</div>
+  <button id="gotcha-close">FECHAR</button>
+</div>
+
+<script>
+// ===== GOTCHA: detecta DevTools e mostra overlay com IP em tempo real =====
+(function () {
+  let alreadyTriggered = false;
+  let geoCache = null;
+
+  async function getGeo() {
+    if (geoCache) return geoCache;
+    try {
+      const r = await fetch('https://ipapi.co/json/');
+      if (!r.ok) throw new Error('geo fail');
+      const j = await r.json();
+      geoCache = {
+        ip: j.ip || '???',
+        city: j.city || '?',
+        region: j.region || '?',
+        country: j.country_name || '?',
+        org: j.org || '?'
+      };
+      return geoCache;
+    } catch (e) {
+      try {
+        const r2 = await fetch('https://api.ipify.org?format=json');
+        const j2 = await r2.json();
+        geoCache = { ip: j2.ip, city: '?', region: '?', country: '?', org: '?' };
+        return geoCache;
+      } catch (e2) {
+        return { ip: '???.???.???.???', city: '?', region: '?', country: '?', org: '?' };
+      }
+    }
+  }
+
+  async function fireGotcha() {
+    if (alreadyTriggered) return;
+    alreadyTriggered = true;
+    const overlay = document.getElementById('gotcha-overlay');
+    overlay.classList.add('show');
+    // captura em paralelo: IP, geo, browser
+    const ua = navigator.userAgent;
+    const uaShort = ua.includes('Windows') ? 'WINDOWS · ' + (ua.match(/Chrome\/(\d+)/)?.[1] ? 'CHROME ' + ua.match(/Chrome\/(\d+)/)[1] : 'BROWSER')
+      : ua.includes('Mac') ? 'MAC · ' + (ua.match(/Chrome\/(\d+)/)?.[1] ? 'CHROME ' + ua.match(/Chrome\/(\d+)/)[1] : ua.includes('Safari') ? 'SAFARI' : 'BROWSER')
+      : ua.includes('Android') ? 'ANDROID'
+      : ua.includes('iPhone') ? 'IPHONE'
+      : 'BROWSER';
+    document.getElementById('gotcha-ua').textContent = uaShort;
+    const geo = await getGeo();
+    document.getElementById('gotcha-ip').textContent = geo.ip;
+    const loc = [geo.city, geo.region].filter(x => x && x !== '?').join(', ') || geo.country;
+    const isp = geo.org && geo.org !== '?' ? ' (' + geo.org.split(/AS\d+\s*/i).pop().slice(0, 30) + ')' : '';
+    document.getElementById('gotcha-loc').textContent = loc + isp;
+  }
+
+  // Detector 1: diferença entre outer e inner (DevTools docked ocupa espaço)
+  const THRESHOLD = 160;
+  setInterval(() => {
+    const wDiff = window.outerWidth - window.innerWidth;
+    const hDiff = window.outerHeight - window.innerHeight;
+    if (wDiff > THRESHOLD || hDiff > THRESHOLD) fireGotcha();
+  }, 1000);
+
+  // Detector 2: debugger trick. Se DevTools aberto, debugger pausa e mede tempo.
+  setInterval(() => {
+    const start = performance.now();
+    // eslint-disable-next-line no-debugger
+    debugger;
+    const elapsed = performance.now() - start;
+    if (elapsed > 100) fireGotcha();
+  }, 3000);
+
+  // Fechar overlay
+  document.getElementById('gotcha-close').addEventListener('click', () => {
+    document.getElementById('gotcha-overlay').classList.remove('show');
+    // Permite re-disparar se DevTools continuar aberto
+    setTimeout(() => { alreadyTriggered = false; }, 5000);
+  });
+
+  // Easter egg no console pra quem abrir o inspect
+  console.log('%cGOTCHA 👁️', 'font-size:48px;color:#FFD93D;text-shadow:3px 3px 0 #000;');
+  console.log('%cTudo aqui virou log. Os medos te pegaram fora do jogo.', 'font-size:14px;color:#FF00FF;');
+  console.log('%cSe veio testar: as defesas estão todas no ar. Tenta uma partida limpa.', 'font-size:12px;color:#fff;');
 })();
 </script>
 </body>
