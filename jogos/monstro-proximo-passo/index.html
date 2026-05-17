@@ -2146,26 +2146,14 @@ async function chooseFear(fearKey) {
   $('share-reflection').textContent = lesson.reflection;
   $('share-practice').textContent = lesson.practice;
   $('share-trail').textContent = 'SOBRE ' + fear.label + ' · ' + lesson.trail;
-  // mostra botão de ranking só se high score
-  const rankBtn = $('btn-rank');
-  if (state.pendingScore > 0 && isHighScore(state.pendingScore)) {
-    rankBtn.hidden = false;
+  // botão antigo de RANKING não é mais usado: agora TODA partida com score > 0
+  // passa obrigatoriamente pelas iniciais antes do share. Pontuação não se perde.
+  $('btn-rank').hidden = true;
+  if (state.pendingScore > 0) {
+    askInitials(state.pendingScore, state.pendingStage);
   } else {
-    rankBtn.hidden = true;
-    // se não for high score mas teve score, ainda registra a partida como anônima (AAA)
-    if (state.pendingScore > 0) {
-      await window.NeonStore.salvarPartida({
-        nome_jogador: '???',
-        score: state.pendingScore,
-        fase_max: state.pendingStage,
-        medo_escolhido: fearKey,
-        acertos: state.hits,
-        combo_max: state.maxCombo
-      });
-      await renderRanking();
-    }
+    showScreen('share');
   }
-  showScreen('share');
 }
 
 function askInitials(score, stage) {
@@ -2208,7 +2196,8 @@ async function saveInitials() {
     await renderRanking();
     btn.textContent = orig;
     btn.disabled = false;
-    showScreen('start');
+    // Vai pra share AGORA que a partida foi salva com nome real.
+    showScreen('share');
   } catch (err) {
     console.error('[jogo] saveInitials EXCEPTION:', err);
     alert('EXCEPTION saveInitials: ' + (err.message || err));

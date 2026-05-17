@@ -138,6 +138,37 @@ async function salvarPartida(partida) {
   return { ok: true, data: payload };
 }
 
+async function topPartidasGeral(limit) {
+  limit = limit || 20;
+  if (useSupabase) {
+    const { data } = await sb
+      .from('partidas')
+      .select('nome_jogador, score, fase_max, medo_escolhido, created_at, caravana_id')
+      .order('score', { ascending: false })
+      .limit(limit);
+    return data || [];
+  }
+  const partidas = JSON.parse(localStorage.getItem('neon-partidas-local') || '[]');
+  return partidas.sort((a, b) => b.score - a.score).slice(0, limit);
+}
+
+async function ultimasPartidas(limit) {
+  limit = limit || 10;
+  if (useSupabase) {
+    const { data } = await sb
+      .from('partidas')
+      .select('nome_jogador, score, fase_max, medo_escolhido, created_at, caravana_id')
+      .order('created_at', { ascending: false })
+      .limit(limit);
+    return data || [];
+  }
+  const partidas = JSON.parse(localStorage.getItem('neon-partidas-local') || '[]');
+  return partidas
+    .slice()
+    .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
+    .slice(0, limit);
+}
+
 async function topPartidasCaravanaAtiva(limit) {
   limit = limit || 5;
   const caravana = await getCaravanaAtiva();
@@ -219,6 +250,8 @@ window.NeonStore = {
   encerrarCaravanaAtiva,
   listarHistoricoCaravanas,
   salvarPartida,
+  topPartidasGeral,
+  ultimasPartidas,
   topPartidasCaravanaAtiva,
   rankingCaravanas,
   subscribeNovasPartidas,

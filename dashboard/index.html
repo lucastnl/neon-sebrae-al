@@ -330,7 +330,14 @@ body::before {
       </div>
 
       <div class="table-wrap">
-        <div class="table-header">TOP 10 · CLASSIFICAÇÃO COMPLETA</div>
+        <div class="table-header">🎮 TOP JOGADORES</div>
+        <div class="table-body" id="players-body">
+          <div class="empty-state">Esperando primeiras partidas.</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-header">TOP 10 · CLASSIFICAÇÃO POR CARAVANA</div>
         <div class="table-body" id="table-body">
           <div class="empty-state">Sem caravanas registradas ainda.</div>
         </div>
@@ -418,11 +425,34 @@ function pushTicker(partida) {
   while (tickerList.children.length > 10) tickerList.removeChild(tickerList.lastChild);
 }
 
+function renderPlayers(partidas) {
+  const el = document.getElementById('players-body');
+  if (!partidas || partidas.length === 0) {
+    el.innerHTML = '<div class="empty-state">Esperando primeiras partidas.</div>';
+    return;
+  }
+  el.innerHTML = partidas.map((p, i) => {
+    const nome = p.nome_jogador || '???';
+    const medo = p.medo_escolhido && FEAR_LABELS[p.medo_escolhido] ? FEAR_LABELS[p.medo_escolhido] : '';
+    const fase = 'F' + (p.fase_max || 1);
+    return '<div class="table-row">'
+      + '<span class="pos">' + String(i + 1).padStart(2, '0') + '</span>'
+      + '<span class="car-name">' + nome + '<small>' + medo + '</small></span>'
+      + '<span class="pts">' + String(p.score).padStart(6, '0') + '</span>'
+      + '<span class="games">' + fase + '</span>'
+      + '</div>';
+  }).join('');
+}
+
 async function refreshRanking() {
   try {
-    const ranking = await window.NeonStore.rankingCaravanas();
+    const [ranking, topPlayers] = await Promise.all([
+      window.NeonStore.rankingCaravanas(),
+      window.NeonStore.topPartidasGeral(15)
+    ]);
     renderPodium(ranking);
     renderTable(ranking);
+    renderPlayers(topPlayers);
   } catch (e) {
     console.error('[dashboard] erro carregando ranking:', e);
   }
@@ -439,6 +469,15 @@ async function refreshRanking() {
     status.className = 'offline';
   }
   await refreshRanking();
+  // Resgata o histórico: popula o ticker com as últimas 10 partidas que já estão no banco,
+  // pra que quem abre o dashboard agora veja o que aconteceu antes (não só o realtime).
+  // Insere em ordem cronológica reversa pra que a mais recente fique no topo.
+  try {
+    const historico = await window.NeonStore.ultimasPartidas(10);
+    historico.slice().reverse().forEach(p => pushTicker(p));
+  } catch (e) {
+    console.warn('[dashboard] erro carregando histórico do ticker:', e);
+  }
   window.NeonStore.subscribeNovasPartidas(async (partida) => {
     pushTicker(partida);
     await refreshRanking();
