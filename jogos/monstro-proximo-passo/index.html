@@ -277,19 +277,27 @@ html, body {
 
 .hud {
   position: absolute;
-  top: 44px;
+  top: 68px; /* abaixado de 44 pra 68 pra não brigar com caravana+fase nos cantos (CVE-qual 3) */
   left: 0; right: 0;
   z-index: 10;
   padding: 0 14px;
 }
 .phase-badge {
-  text-align: center;
+  /* Movido pro canto superior direito, espelhando caravana à esquerda (CVE-qual 3) */
+  position: absolute;
+  top: 38px;
+  right: 14px;
+  z-index: 11;
   font-family: 'Press Start 2P', monospace;
-  font-size: 10px;
+  font-size: 8px;
   color: var(--amarelo);
-  letter-spacing: 1.5px;
-  text-shadow: 0 0 8px var(--amarelo);
-  margin-bottom: 6px;
+  background: rgba(10, 15, 54, 0.7);
+  border: 1px solid var(--amarelo);
+  padding: 4px 8px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+  text-shadow: 0 0 4px var(--amarelo);
+  text-align: right;
 }
 .hp-bar { margin-bottom: 5px; }
 .hp-label {
@@ -316,24 +324,38 @@ html, body {
 @keyframes infiniteFlow { from { background-position: 0% 0; } to { background-position: 200% 0; } }
 
 .timer-combo {
+  /* Movido pra perto do player+botões, sai de cima do monstro (CVE-qual 1+2). */
+  position: absolute;
+  bottom: 120px;
+  left: 14px;
+  right: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 6px;
   gap: 8px;
+  z-index: 12;
+  pointer-events: none;
 }
 .timer {
   font-family: 'Press Start 2P', monospace;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--ciano);
-  text-shadow: 0 0 10px var(--ciano);
+  text-shadow: 0 0 10px var(--ciano), 2px 2px 0 var(--navy-deep);
+  background: rgba(10,15,54,0.7);
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--ciano);
 }
-.timer.infinite { color: var(--vermelho); text-shadow: 0 0 10px var(--vermelho); }
+.timer.infinite { color: var(--vermelho); text-shadow: 0 0 10px var(--vermelho), 2px 2px 0 var(--navy-deep); border-color: var(--vermelho); }
 .score-display {
   font-family: 'Press Start 2P', monospace;
-  font-size: 11px;
+  font-size: 14px;
   color: var(--amarelo);
-  text-shadow: 0 0 8px var(--amarelo);
+  text-shadow: 0 0 10px var(--amarelo), 2px 2px 0 var(--navy-deep);
+  background: rgba(10,15,54,0.7);
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--amarelo);
 }
 .combo-display {
   font-family: 'Press Start 2P', monospace;
@@ -882,16 +904,22 @@ html, body {
 .initial-slot.active .letter { border-color: var(--verde-claro); color: var(--verde-claro); text-shadow: 0 0 12px var(--verde-claro); }
 
 .totem-hint {
+  /* Subido pra cima dos botões pra não ficar atrás deles (CVE-qual 4) */
   position: absolute;
-  bottom: 6px;
+  bottom: 156px;
   left: 0; right: 0;
-  z-index: 100;
+  z-index: 14;
   text-align: center;
-  font-size: 9px;
-  color: rgba(255,255,255,0.3);
+  font-size: 10px;
+  color: rgba(255,255,255,0.55);
   letter-spacing: 1px;
   pointer-events: none;
+  font-family: 'Press Start 2P', monospace;
+  text-shadow: 0 0 6px rgba(0,0,0,0.8);
+  padding: 0 14px;
 }
+/* Some quando o jogo tá rolando pra não poluir a HUD */
+#game.is-playing .totem-hint { opacity: 0.4; }
 
 /* CARAVANA BADGE */
 .caravana-badge {
@@ -1042,6 +1070,123 @@ html, body {
   max-width: 320px;
 }
 .op-confirm strong { color: var(--amarelo); }
+
+/* ===== TUTORIAL OVERLAY (10s antes da Fase 1) ===== */
+#tutorial-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: rgba(5, 8, 34, 0.96);
+  backdrop-filter: blur(6px);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+}
+#tutorial-overlay.show { display: flex; animation: fadeIn 0.4s ease-out; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.tut-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 18px;
+  color: var(--amarelo);
+  text-shadow: 0 0 12px var(--amarelo);
+  margin-bottom: 18px;
+  letter-spacing: 2px;
+}
+.tut-section {
+  background: rgba(10, 15, 54, 0.7);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+  max-width: 320px;
+  width: 100%;
+  border-left: 3px solid var(--ciano);
+}
+.tut-section.verde { border-left-color: var(--verde-claro); }
+.tut-section.magenta { border-left-color: var(--magenta-claro); }
+.tut-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  color: var(--ciano);
+  text-shadow: 0 0 6px var(--ciano);
+  margin-bottom: 6px;
+}
+.tut-section.verde .tut-label { color: var(--verde-claro); text-shadow: 0 0 6px var(--verde); }
+.tut-section.magenta .tut-label { color: var(--magenta-claro); text-shadow: 0 0 6px var(--magenta); }
+.tut-text {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--branco);
+  line-height: 1.4;
+  text-align: left;
+}
+.tut-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 4px 0 2px;
+}
+.tut-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+}
+.tut-bar-row .bar {
+  width: 40px;
+  height: 8px;
+  border: 1px solid var(--branco);
+}
+.tut-bar-row .bar.boss { background: linear-gradient(90deg, var(--magenta), var(--magenta-claro)); }
+.tut-bar-row .bar.you { background: linear-gradient(90deg, var(--verde), var(--verde-claro)); }
+.tut-bar-row .label { color: var(--branco); letter-spacing: 1px; }
+.tut-points {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 4px;
+}
+.tut-pt {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  padding: 6px 4px;
+  border-radius: 4px;
+  text-align: center;
+  background: rgba(255,255,255,0.05);
+}
+.tut-pt .v { font-size: 14px; display: block; margin-bottom: 2px; }
+.tut-pt.perfect { color: var(--amarelo); }
+.tut-pt.perfect .v { text-shadow: 0 0 8px var(--amarelo); }
+.tut-pt.good { color: var(--verde-claro); }
+.tut-pt.good .v { text-shadow: 0 0 8px var(--verde-claro); }
+.tut-pt.late { color: var(--laranja); }
+.tut-pt.late .v { text-shadow: 0 0 8px var(--laranja); }
+.tut-countdown {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: var(--ciano);
+  text-shadow: 0 0 8px var(--ciano);
+  margin-top: 12px;
+  letter-spacing: 1.5px;
+}
+#tut-skip {
+  margin-top: 10px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  background: var(--verde);
+  color: var(--navy-deep);
+  border: none;
+  padding: 12px 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  letter-spacing: 1.5px;
+  box-shadow: 0 0 18px rgba(0, 217, 92, 0.5);
+}
 
 /* ===== GOTCHA OVERLAY: troll pra quem abrir DevTools ===== */
 #gotcha-overlay {
@@ -1254,6 +1399,32 @@ html, body {
 
   <!-- PLAY -->
   <div class="screen" id="screen-play" hidden>
+    <!-- Tutorial de 10s antes da Fase 1 (CVE-qual 1 do QA: explicar pontos/combo/barras) -->
+    <div id="tutorial-overlay">
+      <div class="tut-title">COMO FUNCIONA</div>
+      <div class="tut-section magenta">
+        <div class="tut-label">AS BARRAS</div>
+        <div class="tut-bars">
+          <div class="tut-bar-row"><div class="bar boss"></div><span class="label">MONSTRO (rosa). Cai quando você acerta o bloco certo.</span></div>
+          <div class="tut-bar-row"><div class="bar you"></div><span class="label">VOCÊ (verde). Cai quando bloco bate no chão.</span></div>
+        </div>
+      </div>
+      <div class="tut-section">
+        <div class="tut-label">PONTOS POR TIMING</div>
+        <div class="tut-points">
+          <div class="tut-pt perfect"><span class="v">100</span>PERFECT</div>
+          <div class="tut-pt good"><span class="v">50</span>GOOD</div>
+          <div class="tut-pt late"><span class="v">25</span>LATE</div>
+        </div>
+      </div>
+      <div class="tut-section verde">
+        <div class="tut-label">COMBO</div>
+        <div class="tut-text">Vários acertos seguidos sem errar = bônus crescente. Quebra o combo se errar o bloco ou deixar cair.</div>
+      </div>
+      <div class="tut-countdown" id="tut-countdown">COMEÇA EM 10...</div>
+      <button id="tut-skip">ENTENDI, BORA</button>
+    </div>
+
     <div class="hud">
       <div class="phase-badge" id="phase-badge">FASE 1 · O VAZIO</div>
       <div class="hp-bar">
@@ -1579,6 +1750,7 @@ const state = {
   gameRunning: false,
   mode: 'idle',
   tutorialStep: 0,
+  tutorialIntroShown: false,
   tutorialSequence: ['plano', 'foco', 'coragem', 'apoio'],
   fallingBlocks: [],
   spawnTimer: 0,
@@ -1809,8 +1981,41 @@ function startGame() {
   updateHUD();
   applyPhaseVisual(0);
   showScreen('play');
-  showFlash('TREINO', 'phase');
-  setTimeout(nextTutorialStep, 900);
+  // Mostra tutorial overlay de 10s na PRIMEIRA partida da sessão (CVE-qual 1).
+  // Replays subsequentes pulam direto. Pra ver de novo: F5 na página.
+  showIntroTutorial(() => {
+    showFlash('TREINO', 'phase');
+    setTimeout(nextTutorialStep, 900);
+  });
+}
+
+function showIntroTutorial(callback) {
+  if (state.tutorialIntroShown) { callback(); return; }
+  state.tutorialIntroShown = true;
+  const overlay = $('tutorial-overlay');
+  const countdown = $('tut-countdown');
+  const skipBtn = $('tut-skip');
+  if (!overlay) { callback(); return; }
+  overlay.classList.add('show');
+  let secs = 10;
+  countdown.textContent = 'COMEÇA EM ' + secs + '...';
+  const intv = setInterval(() => {
+    secs--;
+    if (secs <= 0) {
+      clearInterval(intv);
+      overlay.classList.remove('show');
+      callback();
+    } else {
+      countdown.textContent = 'COMEÇA EM ' + secs + '...';
+    }
+  }, 1000);
+  const onSkip = () => {
+    clearInterval(intv);
+    overlay.classList.remove('show');
+    skipBtn.removeEventListener('click', onSkip);
+    callback();
+  };
+  skipBtn.addEventListener('click', onSkip);
 }
 
 function applyPhaseVisual(idx) {
@@ -2470,7 +2675,7 @@ $('op-reset-no').addEventListener('click', () => showOpView('op-view-menu'));
 
 <!-- GOTCHA overlay: dispara quando DevTools é aberto -->
 <div id="gotcha-overlay">
-  <img class="gotcha-img" src="/assets/gotcha.jpg" alt="GOTCHA" />
+  <img class="gotcha-img" src="/assets/gotcha.webp" alt="GOTCHA" />
   <div class="gotcha-title">GOTCHA</div>
   <div class="gotcha-line">VOCÊ É <strong id="gotcha-ip">DETECTANDO...</strong></div>
   <div class="gotcha-line">DE <strong id="gotcha-loc">...</strong></div>
