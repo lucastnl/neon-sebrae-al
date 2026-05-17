@@ -362,11 +362,10 @@ async function resetarTudo() {
 
 // ============ EXPORT ============
 window.NeonStore = {
+  // Funções leves expostas ao client (não destrutivas).
   init: initStore,
   isUsingSupabase: () => useSupabase,
   getCaravanaAtiva,
-  criarNovaCaravana,
-  encerrarCaravanaAtiva,
   listarHistoricoCaravanas,
   salvarPartida,
   topPartidasGeral,
@@ -374,7 +373,13 @@ window.NeonStore = {
   estatisticasGerais,
   topPartidasCaravanaAtiva,
   rankingCaravanas,
-  subscribeNovasPartidas,
-  resetarTudo
+  subscribeNovasPartidas
+  // criarNovaCaravana, encerrarCaravanaAtiva, resetarTudo:
+  // REMOVIDAS do export público pra fechar CVE-006. Operações destrutivas
+  // não podem ficar acessíveis via window.NeonStore.* no DevTools de qualquer
+  // visitante. RLS de caravanas tambem foi restrita (migration 040000), entao
+  // mesmo que alguém recriasse a função, a chave anon não tem permissão.
+  // Pra encerrar caravana / reset durante o evento: SQL Editor do Supabase
+  // (queries comentadas em supabase/migrations/20260517040000).
 };
 })();

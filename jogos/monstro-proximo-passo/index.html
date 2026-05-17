@@ -39,7 +39,7 @@ window.addEventListener('unhandledrejection', e => {
   window._neonErrors.push({ msg: 'unhandled promise: ' + (e.reason?.message || e.reason), src: 'promise', line: '?', col: '?' });
 });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" integrity="sha384-4eCDoMN/7A46qQ5Tj0rZ/D2VEolFGNIINDTLAcWZcvhkRSsvTfqNfaBMlRRoGEZ5" crossorigin="anonymous"></script>
 <script src="/assets/js/neon-store.js?v=5"></script>
 <script>
 window.addEventListener('load', () => {
@@ -55,7 +55,7 @@ window.addEventListener('load', () => {
       + lines.join('\n') + '</div>'
     );
   } else {
-    console.info('[boot] NeonStore disponível:', Object.keys(window.NeonStore));
+    // console removido (CVE-010): listava API do NeonStore, facilitava recon.
   }
 });
 </script>
@@ -1700,17 +1700,28 @@ async function updateCaravanaBadge() {
   await refreshCaravanaAtiva();
   $('caravana-badge').textContent = formatCaravana(getCurrentCaravana());
 }
+// Operações destrutivas removidas do client (CVE-006 do QA do tech lead).
+// Antes: chamavam NeonStore.encerrarCaravanaAtiva / resetarTudo, que rodavam
+// UPDATE/DELETE em caravanas. Qualquer visitante com DevTools podia disparar
+// e derrubar o evento. Agora: o botão do operador só mostra instrução pra
+// rodar no SQL Editor do Supabase. RLS do banco também rejeita anon agora.
 async function closeCurrentCaravana() {
-  await window.NeonStore.encerrarCaravanaAtiva();
-  await refreshCaravanaAtiva();
-  await renderRanking();
-  $('caravana-badge').textContent = formatCaravana(getCurrentCaravana());
+  alert(
+    'Encerrar caravana agora é feito via SQL Editor do Supabase.\n\n' +
+    'Cola e roda:\n\n' +
+    'update public.caravanas set ativa=false, encerrada_em=now() where ativa=true;\n' +
+    'insert into public.caravanas (numero, ativa) values\n' +
+    '  ((select coalesce(max(numero),0)+1 from public.caravanas), true);'
+  );
 }
 async function resetAllCaravan() {
-  await window.NeonStore.resetarTudo();
-  await refreshCaravanaAtiva();
-  await renderRanking();
-  $('caravana-badge').textContent = formatCaravana(getCurrentCaravana());
+  alert(
+    'Reset agora é feito via SQL Editor do Supabase.\n\n' +
+    'Pra zerar TUDO (apaga partidas e caravanas):\n\n' +
+    'delete from public.partidas;\n' +
+    'delete from public.caravanas;\n' +
+    'insert into public.caravanas (numero, ativa) values (1, true);'
+  );
 }
 
 // ranking agora vem da caravana atual via NeonStore (Supabase com fallback localStorage)
@@ -2317,9 +2328,9 @@ async function saveInitials() {
   btn.disabled = true;
   try {
     const name = state.initials.join('');
-    console.info('[jogo] saveInitials disparado', { name, score: state.pendingScore, stage: state.pendingStage });
+    // console.info removido (CVE-010 do QA): logava nome+score+stage em produção,
+    // facilitava exfiltração via XSS e engenharia reversa da lógica.
     const ok = await addToRanking(name, state.pendingScore, state.pendingStage);
-    console.info('[jogo] addToRanking retornou:', ok);
     await renderRanking();
     btn.textContent = orig;
     btn.disabled = false;
@@ -2409,7 +2420,8 @@ async function renderHistory() {
     const date = car.encerrada_em
       ? new Date(car.encerrada_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
       : '';
-    const escolaLine = car.escola ? '<div class="top-line"><span class="name" style="color: var(--ciano);">' + car.escola + '</span></div>' : '';
+    // escola escapado (CVE-005 do QA): vem do banco e poderia ter payload XSS.
+    const escolaLine = car.escola ? '<div class="top-line"><span class="name" style="color: var(--ciano);">' + escHtml(String(car.escola).slice(0, 80)) + '</span></div>' : '';
     return '<div class="op-history-row">'
       + '<div class="car-id">' + formatCaravana(car.numero) + ' · ' + date + '</div>'
       + escolaLine
