@@ -1511,21 +1511,27 @@ const state = {
 
 function initAudio() {
   if (!state.audioCtx) {
-    state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    try {
+      state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    } catch (e) {
+      console.warn('[audio] AudioContext nao disponivel:', e);
+      return;
+    }
   }
   // iOS Safari inicia o contexto em 'suspended' mesmo dentro de user gesture.
-  // Precisa chamar resume() explicitamente, senao nao toca nada no celular.
+  // Chrome Android com baixo Media Engagement Index idem. Resume explicito sempre.
   if (state.audioCtx.state === 'suspended') {
     state.audioCtx.resume().catch(e => console.warn('[audio] resume falhou:', e));
   }
 }
-// Garantia extra pra iOS/Android: qualquer toque tenta retomar o audio se travou.
-// Aba em background tambem suspende o contexto, retomar ao voltar.
-document.addEventListener('touchstart', () => {
-  if (state.audioCtx && state.audioCtx.state === 'suspended') {
-    state.audioCtx.resume();
-  }
-}, { passive: true });
+// Destrava o audio NO PRIMEIRO toque em qualquer lugar da pagina, antes mesmo
+// de apertar COMEÇAR. Chrome Android, iOS Safari e Firefox mobile exigem que
+// o AudioContext seja criado dentro de um user gesture inicial. Sem isso,
+// chamadas posteriores (mesmo dentro de outro toque) podem ficar mudas.
+['touchstart', 'pointerdown', 'click', 'keydown'].forEach(evt => {
+  document.addEventListener(evt, initAudio, { passive: true });
+});
+// Aba em background suspende o contexto. Retomar quando volta.
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden && state.audioCtx && state.audioCtx.state === 'suspended') {
     state.audioCtx.resume();
