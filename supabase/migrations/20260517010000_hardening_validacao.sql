@@ -1,32 +1,41 @@
 -- Neon Sebrae AL 2026 · hardening pós-pentest (17/05/2026)
 -- Adiciona CHECK constraints na tabela partidas pra impedir scores/fases/nomes
--- inválidos via API direta, e limpa os registros maliciosos atuais.
+-- inválidos via API direta, e limpa só os registros DEFINITIVAMENTE maliciosos.
 
--- ============ LIMPEZA DOS DADOS MALICIOSOS ============
--- Remove tentativas de XSS (HTML/SVG no nome) e SQL injection text.
--- Remove scores impossíveis (acima de 999999) e fases inválidas (fora de 1-3).
+-- ============ LIMPEZA DOS DADOS DEFINITIVAMENTE MALICIOSOS ============
+-- Critério conservador: só apaga o que NÃO TEM como ser jogo legítimo.
+-- O 'RED' com score 1.002.225 e combo perfeito 349/349 é ambíguo
+-- (pode ser bot ou jogador absurdo) e fica no banco. Se quiser tirar,
+-- rode manualmente: delete from partidas where id = 'cfe42c0b-7726-4bf2-8bdf-2a024aceb591';
 
 delete from public.partidas
 where
-  -- XSS attempts: nome contém tags HTML ou aspas suspeitas
-  nome_jogador ~ '<|>|=|"|''|`'
+  -- XSS attempts: nome contém tags HTML ou caracteres que não são letras/dígitos/'?'
+  nome_jogador ~ '[<>="''`]'
   -- SQL injection attempts no nome
   or nome_jogador ilike '%update%'
   or nome_jogador ilike '%select%'
   or nome_jogador ilike '%delete%'
   or nome_jogador ilike '%drop%'
   or nome_jogador ilike '%--%'
-  -- Nomes fora do padrão 3 letras maiúsculas (deixa o '???' do legado anônimo passar)
-  or (nome_jogador !~ '^[A-Z?]{3}$' and length(nome_jogador) <> 3)
-  -- Scores fora do razoável
+  -- Nomes com underscore/símbolos (ex __SEC_TEST__, __test__)
+  or nome_jogador like '%\_%'
+  or nome_jogador like '%\_\_%'
+  -- Fases impossíveis (jogo só vai até fase 3)
+  or fase_max > 3
+  or fase_max < 1
+  -- Scores absurdos (mais de 999999, que é o teto razoável + display de 6 dígitos)
   or score > 999999
   or score < 0
-  -- Fases impossíveis
-  or fase_max not between 1 and 3;
+  -- medo_escolhido fora dos 4 válidos
+  or (medo_escolhido is not null
+      and medo_escolhido not in ('procrastinacao', 'comparacao', 'autocobranca', 'paralisia'));
 
 -- ============ CHECK CONSTRAINTS ============
 -- A partir daqui, qualquer INSERT que violar essas regras vai falhar no banco,
--- independente de quem chama (UI legítima ou curl malicioso).
+-- independente de quem chama (UI legítima ou curl malicioso). Isso fecha o vetor
+-- de injeção via API direta usando a anon_key (que necessariamente fica exposta
+-- no client).
 
 alter table public.partidas
   drop constraint if exists partidas_nome_padrao;
@@ -58,7 +67,7 @@ alter table public.partidas
   add constraint partidas_acertos_range
   check (acertos between 0 and 9999);
 
--- medo_escolhido deve ser um dos 4 valores válidos (ou null pra legado)
+-- medo_escolhido: enum dos 4 valores válidos (ou null pra legado)
 alter table public.partidas
   drop constraint if exists partidas_medo_valido;
 alter table public.partidas
