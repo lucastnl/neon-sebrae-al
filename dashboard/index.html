@@ -303,6 +303,53 @@ body::before {
 }
 @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
 
+/* Novos layouts pro placar TV-friendly */
+.layout-main {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 22px;
+  margin-bottom: 22px;
+}
+.layout-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+@media (max-width: 1100px) {
+  .layout-main, .layout-bottom { grid-template-columns: 1fr; }
+}
+
+/* Top Jogadores em modo "destaque" pro placar */
+.table-wrap.destaque .table-header {
+  font-size: 16px;
+  padding: 18px;
+  border-bottom: 2px solid var(--verde);
+  text-shadow: 0 0 12px var(--verde);
+}
+.table-wrap.destaque .table-row {
+  padding: 14px 18px;
+  font-size: 15px;
+}
+.table-wrap.destaque .table-row .pos { font-size: 18px; }
+.table-wrap.destaque .table-row .car-name { font-size: 16px; }
+.table-wrap.destaque .table-row .pts { font-size: 18px; }
+
+/* KPI row no placar é mais compacta que no insights */
+.kpi-row-placar {
+  margin-bottom: 22px;
+}
+.kpi-row-placar .kpi-value { font-size: 30px; }
+.kpi-row-placar .kpi-label { font-size: 9px; }
+
+/* Medos no placar com formato mais condensado */
+.placar-medos { margin-bottom: 0; }
+.placar-medos .medo-row {
+  grid-template-columns: 28px 130px 1fr 44px;
+  gap: 10px;
+  padding: 12px 0;
+}
+.placar-medos .medo-name { font-size: 9px; }
+
 .podium {
   background: rgba(10, 15, 54, 0.6);
   border: 2px solid var(--amarelo);
@@ -487,40 +534,60 @@ body::before {
 
   <div class="view-section" id="view-placar">
   <h1 class="page-title">QUEM TÁ NO TOPO<br>DA MONTANHA?</h1>
-  <p class="page-sub">Ranking somado das caravanas. Atualiza em tempo real.</p>
+  <p class="page-sub">Top jogadores em tempo real.</p>
 
-  <div class="layout">
+  <!-- KPIs do evento, faixa no topo (dá sensação de "tá bombando") -->
+  <div class="kpi-row kpi-row-placar">
+    <div class="kpi-card">
+      <div class="kpi-value" id="placar-kpi-partidas">0</div>
+      <div class="kpi-label">PARTIDAS</div>
+    </div>
+    <div class="kpi-card amarelo">
+      <div class="kpi-value" id="placar-kpi-jogadores">0</div>
+      <div class="kpi-label">JOGADORES</div>
+    </div>
+    <div class="kpi-card verde">
+      <div class="kpi-value" id="placar-kpi-acertos">0</div>
+      <div class="kpi-label">MEDOS DERRUBADOS</div>
+    </div>
+    <div class="kpi-card magenta">
+      <div class="kpi-value" id="placar-kpi-combo">0</div>
+      <div class="kpi-label">COMBO RECORDE</div>
+    </div>
+  </div>
 
-    <div class="podium">
-      <div class="podium-title">🏆 PÓDIO DAS CARAVANAS</div>
-      <div class="podium-list" id="podium-list">
-        <div class="empty-state">Aguardando primeiras partidas...</div>
+  <!-- Linha principal: Top Jogadores destaque + Medos lado a lado -->
+  <div class="layout-main">
+    <div class="table-wrap destaque">
+      <div class="table-header">🎮 TOP JOGADORES</div>
+      <div class="table-body" id="players-body">
+        <div class="empty-state">Esperando primeiras partidas.</div>
       </div>
     </div>
 
-    <div class="side">
-      <div class="ticker">
-        <div class="ticker-title">⚡ ÚLTIMAS JOGADAS</div>
-        <div class="ticker-list" id="ticker-list">
-          <div class="empty-state" style="padding: 24px;">Esperando alguém jogar.</div>
-        </div>
+    <div class="medos-section placar-medos">
+      <div class="insight-title">🎭 MEDOS MAIS ENFRENTADOS</div>
+      <div id="placar-medos-body">
+        <div class="empty-state">Esperando primeiras partidas.</div>
       </div>
+    </div>
+  </div>
 
-      <div class="table-wrap">
-        <div class="table-header">🎮 TOP JOGADORES</div>
-        <div class="table-body" id="players-body">
-          <div class="empty-state">Esperando primeiras partidas.</div>
-        </div>
-      </div>
-
-      <div class="table-wrap">
-        <div class="table-header">TOP 10 · CLASSIFICAÇÃO POR CARAVANA</div>
-        <div class="table-body" id="table-body">
-          <div class="empty-state">Sem caravanas registradas ainda.</div>
-        </div>
+  <!-- Linha de baixo: Últimas Jogadas + Caravanas -->
+  <div class="layout-bottom">
+    <div class="ticker">
+      <div class="ticker-title">⚡ ÚLTIMAS JOGADAS</div>
+      <div class="ticker-list" id="ticker-list">
+        <div class="empty-state" style="padding: 24px;">Esperando alguém jogar.</div>
       </div>
     </div>
 
+    <div class="table-wrap">
+      <div class="table-header">🏆 CARAVANAS</div>
+      <div class="table-body" id="table-body">
+        <div class="empty-state">Sem caravanas registradas ainda.</div>
+      </div>
+    </div>
   </div>
   </div><!-- /view-placar -->
 
@@ -705,16 +772,51 @@ function renderPlayers(partidas) {
 
 async function refreshRanking() {
   try {
-    const [ranking, topPlayers] = await Promise.all([
+    // Carrega tudo em paralelo: ranking caravanas, top jogadores, e stats agregadas
+    // (pros KPIs e medos do placar, que agora vivem ao vivo na TV).
+    const [ranking, topPlayers, stats] = await Promise.all([
       window.NeonStore.rankingCaravanas(),
-      window.NeonStore.topPartidasGeral(15)
+      window.NeonStore.topPartidasGeral(15),
+      window.NeonStore.estatisticasGerais()
     ]);
-    renderPodium(ranking);
     renderTable(ranking);
     renderPlayers(topPlayers);
+    if (stats) renderPlacarStats(stats);
   } catch (e) {
     console.error('[dashboard] erro carregando ranking:', e);
   }
+}
+
+function renderPlacarStats(stats) {
+  // KPIs do placar (faixa no topo)
+  const elPart = document.getElementById('placar-kpi-partidas');
+  const elJog = document.getElementById('placar-kpi-jogadores');
+  const elAc = document.getElementById('placar-kpi-acertos');
+  const elCom = document.getElementById('placar-kpi-combo');
+  if (elPart) elPart.textContent = fmtNumero(stats.total);
+  if (elJog) elJog.textContent = fmtNumero(stats.jogadoresUnicos);
+  if (elAc) elAc.textContent = fmtNumero(stats.totalAcertos);
+  if (elCom) elCom.textContent = fmtNumero(stats.melhorCombo);
+
+  // Medos: barras horizontais no placar
+  const medosEl = document.getElementById('placar-medos-body');
+  if (!medosEl) return;
+  if (!stats.medosDistr || stats.medosDistr.length === 0) {
+    medosEl.innerHTML = '<div class="empty-state">Esperando primeiras partidas.</div>';
+    return;
+  }
+  const max = Math.max(...stats.medosDistr.map(m => m.pct), 1);
+  medosEl.innerHTML = stats.medosDistr.map(m => {
+    const icon = FEAR_ICONS[m.medo] || '?';
+    const nome = FEAR_LABELS[m.medo] || m.medo;
+    const widthPct = Math.round((m.pct / max) * 100);
+    return '<div class="medo-row">'
+      + '<div class="medo-icon">' + icon + '</div>'
+      + '<div class="medo-name">' + esc(nome) + '</div>'
+      + '<div class="medo-bar-wrap"><div class="medo-bar ' + esc(m.medo) + '" style="width:' + widthPct + '%"></div></div>'
+      + '<div class="medo-pct">' + m.pct + '%</div>'
+      + '</div>';
+  }).join('');
 }
 
 // ============ INSIGHTS ============
