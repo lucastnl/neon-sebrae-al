@@ -904,22 +904,21 @@ html, body {
 .initial-slot.active .letter { border-color: var(--verde-claro); color: var(--verde-claro); text-shadow: 0 0 12px var(--verde-claro); }
 
 .totem-hint {
-  /* Subido pra cima dos botões pra não ficar atrás deles (CVE-qual 4) */
+  /* Mora DENTRO de #screen-start; some sozinho quando a tela troca via [hidden].
+   * Ancorado no rodapé da tela de start (abaixo do botão COMEÇAR). */
   position: absolute;
-  bottom: 156px;
+  bottom: 18px;
   left: 0; right: 0;
   z-index: 14;
   text-align: center;
-  font-size: 10px;
-  color: rgba(255,255,255,0.55);
-  letter-spacing: 1px;
+  font-size: 9px;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 1.5px;
   pointer-events: none;
   font-family: 'Press Start 2P', monospace;
   text-shadow: 0 0 6px rgba(0,0,0,0.8);
   padding: 0 14px;
 }
-/* Some quando o jogo tá rolando pra não poluir a HUD */
-#game.is-playing .totem-hint { opacity: 0.4; }
 
 /* CARAVANA BADGE */
 .caravana-badge {
@@ -1353,7 +1352,7 @@ html, body {
   <div class="bg-mountain"></div>
 
   <div class="header">
-    <img src="../../assets/logo-escalada.svg" alt="Escalada" />
+    <img src="../../assets/logo-tnl-h.png" alt="Tiro na Lua" style="height:30px;" />
     <button class="op-btn" id="btn-operator" title="Operador">⚙️</button>
   </div>
 
@@ -1395,6 +1394,8 @@ html, body {
     <div class="btn-row">
       <button class="start-button" id="btn-start">▶ COMEÇAR</button>
     </div>
+
+    <div class="totem-hint">CADA MEDO CAI. APERTA SEU RECURSO ANTES QUE CHEGUE NO CHÃO.</div>
   </div>
 
   <!-- PLAY -->
@@ -1532,7 +1533,7 @@ html, body {
     <p class="share-hint">📸 TIRA FOTO E POSTA. MARCA A GENTE.</p>
     <div class="share-card" id="share-card">
       <div class="share-top">
-        <img class="share-logo" src="../../assets/logo-escalada.svg" alt="Escalada" />
+        <img class="share-logo" src="../../assets/logo-tnl-h.png" alt="Tiro na Lua" />
         <div class="share-title-card">EU FUI NO NEON</div>
       </div>
       <div class="share-score" id="share-score">000000</div>
@@ -1612,8 +1613,6 @@ html, body {
     </div>
     <button class="end-button" id="btn-save-initials">▶ SALVAR</button>
   </div>
-
-  <div class="totem-hint">CADA MEDO CAI. APERTA SEU RECURSO ANTES QUE CHEGUE NO CHÃO.</div>
 
   <!-- OPERATOR -->
   <div class="screen" id="screen-operator" hidden>

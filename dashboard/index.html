@@ -106,31 +106,6 @@ body::before {
   animation: liveBlink 1s infinite;
 }
 
-/* TOGGLE PLACAR / INSIGHTS */
-.view-toggle {
-  display: flex;
-  gap: 8px;
-  margin-left: 16px;
-}
-.view-btn {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 10px;
-  background: rgba(10, 15, 54, 0.6);
-  border: 2px solid rgba(255,255,255,0.2);
-  color: rgba(255,255,255,0.6);
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  letter-spacing: 1px;
-  transition: all 0.2s;
-}
-.view-btn:hover { color: var(--branco); border-color: var(--branco); }
-.view-btn.active {
-  background: var(--verde);
-  color: var(--navy-deep);
-  border-color: var(--verde);
-  box-shadow: 0 0 14px rgba(0, 217, 92, 0.5);
-}
 .view-section { display: block; }
 .view-section[hidden] { display: none; }
 
@@ -171,8 +146,8 @@ body::before {
   line-height: 1.4;
 }
 
-/* INSIGHTS: barras horizontais de medos */
-.medos-section, .insight-section {
+/* Bloco dos medos: barras horizontais (placar) */
+.medos-section {
   background: rgba(10, 15, 54, 0.6);
   border: 2px solid var(--magenta);
   border-radius: 14px;
@@ -180,8 +155,6 @@ body::before {
   margin-bottom: 22px;
   box-shadow: 0 0 24px rgba(255, 0, 255, 0.18);
 }
-.insight-section.verde { border-color: var(--verde); box-shadow: 0 0 24px rgba(0, 217, 92, 0.18); }
-.insight-section.amarelo { border-color: var(--amarelo); box-shadow: 0 0 24px rgba(255, 217, 61, 0.2); }
 .insight-title {
   font-family: 'Press Start 2P', monospace;
   font-size: 12px;
@@ -190,13 +163,11 @@ body::before {
   letter-spacing: 1.5px;
   margin-bottom: 18px;
 }
-.insight-section.verde .insight-title { color: var(--verde-claro); text-shadow: 0 0 8px var(--verde); }
-.insight-section.amarelo .insight-title { color: var(--amarelo); text-shadow: 0 0 8px var(--amarelo); }
 .medo-row {
   display: grid;
-  grid-template-columns: 36px 180px 1fr 50px;
+  grid-template-columns: 28px max-content minmax(0, 1fr) 44px;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   padding: 8px 0;
 }
 .medo-icon { font-size: 22px; text-align: center; }
@@ -230,53 +201,10 @@ body::before {
   text-align: right;
 }
 @media (max-width: 720px) {
-  .medo-row { grid-template-columns: 28px 100px 1fr 44px; gap: 8px; }
-  .medo-name { font-size: 8px; }
+  .medo-row { grid-template-columns: 24px max-content minmax(0, 1fr) 40px; gap: 8px; }
+  .medo-name { font-size: 8px; letter-spacing: 1px; }
 }
 
-/* INSIGHTS: dois blocos lado a lado */
-.insight-two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 22px;
-}
-@media (max-width: 900px) { .insight-two-col { grid-template-columns: 1fr; } }
-.insight-row {
-  display: grid;
-  grid-template-columns: 36px 1fr auto;
-  gap: 12px;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-.insight-row:last-child { border-bottom: none; }
-.insight-row .rank {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 14px;
-  color: var(--amarelo);
-  text-shadow: 0 0 6px var(--amarelo);
-}
-.insight-row .nome {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 14px;
-  color: var(--branco);
-  letter-spacing: 1px;
-}
-.insight-row .nome small {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0;
-  color: rgba(255,255,255,0.5);
-  margin-left: 6px;
-}
-.insight-row .valor {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 13px;
-  color: var(--verde-claro);
-  text-shadow: 0 0 6px var(--verde-claro);
-}
-.insight-section.amarelo .insight-row .valor { color: var(--amarelo); text-shadow: 0 0 6px var(--amarelo); }
 @keyframes liveBlink {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.4; transform: scale(0.8); }
@@ -521,14 +449,10 @@ body::before {
 <div class="container">
 
   <div class="top">
-    <img src="../assets/logo-escalada.svg" alt="Escalada" />
+    <img src="../assets/logo-tnl-h.png" alt="Tiro na Lua" style="height:32px;" />
     <div class="meta">
       <span class="tag">PLACAR · NEON 2026</span>
       <span class="live-dot">AO VIVO</span>
-      <div class="view-toggle">
-        <button class="view-btn active" id="btn-view-placar">🏆 PLACAR</button>
-        <button class="view-btn" id="btn-view-insights">📊 INSIGHTS</button>
-      </div>
     </div>
   </div>
 
@@ -559,7 +483,7 @@ body::before {
   <!-- Linha principal: Top Jogadores destaque + Medos lado a lado -->
   <div class="layout-main">
     <div class="table-wrap destaque">
-      <div class="table-header">🎮 TOP JOGADORES</div>
+      <div class="table-header">🏆 MELHORES DA GALERA</div>
       <div class="table-body" id="players-body">
         <div class="empty-state">Esperando primeiras partidas.</div>
       </div>
@@ -590,52 +514,6 @@ body::before {
     </div>
   </div>
   </div><!-- /view-placar -->
-
-  <div class="view-section" id="view-insights" hidden>
-    <h1 class="page-title">INSIGHTS<br>DO MONSTRO</h1>
-    <p class="page-sub">Padrões da galera que tá enfrentando o jogo.</p>
-
-    <div class="kpi-row">
-      <div class="kpi-card">
-        <div class="kpi-value" id="kpi-partidas">0</div>
-        <div class="kpi-label">PARTIDAS<br>JOGADAS</div>
-      </div>
-      <div class="kpi-card amarelo">
-        <div class="kpi-value" id="kpi-jogadores">0</div>
-        <div class="kpi-label">JOGADORES<br>ÚNICOS</div>
-      </div>
-      <div class="kpi-card verde">
-        <div class="kpi-value" id="kpi-acertos">0</div>
-        <div class="kpi-label">MEDOS<br>DERRUBADOS</div>
-      </div>
-      <div class="kpi-card magenta">
-        <div class="kpi-value" id="kpi-combo">0</div>
-        <div class="kpi-label">COMBO<br>RECORDE</div>
-      </div>
-    </div>
-
-    <div class="medos-section">
-      <div class="insight-title">🎭 MEDOS MAIS ENFRENTADOS</div>
-      <div id="medos-body">
-        <div class="empty-state">Esperando primeiras partidas.</div>
-      </div>
-    </div>
-
-    <div class="insight-two-col">
-      <div class="insight-section verde">
-        <div class="insight-title">🔥 JOGADORES MAIS PERSISTENTES</div>
-        <div id="persistentes-body">
-          <div class="empty-state">Sem dados ainda.</div>
-        </div>
-      </div>
-      <div class="insight-section amarelo">
-        <div class="insight-title">🏆 MELHORES DA GALERA</div>
-        <div id="ranking-individual-body">
-          <div class="empty-state">Sem dados ainda.</div>
-        </div>
-      </div>
-    </div>
-  </div><!-- /view-insights -->
 
   <div class="footer">
     Tiro na Lua, 2026 · <a href="/">voltar pro Neon</a>
@@ -819,7 +697,7 @@ function renderPlacarStats(stats) {
   }).join('');
 }
 
-// ============ INSIGHTS ============
+// ============ ÍCONES DOS MEDOS ============
 
 const FEAR_ICONS = {
   procrastinacao: '📋',
@@ -831,92 +709,6 @@ const FEAR_ICONS = {
 function fmtNumero(n) {
   return Number(n || 0).toLocaleString('pt-BR');
 }
-
-function renderInsights(stats) {
-  document.getElementById('kpi-partidas').textContent = fmtNumero(stats.total);
-  document.getElementById('kpi-jogadores').textContent = fmtNumero(stats.jogadoresUnicos);
-  document.getElementById('kpi-acertos').textContent = fmtNumero(stats.totalAcertos);
-  document.getElementById('kpi-combo').textContent = fmtNumero(stats.melhorCombo);
-
-  // Medos: barras horizontais
-  const medosEl = document.getElementById('medos-body');
-  if (!stats.medosDistr || stats.medosDistr.length === 0) {
-    medosEl.innerHTML = '<div class="empty-state">Esperando primeiras partidas.</div>';
-  } else {
-    const max = Math.max(...stats.medosDistr.map(m => m.pct), 1);
-    medosEl.innerHTML = stats.medosDistr.map(m => {
-      const icon = FEAR_ICONS[m.medo] || '?';
-      const nome = FEAR_LABELS[m.medo] || m.medo;
-      const widthPct = Math.round((m.pct / max) * 100);
-      return '<div class="medo-row">'
-        + '<div class="medo-icon">' + icon + '</div>'
-        + '<div class="medo-name">' + esc(nome) + '</div>'
-        + '<div class="medo-bar-wrap"><div class="medo-bar ' + esc(m.medo) + '" style="width:' + widthPct + '%"></div></div>'
-        + '<div class="medo-pct">' + m.pct + '%</div>'
-        + '</div>';
-    }).join('');
-  }
-
-  // Jogadores persistentes (top 8)
-  const persEl = document.getElementById('persistentes-body');
-  if (stats.jogadoresPersistentes.length === 0) {
-    persEl.innerHTML = '<div class="empty-state">Sem dados ainda.</div>';
-  } else {
-    persEl.innerHTML = stats.jogadoresPersistentes.slice(0, 8).map((j, i) => {
-      const partidaTxt = j.partidas === 1 ? 'partida' : 'partidas';
-      return '<div class="insight-row">'
-        + '<span class="rank">' + String(i + 1).padStart(2, '0') + '</span>'
-        + '<span class="nome">' + safeNome(j.nome) + '</span>'
-        + '<span class="valor">' + j.partidas + ' <small style="font-size:9px;color:rgba(255,255,255,0.5);">' + partidaTxt + '</small></span>'
-        + '</div>';
-    }).join('');
-  }
-
-  // Ranking individual (melhor score de cada jogador, top 8)
-  const rankEl = document.getElementById('ranking-individual-body');
-  if (stats.rankingIndividual.length === 0) {
-    rankEl.innerHTML = '<div class="empty-state">Sem dados ainda.</div>';
-  } else {
-    rankEl.innerHTML = stats.rankingIndividual.slice(0, 8).map((j, i) => {
-      return '<div class="insight-row">'
-        + '<span class="rank">' + String(i + 1).padStart(2, '0') + '</span>'
-        + '<span class="nome">' + safeNome(j.nome) + '<small>' + j.partidas + 'P</small></span>'
-        + '<span class="valor">' + safeScore(j.melhorScore) + '</span>'
-        + '</div>';
-    }).join('');
-  }
-}
-
-async function refreshInsights() {
-  try {
-    const stats = await window.NeonStore.estatisticasGerais();
-    if (stats) renderInsights(stats);
-  } catch (e) {
-    console.error('[dashboard] erro carregando insights:', e);
-  }
-}
-
-// Toggle entre PLACAR e INSIGHTS
-function setView(view) {
-  const placar = document.getElementById('view-placar');
-  const insights = document.getElementById('view-insights');
-  const btnPlacar = document.getElementById('btn-view-placar');
-  const btnInsights = document.getElementById('btn-view-insights');
-  if (view === 'insights') {
-    placar.hidden = true;
-    insights.hidden = false;
-    btnPlacar.classList.remove('active');
-    btnInsights.classList.add('active');
-    refreshInsights();
-  } else {
-    placar.hidden = false;
-    insights.hidden = true;
-    btnPlacar.classList.add('active');
-    btnInsights.classList.remove('active');
-  }
-}
-document.getElementById('btn-view-placar').addEventListener('click', () => setView('placar'));
-document.getElementById('btn-view-insights').addEventListener('click', () => setView('insights'));
 
 (async function boot() {
   const ok = await window.NeonStore.init();
@@ -941,15 +733,8 @@ document.getElementById('btn-view-insights').addEventListener('click', () => set
   window.NeonStore.subscribeNovasPartidas(async (partida) => {
     pushTicker(partida);
     await refreshRanking();
-    // Se o usuário está com a view de insights aberta, atualiza ela também
-    if (!document.getElementById('view-insights').hidden) {
-      await refreshInsights();
-    }
   });
-  setInterval(() => {
-    refreshRanking();
-    if (!document.getElementById('view-insights').hidden) refreshInsights();
-  }, 8000);
+  setInterval(refreshRanking, 8000);
 })();
 </script>
 </body>

@@ -148,8 +148,11 @@ async function salvarPartida(partida) {
   if (fase < 1 || fase > 3) {
     return { ok: false, error: 'Fase inválida (1-3)' };
   }
-  const acertos = Math.max(0, Math.min(9999, Math.floor(Number(partida.acertos) || 0)));
-  const comboMax = Math.max(0, Math.min(9999, Math.floor(Number(partida.combo_max) || 0)));
+  // Limites ampliados (era 9999, virou 99999) pra cobrir partidas longas em
+  // fase 3 infinita. Bot ainda nao passa porque outras camadas pegam (RLS de
+  // duracao 10-7200s, score 999999, regex de nome, device_id obrigatorio).
+  const acertos = Math.max(0, Math.min(99999, Math.floor(Number(partida.acertos) || 0)));
+  const comboMax = Math.max(0, Math.min(99999, Math.floor(Number(partida.combo_max) || 0)));
   const MEDOS_VALIDOS = ['procrastinacao', 'comparacao', 'autocobranca', 'paralisia'];
   const medo = MEDOS_VALIDOS.includes(partida.medo_escolhido) ? partida.medo_escolhido : null;
   // Anti-bot: partida tem que ter durado pelo menos 10 segundos. Banco rejeita
@@ -158,8 +161,8 @@ async function salvarPartida(partida) {
   if (duracao < 10) {
     return { ok: false, error: 'Partida muito curta (' + duracao + 's). Tempo mínimo: 10s.' };
   }
-  if (duracao > 3600) {
-    return { ok: false, error: 'Duração inválida (mais de 1h).' };
+  if (duracao > 7200) {
+    return { ok: false, error: 'Duração inválida (mais de 2h).' };
   }
   // Device ID: identifica dispositivo (não pessoa). Permite cruzar partidas do
   // mesmo browser mesmo se o nome muda. Útil pra auditoria de bot/multinick.
