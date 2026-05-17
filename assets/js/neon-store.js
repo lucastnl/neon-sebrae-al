@@ -10,6 +10,29 @@ const NEON_SUPABASE_ANON = 'sb_publishable_Tk9gs3COsOipbZW-w0wa6w_ncI0bt6_';
 let sb = null;
 let useSupabase = false;
 
+// Device ID: UUID v4 gerado uma vez por browser, persistido em localStorage.
+// Não identifica pessoa (totalmente anônimo, LGPD-friendly), só permite cruzar
+// partidas do mesmo dispositivo. Útil pra detectar bot que tenta vários nomes.
+function getDeviceId() {
+  const KEY = 'neon-device-id-v1';
+  let id = localStorage.getItem(KEY);
+  if (!id) {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      id = crypto.randomUUID();
+    } else {
+      // Fallback pra browsers antigos: gera UUID v4 manualmente
+      id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+    localStorage.setItem(KEY, id);
+  }
+  return id;
+}
+const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 async function initStore() {
   try {
     if (typeof window.supabase === 'undefined') {
@@ -138,6 +161,12 @@ async function salvarPartida(partida) {
   if (duracao > 3600) {
     return { ok: false, error: 'Duração inválida (mais de 1h).' };
   }
+  // Device ID: identifica dispositivo (não pessoa). Permite cruzar partidas do
+  // mesmo browser mesmo se o nome muda. Útil pra auditoria de bot/multinick.
+  const deviceId = getDeviceId();
+  if (!UUID_V4.test(deviceId)) {
+    return { ok: false, error: 'Device ID inválido.' };
+  }
 
   const caravana = await getCaravanaAtiva();
   const payload = {
@@ -149,7 +178,8 @@ async function salvarPartida(partida) {
     medo_escolhido: medo,
     acertos: acertos,
     combo_max: comboMax,
-    duracao_segundos: duracao
+    duracao_segundos: duracao,
+    device_id: deviceId
   };
   console.info('[neon-store] salvando partida', { useSupabase, payload });
   if (useSupabase) {
