@@ -191,6 +191,62 @@ async function ultimasPartidas(limit) {
     .slice(0, limit);
 }
 
+async function estatisticasGerais() {
+  // Calcula stats agregadas pra view de INSIGHTS no dashboard.
+  // 61 partidas hoje, mas pode escalar pra milhares no evento real.
+  // Tudo client-side: o volume é pequeno e Supabase free não tem RPC fácil.
+  let partidas;
+  if (useSupabase) {
+    const { data } = await sb
+      .from('partidas')
+      .select('nome_jogador, score, fase_max, medo_escolhido, acertos, combo_max, created_at')
+      .eq('em_auditoria', false);
+    partidas = data || [];
+  } else {
+    partidas = JSON.parse(localStorage.getItem('neon-partidas-local') || '[]');
+  }
+  if (partidas.length === 0) {
+    return { total: 0, jogadoresUnicos: 0, totalAcertos: 0, melhorCombo: 0,
+             scoreMedio: 0, jogadoresPersistentes: [], rankingIndividual: [], medosDistr: [] };
+  }
+  const total = partidas.length;
+  const totalAcertos = partidas.reduce((s, p) => s + (p.acertos || 0), 0);
+  const melhorCombo = partidas.reduce((m, p) => Math.max(m, p.combo_max || 0), 0);
+  const scoreMedio = Math.round(partidas.reduce((s, p) => s + (p.score || 0), 0) / total);
+
+  // Agrupa por jogador
+  const porJogador = {};
+  partidas.forEach(p => {
+    const nome = p.nome_jogador || '???';
+    if (!porJogador[nome]) {
+      porJogador[nome] = { nome, partidas: 0, melhorScore: 0, totalScore: 0 };
+    }
+    porJogador[nome].partidas++;
+    porJogador[nome].melhorScore = Math.max(porJogador[nome].melhorScore, p.score || 0);
+    porJogador[nome].totalScore += (p.score || 0);
+  });
+  const jogadores = Object.values(porJogador);
+  const jogadoresUnicos = jogadores.length;
+  const jogadoresPersistentes = jogadores.slice().sort((a, b) => b.partidas - a.partidas);
+  const rankingIndividual = jogadores.slice().sort((a, b) => b.melhorScore - a.melhorScore);
+
+  // Distribuição de medos
+  const medosCount = {};
+  let totalComMedo = 0;
+  partidas.forEach(p => {
+    if (p.medo_escolhido) {
+      medosCount[p.medo_escolhido] = (medosCount[p.medo_escolhido] || 0) + 1;
+      totalComMedo++;
+    }
+  });
+  const medosDistr = Object.entries(medosCount)
+    .map(([medo, c]) => ({ medo, count: c, pct: totalComMedo ? Math.round(100 * c / totalComMedo) : 0 }))
+    .sort((a, b) => b.count - a.count);
+
+  return { total, jogadoresUnicos, totalAcertos, melhorCombo, scoreMedio,
+           jogadoresPersistentes, rankingIndividual, medosDistr };
+}
+
 async function topPartidasCaravanaAtiva(limit) {
   limit = limit || 5;
   const caravana = await getCaravanaAtiva();
@@ -275,6 +331,7 @@ window.NeonStore = {
   salvarPartida,
   topPartidasGeral,
   ultimasPartidas,
+  estatisticasGerais,
   topPartidasCaravanaAtiva,
   rankingCaravanas,
   subscribeNovasPartidas,
