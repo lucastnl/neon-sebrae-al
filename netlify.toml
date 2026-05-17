@@ -7,6 +7,16 @@
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    # CSP restringe origens de scripts/styles/conexoes. Combinado com o escape no
+    # client, bloqueia execucao de JS injetado via XSS mesmo se algo escapar.
+    # Permite Supabase (rest + realtime websocket) e Google Fonts. Inline ainda
+    # permitido (JS do jogo e CSS estao inline; refator pra externalizar fica pra depois).
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+    # Bloqueia features que o jogo nao usa, reduz superficie de ataque
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=(), usb=(), gyroscope=(), magnetometer=(), accelerometer=()"
+    # Cross-origin protections
+    Cross-Origin-Opener-Policy = "same-origin"
+    X-Permitted-Cross-Domain-Policies = "none"
 
 [[headers]]
   for = "/assets/*"

@@ -110,16 +110,36 @@ async function listarHistoricoCaravanas() {
 // ============ PARTIDAS ============
 
 async function salvarPartida(partida) {
+  // Validação defensiva no client antes de chamar a API.
+  // Mesmo que alguém contorne a UI, o banco tem CHECK constraints e RLS WITH CHECK.
+  // Aqui é a primeira barreira: fail fast com mensagem útil.
+  const nome = String(partida.nome_jogador || '').toUpperCase().slice(0, 3);
+  if (!/^[A-Z?]{3}$/.test(nome)) {
+    return { ok: false, error: 'Nome deve ter 3 letras maiúsculas (A-Z)' };
+  }
+  const score = Math.floor(Number(partida.score) || 0);
+  if (score < 0 || score > 999999) {
+    return { ok: false, error: 'Score fora do intervalo permitido (0-999999)' };
+  }
+  const fase = Math.floor(Number(partida.fase_max) || 1);
+  if (fase < 1 || fase > 3) {
+    return { ok: false, error: 'Fase inválida (1-3)' };
+  }
+  const acertos = Math.max(0, Math.min(9999, Math.floor(Number(partida.acertos) || 0)));
+  const comboMax = Math.max(0, Math.min(9999, Math.floor(Number(partida.combo_max) || 0)));
+  const MEDOS_VALIDOS = ['procrastinacao', 'comparacao', 'autocobranca', 'paralisia'];
+  const medo = MEDOS_VALIDOS.includes(partida.medo_escolhido) ? partida.medo_escolhido : null;
+
   const caravana = await getCaravanaAtiva();
   const payload = {
     caravana_id: caravana.id,
-    jogo: partida.jogo || 'monstro-proximo-passo',
-    nome_jogador: partida.nome_jogador,
-    score: partida.score,
-    fase_max: partida.fase_max,
-    medo_escolhido: partida.medo_escolhido,
-    acertos: partida.acertos || 0,
-    combo_max: partida.combo_max || 0
+    jogo: 'monstro-proximo-passo',
+    nome_jogador: nome,
+    score: score,
+    fase_max: fase,
+    medo_escolhido: medo,
+    acertos: acertos,
+    combo_max: comboMax
   };
   console.info('[neon-store] salvando partida', { useSupabase, payload });
   if (useSupabase) {
@@ -144,6 +164,7 @@ async function topPartidasGeral(limit) {
     const { data } = await sb
       .from('partidas')
       .select('nome_jogador, score, fase_max, medo_escolhido, created_at, caravana_id')
+      .eq('em_auditoria', false)
       .order('score', { ascending: false })
       .limit(limit);
     return data || [];
@@ -158,6 +179,7 @@ async function ultimasPartidas(limit) {
     const { data } = await sb
       .from('partidas')
       .select('nome_jogador, score, fase_max, medo_escolhido, created_at, caravana_id')
+      .eq('em_auditoria', false)
       .order('created_at', { ascending: false })
       .limit(limit);
     return data || [];
@@ -177,6 +199,7 @@ async function topPartidasCaravanaAtiva(limit) {
       .from('partidas')
       .select('nome_jogador, score, fase_max, created_at')
       .eq('caravana_id', caravana.id)
+      .eq('em_auditoria', false)
       .order('score', { ascending: false })
       .limit(limit);
     return data || [];
