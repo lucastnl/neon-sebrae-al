@@ -1642,13 +1642,22 @@ async function renderRanking() {
     return;
   }
   c.innerHTML = _cachedRanking.map((r, i) => {
+    // Escape + truncate dos campos que vem do banco (proteção XSS).
+    const nome = escHtml(String(r.nome_jogador || '???').slice(0, 3).toUpperCase());
+    const score = String(Math.max(0, Math.min(999999, Number(r.score) || 0))).padStart(6, '0');
+    const fase = Math.max(1, Math.min(3, Number(r.fase_max) || 1));
     return '<div class="hs-row">'
       + '<span class="rank">' + String(i + 1).padStart(2, '0') + '</span>'
-      + '<span class="name">' + (r.nome_jogador || '???') + '</span>'
-      + '<span class="score">' + String(r.score).padStart(6, '0') + '</span>'
-      + '<span class="stage">F' + (r.fase_max || 1) + '</span>'
+      + '<span class="name">' + nome + '</span>'
+      + '<span class="score">' + score + '</span>'
+      + '<span class="stage">F' + fase + '</span>'
       + '</div>';
   }).join('');
+}
+function escHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 function isHighScore(score) {
   if (_cachedRanking.length < 5) return true;

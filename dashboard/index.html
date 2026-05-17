@@ -364,6 +364,32 @@ const FEAR_LABELS = {
 
 let prevRanking = [];
 
+// Escape HTML pra evitar XSS via campos vindos do banco (nome_jogador, escola).
+// Quem injeta payload via API direta vai aparecer como texto literal, sem executar.
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+// Nome de jogador: trunca pra 3 chars + escape. Se o cara mandou payload longo,
+// vira ASS (de "AssaltoXSSpayload") em vez de quebrar o layout.
+function safeNome(raw) {
+  return esc(String(raw || '???').slice(0, 3).toUpperCase());
+}
+// Score sane: max 6 digitos no display. Quem mandou 9999999 via API direta
+// agora aparece como 999999, sem dominar a tela. Validacao real esta no banco.
+function safeScore(n) {
+  const v = Math.max(0, Math.min(999999, Number(n) || 0));
+  return String(v).padStart(6, '0');
+}
+function safeFase(n) {
+  const v = Math.max(1, Math.min(3, Number(n) || 1));
+  return v;
+}
+
 function renderPodium(ranking) {
   const el = document.getElementById('podium-list');
   if (ranking.length === 0) {
@@ -374,16 +400,16 @@ function renderPodium(ranking) {
   el.innerHTML = top.map((r, i) => {
     const cls = i === 0 ? 'first' : i === 1 ? 'second' : i === 2 ? 'third' : 'other';
     const rank = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : String(i + 1).padStart(2, '0');
-    const car = 'CARAVANA ' + String(r.numero).padStart(2, '0');
-    const escola = r.escola || (r.ativa ? '· em andamento' : '· encerrada');
+    const car = 'CARAVANA ' + String(Number(r.numero) || 0).padStart(2, '0');
+    const escola = esc(r.escola || (r.ativa ? '· em andamento' : '· encerrada'));
     return '<div class="podium-card ' + cls + '">'
       + '<div class="podium-rank">' + rank + '</div>'
       + '<div class="podium-info">'
       +   '<div class="car">' + car + '</div>'
       +   '<div class="escola">' + escola + '</div>'
-      +   '<div class="partidas">' + (r.partidas_jogadas || 0) + ' PARTIDAS</div>'
+      +   '<div class="partidas">' + (Number(r.partidas_jogadas) || 0) + ' PARTIDAS</div>'
       + '</div>'
-      + '<div class="podium-pts">' + String(r.pontos_totais).padStart(6, '0') + '</div>'
+      + '<div class="podium-pts">' + safeScore(r.pontos_totais) + '</div>'
       + '</div>';
   }).join('');
 }
@@ -396,15 +422,15 @@ function renderTable(ranking) {
   }
   const top10 = ranking.slice(0, 10);
   el.innerHTML = top10.map((r, i) => {
-    const car = 'CARAVANA ' + String(r.numero).padStart(2, '0');
-    const escola = r.escola || (r.ativa ? 'em andamento' : 'encerrada');
+    const car = 'CARAVANA ' + String(Number(r.numero) || 0).padStart(2, '0');
+    const escola = esc(r.escola || (r.ativa ? 'em andamento' : 'encerrada'));
     const prevPos = prevRanking.findIndex(p => p.id === r.id);
     const up = prevPos > i && prevPos !== -1 ? ' up' : '';
     return '<div class="table-row' + up + '">'
       + '<span class="pos">' + String(i + 1).padStart(2, '0') + '</span>'
       + '<span class="car-name">' + car + '<small>' + escola + '</small></span>'
-      + '<span class="pts">' + String(r.pontos_totais).padStart(6, '0') + '</span>'
-      + '<span class="games">' + (r.partidas_jogadas || 0) + 'P</span>'
+      + '<span class="pts">' + safeScore(r.pontos_totais) + '</span>'
+      + '<span class="games">' + (Number(r.partidas_jogadas) || 0) + 'P</span>'
       + '</div>';
   }).join('');
   prevRanking = ranking;
@@ -415,11 +441,13 @@ function pushTicker(partida) {
   if (tickerList.querySelector('.empty-state')) tickerList.innerHTML = '';
   const row = document.createElement('div');
   row.className = 'ticker-row';
-  const nome = partida.nome_jogador || '???';
-  const score = String(partida.score).padStart(6, '0');
-  const fase = partida.fase_max || 1;
-  const medo = partida.medo_escolhido && FEAR_LABELS[partida.medo_escolhido] ? ' · ' + FEAR_LABELS[partida.medo_escolhido] : '';
-  const when = new Date(partida.created_at || Date.now()).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  const nome = safeNome(partida.nome_jogador);
+  const score = safeScore(partida.score);
+  const fase = safeFase(partida.fase_max);
+  // FEAR_LABELS é dicionário nosso, seguro. Lookup pela key (sanitizada via if).
+  const fearKey = partida.medo_escolhido;
+  const medo = FEAR_LABELS[fearKey] ? ' · ' + FEAR_LABELS[fearKey] : '';
+  const when = esc(new Date(partida.created_at || Date.now()).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
   row.innerHTML = '<strong>' + nome + '</strong> fez <strong>' + score + '</strong> · Fase ' + fase + medo + ' <span class="when">' + when + '</span>';
   tickerList.insertBefore(row, tickerList.firstChild);
   while (tickerList.children.length > 10) tickerList.removeChild(tickerList.lastChild);
@@ -432,13 +460,13 @@ function renderPlayers(partidas) {
     return;
   }
   el.innerHTML = partidas.map((p, i) => {
-    const nome = p.nome_jogador || '???';
-    const medo = p.medo_escolhido && FEAR_LABELS[p.medo_escolhido] ? FEAR_LABELS[p.medo_escolhido] : '';
-    const fase = 'F' + (p.fase_max || 1);
+    const nome = safeNome(p.nome_jogador);
+    const medo = FEAR_LABELS[p.medo_escolhido] ? FEAR_LABELS[p.medo_escolhido] : '';
+    const fase = 'F' + safeFase(p.fase_max);
     return '<div class="table-row">'
       + '<span class="pos">' + String(i + 1).padStart(2, '0') + '</span>'
       + '<span class="car-name">' + nome + '<small>' + medo + '</small></span>'
-      + '<span class="pts">' + String(p.score).padStart(6, '0') + '</span>'
+      + '<span class="pts">' + safeScore(p.score) + '</span>'
       + '<span class="games">' + fase + '</span>'
       + '</div>';
   }).join('');
