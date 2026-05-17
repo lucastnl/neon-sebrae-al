@@ -1946,7 +1946,11 @@ async function addToRanking(name, score, stage) {
       duracao_segundos: state.pendingDuration || 0
     });
     if (!res || !res.ok) {
-      alert('NAO SALVOU: ' + (res ? res.error : 'sem resposta'));
+      if (res && res.preservada) {
+        alert('Banco rejeitou, mas guardamos sua partida aqui. Avisa o operador (codigo 1234).');
+      } else {
+        alert('NAO SALVOU: ' + (res ? res.error : 'sem resposta'));
+      }
       return false;
     }
     return true;

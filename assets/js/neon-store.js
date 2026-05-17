@@ -161,8 +161,8 @@ async function salvarPartida(partida) {
   if (duracao < 10) {
     return { ok: false, error: 'Partida muito curta (' + duracao + 's). Tempo mínimo: 10s.' };
   }
-  if (duracao > 7200) {
-    return { ok: false, error: 'Duração inválida (mais de 2h).' };
+  if (duracao > 14400) {
+    return { ok: false, error: 'Duração inválida (mais de 4h).' };
   }
   // Device ID: identifica dispositivo (não pessoa). Permite cruzar partidas do
   // mesmo browser mesmo se o nome muda. Útil pra auditoria de bot/multinick.
@@ -188,8 +188,17 @@ async function salvarPartida(partida) {
   if (useSupabase) {
     const { data, error } = await sb.from('partidas').insert(payload).select();
     if (error) {
-      console.error('[neon-store] erro salvando partida no Supabase:', error);
-      return { ok: false, error: error.message || JSON.stringify(error) };
+      // Preserva a partida em localStorage como "órfã" pra Lucas reenviar depois,
+      // assim nenhuma jogada legítima se perde por RLS/CHECK rejeitando.
+      // Log full payload no console pra recuperação manual também (cole no SQL).
+      const orfa = { ...payload, _erro: error.message, _rejeitada_em: new Date().toISOString() };
+      try {
+        const orfas = JSON.parse(localStorage.getItem('neon-partidas-orfas') || '[]');
+        orfas.push(orfa);
+        localStorage.setItem('neon-partidas-orfas', JSON.stringify(orfas));
+      } catch (e) { /* localStorage cheio: paciência */ }
+      console.error('[neon-store] PARTIDA REJEITADA pelo Supabase. Payload preservado:', orfa);
+      return { ok: false, error: error.message || JSON.stringify(error), preservada: true };
     }
     console.info('[neon-store] partida salva no Supabase:', data);
     return { ok: true, data };

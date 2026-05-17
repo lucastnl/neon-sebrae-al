@@ -4,7 +4,9 @@
 -- violates row-level security policy" em partida normal.
 -- Possíveis causas: acertos > 9999, combo > 9999, ou duracao > 3600s.
 -- Solução: ampliar pra valores que cobrem fase 3 infinita por muito tempo
--- sem abrir brecha pra bot absurdo.
+-- sem abrir brecha pra bot absurdo. Duracao max 14400s (4h) porque o totem
+-- fica horas com a mesma sessao aberta no evento ao vivo (gameStartedAt
+-- marca o inicio do startGame() e nao reseta entre fases).
 
 -- ============ CHECK CONSTRAINTS AMPLIADAS ============
 
@@ -21,7 +23,7 @@ alter table public.partidas
 alter table public.partidas drop constraint if exists partidas_duracao_min;
 alter table public.partidas
   add constraint partidas_duracao_min
-  check (duracao_segundos is null or (duracao_segundos >= 10 and duracao_segundos <= 7200));
+  check (duracao_segundos is null or (duracao_segundos >= 10 and duracao_segundos <= 14400));
 
 -- ============ RLS POLICY ATUALIZADA ============
 -- Reflete os novos limites na policy de INSERT.
@@ -40,6 +42,6 @@ create policy "partidas_insert_validated" on public.partidas
         ('procrastinacao', 'comparacao', 'autocobranca', 'paralisia'))
     and em_auditoria = false
     and (jogo is null or jogo = 'monstro-proximo-passo')
-    and duracao_segundos between 10 and 7200
+    and duracao_segundos between 10 and 14400
     and device_id ~ '^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
   );
