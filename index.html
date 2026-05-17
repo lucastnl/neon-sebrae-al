@@ -237,6 +237,9 @@ h1 .verde { color: var(--verde-claro); text-shadow: 0 0 16px var(--verde), 4px 4
   letter-spacing: 1px;
   line-height: 1.7;
 }
+.footer { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+.footer-signature { height: 16px; opacity: 0.5; transition: opacity 0.2s; }
+.footer-signature:hover { opacity: 0.9; }
 .footer a { color: var(--ciano); text-decoration: none; }
 .footer a:hover { color: var(--verde-claro); }
 </style>
@@ -248,7 +251,9 @@ h1 .verde { color: var(--verde-claro); text-shadow: 0 0 16px var(--verde), 4px 4
 <div class="container">
 
   <div class="header">
-    <img src="assets/logo-tnl-h.png" alt="Tiro na Lua" style="height:34px;" />
+    <!-- TROCAR pelo logo do Sebrae Alagoas quando o asset chegar:
+         <img src="assets/logo-sebrae-al.png" alt="Sebrae Alagoas" /> -->
+    <div class="header-brand-slot" aria-hidden="true"></div>
   </div>
 
   <p class="eyebrow">ESPAÇO EDUCAÇÃO EMPREENDEDORA</p>
@@ -281,7 +286,7 @@ h1 .verde { color: var(--verde-claro); text-shadow: 0 0 16px var(--verde), 4px 4
   </div>
 
   <div class="footer">
-    Tiro na Lua, 2026<br>
+    <img class="footer-signature" src="assets/logo-tnl-h.png" alt="Tiro na Lua" />
     <a href="https://github.com/lucastnl/neon-sebrae-al" target="_blank">github.com/lucastnl/neon-sebrae-al</a>
   </div>
 
