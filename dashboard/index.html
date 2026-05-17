@@ -146,7 +146,7 @@ body::before {
   line-height: 1.4;
 }
 
-/* Bloco dos medos: barras horizontais (placar) */
+/* Bloco dos medos: donut chart (placar) */
 .medos-section {
   background: rgba(10, 15, 54, 0.6);
   border: 2px solid var(--magenta);
@@ -163,53 +163,85 @@ body::before {
   letter-spacing: 1.5px;
   margin-bottom: 18px;
 }
-.medo-row {
+/* Donut chart dos medos: share-of-total honesto */
+.medos-pie {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 8px 0;
+  gap: 36px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
-.medo-icon { font-size: 22px; text-align: center; width: 28px; flex-shrink: 0; }
-.medo-name {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  color: var(--branco);
-  white-space: nowrap;
+.medos-pie-svg {
+  width: 280px;
+  height: 280px;
   flex-shrink: 0;
+  filter: drop-shadow(0 0 18px rgba(255, 0, 255, 0.3));
 }
-.medo-bar-wrap {
+.medos-pie-svg .donut-bg { fill: none; stroke: rgba(255,255,255,0.06); }
+.medos-pie-svg .donut-seg {
+  fill: none;
+  stroke-linecap: butt;
+  transition: stroke-dashoffset 0.8s ease-out, stroke-dasharray 0.8s ease-out;
+}
+.medos-pie-svg .donut-seg.procrastinacao { stroke: var(--azul-claro); }
+.medos-pie-svg .donut-seg.comparacao    { stroke: var(--ciano); }
+.medos-pie-svg .donut-seg.autocobranca  { stroke: var(--laranja); }
+.medos-pie-svg .donut-seg.paralisia     { stroke: var(--verde); }
+.medos-pie-svg .donut-center-num {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 22px;
+  fill: var(--branco);
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+.medos-pie-svg .donut-center-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6.5px;
+  fill: rgba(255,255,255,0.55);
+  text-anchor: middle;
+  dominant-baseline: middle;
+  letter-spacing: 1.5px;
+}
+.medos-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   flex: 1;
-  min-width: 0;
-  height: 18px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 4px;
-  overflow: hidden;
+  min-width: 200px;
 }
-.medo-bar {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.6s ease-out;
-  box-shadow: 0 0 14px currentColor;
-}
-.medo-bar.procrastinacao { background: var(--azul-claro); color: var(--azul-claro); }
-.medo-bar.comparacao { background: var(--ciano); color: var(--ciano); }
-.medo-bar.autocobranca { background: var(--laranja); color: var(--laranja); }
-.medo-bar.paralisia { background: var(--verde); color: var(--verde); }
-.medo-pct {
+.medos-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
   font-family: 'Press Start 2P', monospace;
   font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--branco);
+}
+.medos-legend-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  box-shadow: 0 0 12px currentColor;
+}
+.medos-legend-dot.procrastinacao { background: var(--azul-claro); color: var(--azul-claro); }
+.medos-legend-dot.comparacao { background: var(--ciano); color: var(--ciano); }
+.medos-legend-dot.autocobranca { background: var(--laranja); color: var(--laranja); }
+.medos-legend-dot.paralisia { background: var(--verde); color: var(--verde); }
+.medos-legend-icon { font-size: 20px; }
+.medos-legend-name { flex: 1; white-space: nowrap; }
+.medos-legend-pct {
   color: var(--amarelo);
   text-shadow: 0 0 6px var(--amarelo);
-  text-align: right;
-  width: 44px;
-  flex-shrink: 0;
+  font-size: 14px;
 }
 @media (max-width: 720px) {
-  .medo-row { gap: 12px; }
-  .medo-icon { width: 24px; }
-  .medo-name { font-size: 8px; letter-spacing: 1px; }
-  .medo-pct { width: 40px; }
+  .medos-pie-svg { width: 200px; height: 200px; }
+  .medos-legend-row { font-size: 9px; gap: 10px; }
+  .medos-legend-pct { font-size: 11px; }
+  .medos-legend-icon { font-size: 16px; }
+  .medos-legend-dot { width: 14px; height: 14px; }
 }
 
 @keyframes liveBlink {
@@ -276,14 +308,18 @@ body::before {
 .kpi-row-placar .kpi-value { font-size: 30px; }
 .kpi-row-placar .kpi-label { font-size: 9px; }
 
-/* Medos no placar com formato mais condensado */
-.placar-medos { margin-bottom: 0; }
-.placar-medos .medo-row {
-  grid-template-columns: 28px 130px 1fr 44px;
-  gap: 10px;
-  padding: 12px 0;
+/* Medos no placar: donut centralizado verticalmente pra preencher altura do vizinho */
+.placar-medos {
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
 }
-.placar-medos .medo-name { font-size: 9px; }
+.placar-medos #placar-medos-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .podium {
   background: rgba(10, 15, 54, 0.6);
@@ -689,25 +725,55 @@ function renderPlacarStats(stats) {
   if (elAc) elAc.textContent = fmtNumero(stats.totalAcertos);
   if (elCom) elCom.textContent = fmtNumero(stats.melhorCombo);
 
-  // Medos: barras horizontais no placar
+  // Medos: donut chart com share-of-total honesto + legenda
   const medosEl = document.getElementById('placar-medos-body');
   if (!medosEl) return;
   if (!stats.medosDistr || stats.medosDistr.length === 0) {
     medosEl.innerHTML = '<div class="empty-state">Esperando primeiras partidas.</div>';
     return;
   }
-  const max = Math.max(...stats.medosDistr.map(m => m.pct), 1);
-  medosEl.innerHTML = stats.medosDistr.map(m => {
+
+  // medosDistr já vem ordenado por count desc, com pct calculado em cima de quem escolheu medo.
+  // Soma de counts = total de partidas COM medo (centro do donut).
+  const ordem = ['procrastinacao', 'comparacao', 'autocobranca', 'paralisia'];
+  const dist = stats.medosDistr.slice().sort((a, b) => ordem.indexOf(a.medo) - ordem.indexOf(b.medo));
+  const totalCount = dist.reduce((acc, m) => acc + m.count, 0);
+  const totalPct = dist.reduce((acc, m) => acc + m.pct, 0) || 1;
+
+  const C = 2 * Math.PI * 40; // circunferência (raio 40)
+  let cumulative = 0;
+  const segments = dist.map(m => {
+    const frac = m.pct / totalPct;
+    const len = frac * C;
+    const seg = '<circle class="donut-seg ' + esc(m.medo) + '" cx="50" cy="50" r="40" '
+      + 'stroke-width="14" '
+      + 'stroke-dasharray="' + len.toFixed(3) + ' ' + C.toFixed(3) + '" '
+      + 'stroke-dashoffset="' + (-cumulative).toFixed(3) + '"></circle>';
+    cumulative += len;
+    return seg;
+  }).join('');
+
+  const svg = '<svg class="medos-pie-svg" viewBox="0 0 100 100">'
+    + '<g transform="rotate(-90 50 50)">'
+    + '<circle class="donut-bg" cx="50" cy="50" r="40" stroke-width="14"></circle>'
+    + segments
+    + '</g>'
+    + '<text class="donut-center-num" x="50" y="48">' + fmtNumero(totalCount) + '</text>'
+    + '<text class="donut-center-label" x="50" y="62">MEDOS</text>'
+    + '</svg>';
+
+  const legenda = '<div class="medos-legend">' + dist.map(m => {
     const icon = FEAR_ICONS[m.medo] || '?';
     const nome = FEAR_LABELS[m.medo] || m.medo;
-    const widthPct = Math.round((m.pct / max) * 100);
-    return '<div class="medo-row">'
-      + '<div class="medo-icon">' + icon + '</div>'
-      + '<div class="medo-name">' + esc(nome) + '</div>'
-      + '<div class="medo-bar-wrap"><div class="medo-bar ' + esc(m.medo) + '" style="width:' + widthPct + '%"></div></div>'
-      + '<div class="medo-pct">' + m.pct + '%</div>'
+    return '<div class="medos-legend-row">'
+      + '<span class="medos-legend-dot ' + esc(m.medo) + '"></span>'
+      + '<span class="medos-legend-icon">' + icon + '</span>'
+      + '<span class="medos-legend-name">' + esc(nome) + '</span>'
+      + '<span class="medos-legend-pct">' + m.pct + '%</span>'
       + '</div>';
-  }).join('');
+  }).join('') + '</div>';
+
+  medosEl.innerHTML = '<div class="medos-pie">' + svg + legenda + '</div>';
 }
 
 // ============ ÍCONES DOS MEDOS ============
