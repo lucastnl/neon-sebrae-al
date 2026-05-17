@@ -2742,12 +2742,17 @@ $('op-reset-no').addEventListener('click', () => showOpView('op-view-menu'));
   }
 
   // Detector 1: diferença entre outer e inner (DevTools docked ocupa espaço)
-  const THRESHOLD = 160;
-  setInterval(() => {
-    const wDiff = window.outerWidth - window.innerWidth;
-    const hDiff = window.outerHeight - window.innerHeight;
-    if (wDiff > THRESHOLD || hDiff > THRESHOLD) fireGotcha();
-  }, 1000);
+  // Pulado em mobile/touch: barra de URL + status bar já comem >160px de hDiff
+  // sem DevTools aberto, gera falso positivo no celular.
+  const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+  if (!isTouch) {
+    const THRESHOLD = 160;
+    setInterval(() => {
+      const wDiff = window.outerWidth - window.innerWidth;
+      const hDiff = window.outerHeight - window.innerHeight;
+      if (wDiff > THRESHOLD || hDiff > THRESHOLD) fireGotcha();
+    }, 1000);
+  }
 
   // Detector 2: debugger trick. Se DevTools aberto, debugger pausa e mede tempo.
   setInterval(() => {
