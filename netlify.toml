@@ -49,6 +49,11 @@
   [headers.values]
     Cache-Control = "no-store, max-age=0, must-revalidate"
 
+[[headers]]
+  for = "/cocriacao/*"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0, must-revalidate"
+
 # Rotas amigáveis
 [[redirects]]
   from = "/jogar"
@@ -68,4 +73,14 @@
 [[redirects]]
   from = "/placar"
   to = "/dashboard/"
+  status = 301
+
+[[redirects]]
+  from = "/cocriar"
+  to = "/cocriacao/"
+  status = 301
+
+[[redirects]]
+  from = "/jornada"
+  to = "/cocriacao/"
   status = 301

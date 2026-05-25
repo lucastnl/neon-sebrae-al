@@ -1,0 +1,2215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Lunoscópio · Design de Experiências · Tiro na Lua</title>
+
+<meta property="og:title" content="Lunoscópio TNL · Design de Experiências" />
+<meta property="og:description" content="Ferramenta Tiro na Lua de cocriação. Em 30 minutos, do sensor de realidade à jornada costurada. Aplica o Selo 6D TNL." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://neon-sebrae-al.netlify.app/cocriacao/" />
+<meta property="og:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+:root {
+  --navy-deep: #050822;
+  --navy: #0A0F36;
+  --navy-soft: #141A4A;
+  --branco: #FFFFFF;
+  --cinza-claro: rgba(255,255,255,0.78);
+  --cinza-medio: rgba(255,255,255,0.55);
+  --cinza-suave: rgba(255,255,255,0.18);
+  --lua: #FFE9A8;
+  --lua-glow: rgba(255, 233, 168, 0.45);
+  --ouro: #F4C25C;
+  --ciano: #00F9FF;
+  --verde-ok: #00D95C;
+  --magenta: #FF00FF;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  background: var(--navy-deep);
+  color: var(--branco);
+  font-family: 'Space Grotesk', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at top, var(--navy) 0%, var(--navy-deep) 70%),
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,233,168,0.025) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,233,168,0.025) 40px);
+  z-index: -2;
+}
+
+.stars {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    radial-gradient(2px 2px at 12% 18%, var(--lua) 50%, transparent 50%),
+    radial-gradient(1px 1px at 65% 25%, var(--branco) 50%, transparent 50%),
+    radial-gradient(2px 2px at 88% 12%, var(--lua) 50%, transparent 50%),
+    radial-gradient(1px 1px at 38% 38%, var(--branco) 50%, transparent 50%),
+    radial-gradient(1px 1px at 72% 55%, var(--ouro) 50%, transparent 50%),
+    radial-gradient(2px 2px at 18% 62%, var(--lua) 50%, transparent 50%),
+    radial-gradient(1px 1px at 92% 78%, var(--branco) 50%, transparent 50%),
+    radial-gradient(2px 2px at 32% 85%, var(--ouro) 50%, transparent 50%),
+    radial-gradient(1px 1px at 55% 92%, var(--branco) 50%, transparent 50%),
+    radial-gradient(1px 1px at 80% 38%, var(--branco) 50%, transparent 50%);
+  animation: twinkle 6s ease-in-out infinite alternate;
+}
+@keyframes twinkle { from { opacity: 0.35; } to { opacity: 0.85; } }
+
+.app {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+  position: relative;
+}
+
+@media (max-width: 880px) {
+  .app { grid-template-columns: 1fr; }
+}
+
+.sidebar {
+  background: rgba(5, 8, 34, 0.85);
+  border-right: 1px solid var(--cinza-suave);
+  padding: 32px 22px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  backdrop-filter: blur(8px);
+}
+.sidebar .brand {
+  margin-bottom: 28px;
+}
+.sidebar .brand img { height: 22px; opacity: 0.95; }
+.sidebar .brand-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: var(--lua);
+  letter-spacing: 2px;
+  margin-top: 14px;
+  display: block;
+  text-shadow: 0 0 8px var(--lua-glow);
+}
+.sidebar .brand-tag {
+  font-size: 10px;
+  color: var(--cinza-medio);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.steps { list-style: none; }
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px dashed var(--cinza-suave);
+  cursor: pointer;
+  transition: opacity 0.2s;
+  opacity: 0.55;
+}
+.step-item:last-child { border-bottom: none; }
+.step-item.active { opacity: 1; }
+.step-item.done { opacity: 0.85; }
+.step-item:hover { opacity: 0.9; }
+
+.step-num {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid var(--cinza-suave);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--cinza-medio);
+}
+.step-item.active .step-num {
+  border-color: var(--lua);
+  background: var(--lua);
+  color: var(--navy-deep);
+  box-shadow: 0 0 16px var(--lua-glow);
+}
+.step-item.done .step-num {
+  border-color: var(--verde-ok);
+  background: var(--verde-ok);
+  color: var(--navy-deep);
+}
+
+.step-text { flex: 1; padding-top: 4px; }
+.step-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--branco);
+  margin-bottom: 2px;
+}
+.step-sub {
+  font-size: 11px;
+  color: var(--cinza-medio);
+  font-style: italic;
+  margin-bottom: 3px;
+}
+.step-time {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  color: var(--cinza-medio);
+  letter-spacing: 1px;
+}
+
+.sidebar-footer {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--cinza-suave);
+  font-size: 11px;
+  color: var(--cinza-medio);
+  line-height: 1.6;
+}
+.sidebar-footer a { color: var(--lua); text-decoration: none; }
+
+.main {
+  padding: 56px 56px 120px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+}
+
+@media (max-width: 880px) {
+  .main { padding: 32px 24px 120px; }
+  .sidebar { position: relative; height: auto; }
+}
+
+.eyebrow {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--lua);
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+  text-shadow: 0 0 12px var(--lua-glow);
+}
+
+h1.stage-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  letter-spacing: -0.5px;
+}
+h1.stage-title em {
+  font-style: normal;
+  color: var(--lua);
+  text-shadow: 0 0 18px var(--lua-glow);
+}
+
+.stage-lead {
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--cinza-claro);
+  max-width: 720px;
+  margin-bottom: 40px;
+}
+
+.stage { display: none; animation: fadeIn 0.35s ease; }
+.stage.active { display: block; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === CAPA === */
+.capa-hero {
+  text-align: center;
+  padding: 48px 20px 40px;
+}
+.lunoscopio-svg {
+  width: 180px;
+  height: 180px;
+  display: inline-block;
+  margin-bottom: 18px;
+  animation: float 5s ease-in-out infinite alternate, rotateSlow 60s linear infinite;
+  filter: drop-shadow(0 0 24px var(--lua-glow));
+}
+@keyframes float { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+@keyframes rotateSlow { from { rotate: 0deg; } to { rotate: 360deg; } }
+
+.capa-hero h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 8px;
+  letter-spacing: -1.5px;
+  color: var(--lua);
+  text-shadow: 0 0 30px var(--lua-glow);
+}
+.capa-hero h2 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: var(--branco);
+  letter-spacing: 3px;
+  margin-bottom: 28px;
+  opacity: 0.8;
+}
+.capa-hero .capa-sub {
+  font-size: 18px;
+  color: var(--cinza-claro);
+  max-width: 580px;
+  margin: 0 auto 36px;
+  line-height: 1.55;
+}
+.capa-meta {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+.capa-meta-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.capa-meta-num {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 18px;
+  color: var(--lua);
+}
+.capa-meta-label {
+  font-size: 12px;
+  color: var(--cinza-medio);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.capa-roteiro {
+  background: rgba(20, 26, 74, 0.4);
+  border: 1px solid var(--cinza-suave);
+  border-radius: 12px;
+  padding: 28px;
+  max-width: 680px;
+  margin: 0 auto 28px;
+  text-align: left;
+}
+.capa-roteiro h3 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--lua);
+  letter-spacing: 1.5px;
+  margin-bottom: 18px;
+}
+.capa-roteiro ol {
+  list-style: none;
+  counter-reset: roteiro;
+}
+.capa-roteiro li {
+  counter-increment: roteiro;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--cinza-suave);
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  align-items: baseline;
+  gap: 12px;
+}
+.capa-roteiro li:last-child { border-bottom: none; }
+.capa-roteiro li::before {
+  content: counter(roteiro);
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: var(--lua);
+}
+.capa-roteiro .roteiro-title { font-weight: 600; line-height: 1.4; }
+.capa-roteiro .roteiro-sub { font-size: 12px; color: var(--cinza-medio); font-style: italic; display: block; margin-top: 2px; }
+.capa-roteiro .roteiro-time { font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--cinza-medio); }
+
+.selo-6d {
+  background: rgba(20, 26, 74, 0.25);
+  border: 1px solid var(--ouro);
+  border-radius: 12px;
+  padding: 22px 26px;
+  max-width: 680px;
+  margin: 0 auto 36px;
+  text-align: left;
+}
+.selo-6d-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.selo-6d-icon {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: var(--navy-deep);
+  background: var(--lua);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 16px var(--lua-glow);
+}
+.selo-6d-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--lua);
+  letter-spacing: 1.5px;
+}
+.selo-6d-tag {
+  font-size: 11px;
+  color: var(--cinza-medio);
+  margin-top: 3px;
+}
+.selo-6d-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 18px;
+}
+@media (max-width: 700px) { .selo-6d-grid { grid-template-columns: 1fr; } }
+.selo-6d-item {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 13px;
+  color: var(--cinza-claro);
+  padding: 4px 0;
+}
+.selo-6d-item-num {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--lua);
+}
+.selo-6d-item-name { font-weight: 600; color: var(--branco); }
+.selo-6d-item-desc { color: var(--cinza-medio); font-size: 12px; margin-left: 4px; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+}
+.btn-primary {
+  background: var(--lua);
+  color: var(--navy-deep);
+  box-shadow: 0 0 24px var(--lua-glow);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 36px var(--lua-glow);
+}
+.btn-primary:disabled {
+  background: var(--cinza-suave);
+  color: var(--cinza-medio);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--cinza-claro);
+  border: 1px solid var(--cinza-suave);
+}
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: var(--cinza-medio);
+}
+.btn-icon {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+}
+
+.stage-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 56px;
+  padding-top: 28px;
+  border-top: 1px dashed var(--cinza-suave);
+}
+.stage-nav .nav-spacer { flex: 1; }
+
+/* === Sub-titulo metodologico (eyebrow do ato) === */
+.metodo-tag {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--ouro);
+  letter-spacing: 1.5px;
+  margin-top: -8px;
+  margin-bottom: 14px;
+  opacity: 0.85;
+}
+
+/* === Bloco generico (sub-secao dentro de um Ato) === */
+.bloco {
+  margin-bottom: 36px;
+}
+.bloco-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed var(--cinza-suave);
+}
+.bloco-letra {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: var(--lua);
+  text-shadow: 0 0 10px var(--lua-glow);
+}
+.bloco-titulo {
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--branco);
+}
+.bloco-sub {
+  font-size: 13px;
+  color: var(--cinza-medio);
+  margin-left: auto;
+  font-style: italic;
+}
+
+/* === 4Ds === */
+.quatro-d-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+@media (max-width: 780px) { .quatro-d-grid { grid-template-columns: 1fr; } }
+.quatro-d-card {
+  background: rgba(20, 26, 74, 0.5);
+  border: 1px solid var(--cinza-suave);
+  border-radius: 12px;
+  padding: 18px;
+  transition: border 0.15s;
+}
+.quatro-d-card:focus-within { border-color: var(--lua); }
+.quatro-d-card .qd-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.quatro-d-card .qd-emoji { font-size: 22px; }
+.quatro-d-card .qd-titulo {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: var(--lua);
+  letter-spacing: 1px;
+}
+.quatro-d-card .qd-pergunta {
+  font-size: 13px;
+  color: var(--cinza-medio);
+  margin-bottom: 12px;
+  font-style: italic;
+  line-height: 1.4;
+}
+.quatro-d-card textarea {
+  width: 100%;
+  background: rgba(5, 8, 34, 0.6);
+  border: 1px solid var(--cinza-suave);
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: var(--branco);
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  outline: none;
+  min-height: 70px;
+  line-height: 1.5;
+}
+.quatro-d-card textarea:focus { border-color: var(--lua); }
+.qd-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.qd-chip {
+  background: rgba(255, 233, 168, 0.06);
+  border: 1px solid var(--cinza-suave);
+  border-radius: 100px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: var(--cinza-claro);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.qd-chip:hover {
+  border-color: var(--lua);
+  color: var(--lua);
+}
+
+/* === TOM === */
+.tom-status {
+  background: rgba(20, 26, 74, 0.4);
+  border: 1px solid var(--cinza-suave);
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin-bottom: 18px;
+  font-size: 13px;
+  color: var(--cinza-claro);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tom-status strong { color: var(--lua); font-weight: 600; }
+.tom-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 12px;
+}
+@media (max-width: 880px) { .tom-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 600px) { .tom-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.tom-card {
+  background: rgba(20, 26, 74, 0.5);
+  border: 2px solid var(--cinza-suave);
+  border-radius: 12px;
+  padding: 22px 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  position: relative;
+}
+.tom-card:hover {
+  border-color: var(--cinza-medio);
+  transform: translateY(-2px);
+}
+.tom-card.selected {
+  border-color: var(--lua);
+  background: rgba(255, 233, 168, 0.08);
+  box-shadow: 0 0 24px var(--lua-glow);
+}
+.tom-card.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.tom-card .tom-emoji { font-size: 28px; margin-bottom: 10px; display: block; }
+.tom-card .tom-word {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: var(--lua);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.tom-card.selected .tom-word { color: var(--lua); }
+.tom-card .tom-desc {
+  font-size: 12px;
+  color: var(--cinza-claro);
+  line-height: 1.4;
+}
+.tom-card .tom-check {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--lua);
+  color: var(--navy-deep);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+}
+.tom-card.selected .tom-check { display: flex; }
+
+/* === MOTE === */
+.mote-fab {
+  background: linear-gradient(135deg, rgba(255,233,168,0.08), rgba(20, 26, 74, 0.4));
+  border: 1px solid var(--lua);
+  border-radius: 16px;
+  padding: 36px 32px;
+  margin-bottom: 28px;
+}
+.mote-frase {
+  font-size: 26px;
+  line-height: 1.5;
+  color: var(--branco);
+  text-align: center;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.mote-frase .mote-slot {
+  display: inline-block;
+  min-width: 140px;
+  padding: 4px 14px;
+  margin: 0 4px;
+  border-bottom: 2px dashed var(--lua);
+  color: var(--lua);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.mote-frase .mote-slot:hover { background: rgba(255, 233, 168, 0.12); }
+.mote-frase .mote-slot.empty {
+  color: var(--cinza-medio);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.mote-sugestoes {
+  margin-top: 24px;
+  display: none;
+}
+.mote-sugestoes.active { display: block; }
+.mote-sugestoes-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--cinza-medio);
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+}
+.mote-sugestoes-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.mote-chip {
+  background: rgba(20, 26, 74, 0.6);
+  border: 1px solid var(--cinza-suave);
+  border-radius: 100px;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: var(--cinza-claro);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.mote-chip:hover {
+  border-color: var(--lua);
+  color: var(--lua);
+  background: rgba(255, 233, 168, 0.06);
+}
+
+.mote-historico {
+  margin-top: 32px;
+}
+.mote-historico-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: var(--lua);
+  letter-spacing: 1.5px;
+  margin-bottom: 16px;
+}
+.mote-versao {
+  background: rgba(20, 26, 74, 0.35);
+  border: 1px solid var(--cinza-suave);
+  border-left: 3px solid var(--cinza-suave);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--cinza-claro);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.15s;
+}
+.mote-versao:hover {
+  border-color: var(--cinza-medio);
+  background: rgba(20, 26, 74, 0.6);
+}
+.mote-versao.escolhida {
+  border-color: var(--lua);
+  border-left-color: var(--lua);
+  background: rgba(255, 233, 168, 0.08);
+  color: var(--branco);
+}
+.mote-versao .versao-texto { flex: 1; }
+.mote-versao .versao-star {
+  font-size: 20px;
+  color: var(--cinza-suave);
+  transition: color 0.15s;
+  cursor: pointer;
+}
+.mote-versao.escolhida .versao-star { color: var(--lua); }
+.mote-versao .versao-remover {
+  background: none;
+  border: none;
+  color: var(--cinza-medio);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 4px;
+}
+.mote-versao .versao-remover:hover { color: var(--magenta); }
+
+.mote-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  justify-content: center;
+}
+
+/* === MAPA === */
+.mapa-info {
+  background: rgba(20, 26, 74, 0.4);
+  border: 1px solid var(--cinza-suave);
+  border-radius: 10px;
+  padding: 14px 20px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: var(--cinza-claro);
+}
+.mapa-pool {
+  background: rgba(20, 26, 74, 0.5);
+  border: 1px dashed var(--cinza-medio);
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 24px;
+  min-height: 100px;
+}
+.mapa-pool-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--cinza-medio);
+  letter-spacing: 1.5px;
+  margin-bottom: 12px;
+  display: block;
+}
+.mapa-pool-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mapa-board {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+@media (max-width: 1000px) { .mapa-board { grid-template-columns: repeat(2, 1fr); } }
+
+.mapa-fase {
+  background: rgba(10, 15, 54, 0.6);
+  border: 1px solid var(--cinza-suave);
+  border-radius: 12px;
+  padding: 16px 14px;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+.mapa-fase.drag-over {
+  border-color: var(--lua);
+  background: rgba(255, 233, 168, 0.06);
+}
+.fase-num {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--lua);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.fase-nome {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: var(--branco);
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.fase-desc {
+  font-size: 11px;
+  color: var(--cinza-medio);
+  line-height: 1.4;
+  margin-bottom: 14px;
+  font-style: italic;
+}
+.fase-drop {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 60px;
+}
+
+.exp-card {
+  background: rgba(255, 233, 168, 0.08);
+  border: 1.5px solid var(--lua);
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: grab;
+  transition: all 0.15s;
+  user-select: none;
+}
+.exp-card:active { cursor: grabbing; }
+.exp-card.dragging { opacity: 0.4; }
+.exp-card:hover { background: rgba(255, 233, 168, 0.15); }
+.exp-card .exp-emoji { font-size: 18px; margin-bottom: 3px; display: block; }
+.exp-card .exp-nome {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--branco);
+  line-height: 1.3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+.exp-card .exp-remover {
+  background: none;
+  border: none;
+  color: var(--magenta);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 2px;
+  line-height: 1;
+}
+
+/* === COSTURA === */
+.costura-info {
+  background: rgba(20, 26, 74, 0.4);
+  border: 1px solid var(--cinza-suave);
+  border-radius: 10px;
+  padding: 14px 20px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: var(--cinza-claro);
+}
+.costura-lista {
+  display: grid;
+  gap: 18px;
+}
+.costura-card {
+  background: rgba(20, 26, 74, 0.5);
+  border: 1px solid var(--cinza-suave);
+  border-radius: 12px;
+  padding: 20px 22px;
+}
+.costura-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.costura-card-emoji { font-size: 28px; }
+.costura-card-titulo {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--branco);
+}
+.costura-card-fase {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--lua);
+  letter-spacing: 1.5px;
+  margin-left: auto;
+  padding: 5px 10px;
+  border: 1px solid var(--lua);
+  border-radius: 100px;
+}
+.costura-rtf {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 6px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--cinza-suave);
+}
+@media (max-width: 700px) { .costura-rtf { grid-template-columns: 1fr; } }
+.rtf-pill {
+  text-align: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: var(--cinza-medio);
+  padding: 6px 8px;
+  border: 1px dashed var(--cinza-suave);
+  border-radius: 6px;
+}
+.costura-checklist {
+  display: grid;
+  gap: 14px;
+}
+.costura-bloco {
+  border-top: 1px dashed var(--cinza-suave);
+  padding-top: 14px;
+}
+.costura-bloco:first-child { border-top: none; padding-top: 0; }
+.costura-item {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.costura-item label {
+  font-size: 14px;
+  color: var(--cinza-claro);
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+}
+.costura-check {
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--cinza-medio);
+  border-radius: 5px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  appearance: none;
+  transition: all 0.15s;
+}
+.costura-check:checked {
+  background: var(--verde-ok);
+  border-color: var(--verde-ok);
+}
+.costura-check:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--navy-deep);
+  font-size: 16px;
+  font-weight: 700;
+}
+.costura-detalhe {
+  margin-left: 44px;
+  display: grid;
+  gap: 6px;
+}
+.costura-detalhe label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--cinza-medio);
+  letter-spacing: 1.5px;
+}
+.costura-detalhe input,
+.costura-detalhe textarea {
+  background: rgba(5, 8, 34, 0.6);
+  border: 1px solid var(--cinza-suave);
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: var(--branco);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  resize: vertical;
+}
+.costura-detalhe input:focus,
+.costura-detalhe textarea:focus {
+  border-color: var(--lua);
+}
+.costura-vazio {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--cinza-medio);
+  font-style: italic;
+}
+
+/* === RESULTADO === */
+.resultado {
+  background: rgba(255, 255, 255, 0.97);
+  color: var(--navy-deep);
+  border-radius: 16px;
+  padding: 48px 40px;
+  margin-bottom: 28px;
+}
+.resultado-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--navy-deep);
+}
+.resultado-titulo {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--navy-deep);
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+.resultado-sub {
+  font-size: 14px;
+  color: #555;
+  letter-spacing: 0.5px;
+}
+.resultado-brand img { height: 30px; }
+
+.resultado-secao {
+  margin-bottom: 28px;
+}
+.resultado-secao-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: #777;
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+
+.resultado-4d {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+@media (max-width: 700px) { .resultado-4d { grid-template-columns: repeat(2, 1fr); } }
+.resultado-4d-card {
+  background: #F4F5F8;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+.resultado-4d-titulo {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: var(--navy-deep);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed #BBB;
+  padding-bottom: 6px;
+}
+.resultado-4d-texto {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--navy-deep);
+  white-space: pre-wrap;
+}
+.resultado-4d-vazio { color: #999; font-style: italic; font-size: 11px; }
+
+.resultado-tom-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+.resultado-tom-chip {
+  background: var(--navy-deep);
+  color: var(--lua);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-family: 'Press Start 2P', monospace;
+  letter-spacing: 1px;
+}
+
+.resultado-mote {
+  font-size: 24px;
+  line-height: 1.4;
+  color: var(--navy-deep);
+  font-weight: 500;
+  padding: 18px 20px;
+  border-left: 4px solid var(--navy-deep);
+  background: #F4F5F8;
+  border-radius: 0 8px 8px 0;
+}
+
+.resultado-mapa {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.resultado-fase {
+  background: #F4F5F8;
+  border-radius: 8px;
+  padding: 12px 10px;
+  min-height: 90px;
+}
+.resultado-fase-nome {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  color: var(--navy-deep);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  text-align: center;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed #BBB;
+}
+.resultado-fase-exp {
+  background: #FFF;
+  border-radius: 5px;
+  padding: 6px 8px;
+  margin-bottom: 5px;
+  font-size: 11px;
+  color: var(--navy-deep);
+  font-weight: 600;
+}
+
+.resultado-pendencias {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.resultado-pendencias th {
+  background: var(--navy-deep);
+  color: var(--lua);
+  text-align: left;
+  padding: 10px 12px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  letter-spacing: 1px;
+}
+.resultado-pendencias td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #E5E5E5;
+  vertical-align: top;
+  color: var(--navy-deep);
+}
+.resultado-pendencias .check-ok { color: var(--verde-ok); font-weight: 700; }
+.resultado-pendencias .check-pending { color: #C44; font-weight: 700; }
+
+.resultado-selo {
+  background: var(--navy-deep);
+  color: var(--lua);
+  border-radius: 12px;
+  padding: 22px 26px;
+  margin-top: 16px;
+}
+.resultado-selo-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.resultado-selo-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--lua);
+  color: var(--navy-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+}
+.resultado-selo-titulo {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--lua);
+}
+.resultado-selo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 18px;
+}
+@media (max-width: 700px) { .resultado-selo-grid { grid-template-columns: 1fr; } }
+.resultado-selo-item {
+  font-size: 12px;
+  color: var(--cinza-claro);
+  display: grid;
+  grid-template-columns: 16px 1fr;
+  gap: 6px;
+  padding: 3px 0;
+}
+.resultado-selo-item.tocado { color: var(--branco); }
+.resultado-selo-item .ss-check {
+  font-family: monospace;
+  color: var(--cinza-medio);
+}
+.resultado-selo-item.tocado .ss-check { color: var(--verde-ok); }
+.resultado-selo-item-name { font-weight: 600; }
+
+.resultado-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px dashed #BBB;
+  font-size: 11px;
+  color: #888;
+}
+
+.resultado-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+@media print {
+  @page { size: A4 landscape; margin: 10mm; }
+  body { background: white; }
+  body::before, body::after, .stars { display: none; }
+  .sidebar, .stage-nav, .resultado-actions { display: none !important; }
+  .app { display: block; }
+  .main { padding: 0; max-width: 100%; }
+  .stage { display: none; }
+  .stage#stage-resultado { display: block !important; }
+  .stage#stage-resultado .eyebrow,
+  .stage#stage-resultado > h1,
+  .stage#stage-resultado > .stage-lead { display: none; }
+  .resultado {
+    background: white !important;
+    color: var(--navy-deep) !important;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+  }
+  .resultado-mote, .resultado-fase, .resultado-fase-exp, .resultado-4d-card { background: #F4F5F8 !important; }
+  .resultado-pendencias th { background: var(--navy-deep) !important; color: var(--lua) !important; }
+  .resultado-selo { background: var(--navy-deep) !important; color: var(--lua) !important; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+
+<body>
+<div class="stars"></div>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="../assets/logo-tnl-h.png" alt="Tiro na Lua" />
+      <span class="brand-label">LUNOSCÓPIO</span>
+      <span class="brand-tag">Design de Experiências</span>
+    </div>
+    <ul class="steps" id="steps">
+      <li class="step-item" data-stage="capa">
+        <span class="step-num">0</span>
+        <div class="step-text">
+          <div class="step-title">Abertura</div>
+          <div class="step-time">2 MIN</div>
+        </div>
+      </li>
+      <li class="step-item" data-stage="sensor">
+        <span class="step-num">1</span>
+        <div class="step-text">
+          <div class="step-title">Sensor</div>
+          <div class="step-sub">4Ds + Tom</div>
+          <div class="step-time">8 MIN</div>
+        </div>
+      </li>
+      <li class="step-item" data-stage="mote">
+        <span class="step-num">2</span>
+        <div class="step-text">
+          <div class="step-title">Mote</div>
+          <div class="step-sub">Roteiro de Impacto</div>
+          <div class="step-time">8 MIN</div>
+        </div>
+      </li>
+      <li class="step-item" data-stage="mapa">
+        <span class="step-num">3</span>
+        <div class="step-text">
+          <div class="step-title">Mapa</div>
+          <div class="step-sub">Espiral da Ação</div>
+          <div class="step-time">8 MIN</div>
+        </div>
+      </li>
+      <li class="step-item" data-stage="costura">
+        <span class="step-num">4</span>
+        <div class="step-text">
+          <div class="step-title">Costura</div>
+          <div class="step-sub">Arquitetura Orgânica</div>
+          <div class="step-time">6 MIN</div>
+        </div>
+      </li>
+      <li class="step-item" data-stage="resultado">
+        <span class="step-num">★</span>
+        <div class="step-text">
+          <div class="step-title">Carta Final</div>
+          <div class="step-time">EXPORTAR</div>
+        </div>
+      </li>
+    </ul>
+    <div class="sidebar-footer">
+      Cocriação de jornada de evento. Reunião Sebrae AL, Neon Jun/2026.
+      <br><br>
+      <a href="#" id="reset-link">↻ Recomeçar</a>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <section class="stage" id="stage-capa">
+      <div class="capa-hero">
+        <svg class="lunoscopio-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <radialGradient id="moonGrad" cx="38%" cy="38%">
+              <stop offset="0%" stop-color="#FFF6D8" stop-opacity="1"/>
+              <stop offset="55%" stop-color="#FFE9A8" stop-opacity="0.95"/>
+              <stop offset="100%" stop-color="#B89544" stop-opacity="0.85"/>
+            </radialGradient>
+            <filter id="glowFilter" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="8"/>
+            </filter>
+          </defs>
+          <circle cx="100" cy="100" r="78" fill="#FFE9A8" opacity="0.18" filter="url(#glowFilter)"/>
+          <circle cx="100" cy="100" r="82" fill="none" stroke="#FFE9A8" stroke-width="1" opacity="0.45"/>
+          <circle cx="100" cy="100" r="76" fill="none" stroke="#F4C25C" stroke-width="0.5" opacity="0.3"/>
+          <circle cx="100" cy="100" r="56" fill="url(#moonGrad)"/>
+          <circle cx="84" cy="92" r="5" fill="#000" opacity="0.10"/>
+          <circle cx="112" cy="112" r="7" fill="#000" opacity="0.08"/>
+          <circle cx="120" cy="86" r="3" fill="#000" opacity="0.12"/>
+          <circle cx="92" cy="116" r="3" fill="#000" opacity="0.10"/>
+          <line x1="100" y1="14" x2="100" y2="34" stroke="#FFE9A8" stroke-width="1.5" opacity="0.9" stroke-linecap="round"/>
+          <line x1="100" y1="166" x2="100" y2="186" stroke="#FFE9A8" stroke-width="1.5" opacity="0.9" stroke-linecap="round"/>
+          <line x1="14" y1="100" x2="34" y2="100" stroke="#FFE9A8" stroke-width="1.5" opacity="0.9" stroke-linecap="round"/>
+          <line x1="166" y1="100" x2="186" y2="100" stroke="#FFE9A8" stroke-width="1.5" opacity="0.9" stroke-linecap="round"/>
+          <g stroke="#FFE9A8" stroke-width="0.7" opacity="0.5">
+            <line x1="100" y1="40" x2="100" y2="44"/>
+            <line x1="100" y1="156" x2="100" y2="160"/>
+            <line x1="40" y1="100" x2="44" y2="100"/>
+            <line x1="156" y1="100" x2="160" y2="100"/>
+            <line x1="58" y1="58" x2="62" y2="62"/>
+            <line x1="142" y1="58" x2="138" y2="62"/>
+            <line x1="58" y1="142" x2="62" y2="138"/>
+            <line x1="142" y1="142" x2="138" y2="138"/>
+          </g>
+        </svg>
+        <h1>Lunoscópio</h1>
+        <h2>DESIGN DE EXPERIÊNCIAS</h2>
+        <p class="capa-sub">Uma ferramenta Tiro na Lua de cocriação. Em 30 minutos, do sensor de realidade à jornada costurada.</p>
+
+        <div class="capa-meta">
+          <div class="capa-meta-item">
+            <span class="capa-meta-num">30'</span>
+            <span class="capa-meta-label">Duração</span>
+          </div>
+          <div class="capa-meta-item">
+            <span class="capa-meta-num">4</span>
+            <span class="capa-meta-label">Atos</span>
+          </div>
+          <div class="capa-meta-item">
+            <span class="capa-meta-num">6D</span>
+            <span class="capa-meta-label">Selo TNL</span>
+          </div>
+          <div class="capa-meta-item">
+            <span class="capa-meta-num">1</span>
+            <span class="capa-meta-label">Carta final</span>
+          </div>
+        </div>
+
+        <div class="capa-roteiro">
+          <h3>O QUE A GENTE VAI FAZER JUNTO</h3>
+          <ol>
+            <li>
+              <div>
+                <span class="roteiro-title">Sensor de Realidade</span>
+                <span class="roteiro-sub">4Ds (Dores, Dúvidas, Dilemas, Desejos) + Tom emocional do jovem</span>
+              </div>
+              <span class="roteiro-time">8 MIN</span>
+            </li>
+            <li>
+              <div>
+                <span class="roteiro-title">Roteiro de Impacto</span>
+                <span class="roteiro-sub">A frase-tese que costura jogos, palestras e oficinas</span>
+              </div>
+              <span class="roteiro-time">8 MIN</span>
+            </li>
+            <li>
+              <div>
+                <span class="roteiro-title">Espiral da Ação</span>
+                <span class="roteiro-sub">Onde cada experiência encaixa nas 5 fases da jornada</span>
+              </div>
+              <span class="roteiro-time">8 MIN</span>
+            </li>
+            <li>
+              <div>
+                <span class="roteiro-title">Arquitetura Orgânica</span>
+                <span class="roteiro-sub">O que ainda falta resolver pra cada experiência sair do papel</span>
+              </div>
+              <span class="roteiro-time">6 MIN</span>
+            </li>
+          </ol>
+        </div>
+
+        <div class="selo-6d">
+          <div class="selo-6d-header">
+            <div class="selo-6d-icon">6D</div>
+            <div>
+              <div class="selo-6d-title">ASSINATURA METODOLÓGICA</div>
+              <div class="selo-6d-tag">Toda Carta do Lunoscópio aplica o Selo 6D TNL de design educacional.</div>
+            </div>
+          </div>
+          <div class="selo-6d-grid">
+            <div class="selo-6d-item"><span class="selo-6d-item-num">1</span><div><span class="selo-6d-item-name">Sensor de Realidade</span><span class="selo-6d-item-desc">diagnóstico do público</span></div></div>
+            <div class="selo-6d-item"><span class="selo-6d-item-num">2</span><div><span class="selo-6d-item-name">Roteiro de Impacto</span><span class="selo-6d-item-desc">teoria da mudança</span></div></div>
+            <div class="selo-6d-item"><span class="selo-6d-item-num">3</span><div><span class="selo-6d-item-name">Espiral da Ação</span><span class="selo-6d-item-desc">loop de aprendizado</span></div></div>
+            <div class="selo-6d-item"><span class="selo-6d-item-num">4</span><div><span class="selo-6d-item-name">Referencial Vivo</span><span class="selo-6d-item-desc">BNCC + EntreComp</span></div></div>
+            <div class="selo-6d-item"><span class="selo-6d-item-num">5</span><div><span class="selo-6d-item-name">Arquitetura Orgânica</span><span class="selo-6d-item-desc">raízes, tronco, frutos</span></div></div>
+            <div class="selo-6d-item"><span class="selo-6d-item-num">6</span><div><span class="selo-6d-item-name">SQD</span><span class="selo-6d-item-desc">rubrica de qualidade</span></div></div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="goStage('sensor')">Começar <span class="btn-icon">▶</span></button>
+      </div>
+    </section>
+
+    <section class="stage" id="stage-sensor">
+      <p class="eyebrow">ATO 1 · 8 MIN</p>
+      <p class="metodo-tag">SELO 6D · #1 SENSOR DE REALIDADE</p>
+      <h1 class="stage-title">Quem é esse <em>jovem</em> que vai entrar no Espaço?</h1>
+      <p class="stage-lead">Antes de pensar em conteúdo, a gente precisa enxergar bem quem é esse jovem alagoano de caravana. Dois movimentos rápidos: <strong>(A)</strong> os 4Ds dele (o que dói, duvida, divide, deseja) e <strong>(B)</strong> o tom emocional que queremos provocar na passagem.</p>
+
+      <div class="bloco">
+        <div class="bloco-header">
+          <span class="bloco-letra">A</span>
+          <span class="bloco-titulo">4Ds, o sensor estrutural</span>
+          <span class="bloco-sub">~5 min</span>
+        </div>
+        <div class="quatro-d-grid" id="quatro-d-grid"></div>
+      </div>
+
+      <div class="bloco">
+        <div class="bloco-header">
+          <span class="bloco-letra">B</span>
+          <span class="bloco-titulo">Tom emocional, a sensação alvo</span>
+          <span class="bloco-sub">~3 min</span>
+        </div>
+        <div class="tom-status">
+          <span>Escolham até <strong>3 palavras</strong> que descrevem o que esse jovem deveria sentir durante a passagem. Selecionadas: <strong id="tom-count">0</strong>/3</span>
+        </div>
+        <div class="tom-grid" id="tom-grid"></div>
+      </div>
+
+      <div class="stage-nav">
+        <button class="btn btn-ghost" onclick="goStage('capa')"><span class="btn-icon">◀</span> Voltar</button>
+        <div class="nav-spacer"></div>
+        <button class="btn btn-primary" id="sensor-next" onclick="goStage('mote')" disabled>Próximo <span class="btn-icon">▶</span></button>
+      </div>
+    </section>
+
+    <section class="stage" id="stage-mote">
+      <p class="eyebrow">ATO 2 · 8 MIN</p>
+      <p class="metodo-tag">SELO 6D · #2 ROTEIRO DE IMPACTO</p>
+      <h1 class="stage-title">Qual é a <em>história</em> que conecta tudo?</h1>
+      <p class="stage-lead">Os jogos, palestras e oficinas precisam de um fio narrativo comum. Esse é o gancho que palestrantes vão abrir e fechar. Preencham a frase abaixo clicando em cada espaço, gerem 2 ou 3 versões e escolham UMA pra ser o mote oficial.</p>
+
+      <div class="mote-fab">
+        <p class="mote-frase" id="mote-frase">
+          No Neon, o
+          <span class="mote-slot empty" data-slot="quem">quem é esse jovem?</span>
+          vai
+          <span class="mote-slot empty" data-slot="verbo">o que ele faz?</span>
+          sua
+          <span class="mote-slot empty" data-slot="simbolo">qual o símbolo?</span>.
+        </p>
+        <div class="mote-sugestoes" id="mote-sugestoes"></div>
+        <div class="mote-actions">
+          <button class="btn btn-ghost" onclick="motePreencherAleatorio()">↻ Sugerir tudo</button>
+          <button class="btn btn-primary" onclick="moteSalvarVersao()">💾 Salvar versão</button>
+        </div>
+      </div>
+
+      <div class="mote-historico">
+        <p class="mote-historico-label">VERSÕES SALVAS. CLIQUE NA ESTRELA PRA ESCOLHER A OFICIAL.</p>
+        <div id="mote-versoes"></div>
+      </div>
+
+      <div class="stage-nav">
+        <button class="btn btn-ghost" onclick="goStage('sensor')"><span class="btn-icon">◀</span> Voltar</button>
+        <div class="nav-spacer"></div>
+        <button class="btn btn-primary" id="mote-next" onclick="goStage('mapa')" disabled>Próximo <span class="btn-icon">▶</span></button>
+      </div>
+    </section>
+
+    <section class="stage" id="stage-mapa">
+      <p class="eyebrow">ATO 3 · 8 MIN</p>
+      <p class="metodo-tag">SELO 6D · #3 ESPIRAL DA AÇÃO</p>
+      <h1 class="stage-title">Onde cada <em>experiência</em> encaixa na jornada?</h1>
+      <p class="stage-lead">A passagem do jovem tem 5 momentos. Arrastem cada experiência do estoque pra onde ela melhor encaixa. Uma mesma experiência pode aparecer em mais de uma fase, basta arrastar de novo.</p>
+
+      <div class="mapa-info">
+        💡 Cada experiência alocada vai ter sua própria mini-espiral interna depois (Recurso → Ação → Reflexão → Feedback → Fruto). Agora a gente só costura o macro.
+      </div>
+
+      <div class="mapa-pool">
+        <span class="mapa-pool-label">📦 ESTOQUE DE EXPERIÊNCIAS</span>
+        <div class="mapa-pool-cards" id="mapa-pool"></div>
+      </div>
+
+      <div class="mapa-board" id="mapa-board"></div>
+
+      <div class="stage-nav">
+        <button class="btn btn-ghost" onclick="goStage('mote')"><span class="btn-icon">◀</span> Voltar</button>
+        <div class="nav-spacer"></div>
+        <button class="btn btn-primary" id="mapa-next" onclick="goStage('costura')" disabled>Próximo <span class="btn-icon">▶</span></button>
+      </div>
+    </section>
+
+    <section class="stage" id="stage-costura">
+      <p class="eyebrow">ATO 4 · 6 MIN</p>
+      <p class="metodo-tag">SELO 6D · #5 ARQUITETURA ORGÂNICA (RTF)</p>
+      <h1 class="stage-title">O que ainda <em>precisamos resolver</em>?</h1>
+      <p class="stage-lead">Pra cada experiência alocada na jornada, vamos confirmar 4 coisas. O que ficar marcado vermelho é o que ainda precisa ser resolvido até o evento, e vira a lista de encaminhamentos da reunião.</p>
+
+      <div class="costura-info">
+        ⚠️ Não precisa preencher tudo agora. O que faltar fica destacado no PDF final como pendência por responsável.
+      </div>
+
+      <div class="costura-lista" id="costura-lista"></div>
+
+      <div class="stage-nav">
+        <button class="btn btn-ghost" onclick="goStage('mapa')"><span class="btn-icon">◀</span> Voltar</button>
+        <div class="nav-spacer"></div>
+        <button class="btn btn-primary" onclick="goStage('resultado'); gerarResultado();">Ver Carta Final <span class="btn-icon">▶</span></button>
+      </div>
+    </section>
+
+    <section class="stage" id="stage-resultado">
+      <p class="eyebrow">★ CARTA FINAL DO LUNOSCÓPIO</p>
+      <h1 class="stage-title">A <em>jornada</em> está costurada.</h1>
+      <p class="stage-lead">Esse é o documento de fechamento da reunião. Clique no botão pra exportar como PDF (A4 paisagem). Pode imprimir e levar pra próxima reunião do time.</p>
+
+      <div class="resultado" id="resultado-conteudo"></div>
+
+      <div class="resultado-actions">
+        <button class="btn btn-ghost" onclick="goStage('costura')"><span class="btn-icon">◀</span> Voltar e ajustar</button>
+        <button class="btn btn-primary" onclick="window.print()">🖨 Exportar PDF</button>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'tnl_lunoscopio_neon_v2';
+
+const state = {
+  stage: 'capa',
+  realidade: { dores: '', duvidas: '', dilemas: '', desejos: '' },
+  tom: [],
+  mote: { quem: '', verbo: '', simbolo: '', versoes: [] },
+  mapa: { entrada: [], descoberta: [], climax: [], partilha: [], pos: [] },
+  costura: {},
+};
+
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) Object.assign(state, JSON.parse(raw));
+  } catch(e) {}
+}
+function resetState() {
+  if (!confirm('Apagar tudo e recomeçar? Esta ação não pode ser desfeita.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+const QUATRO_DS = [
+  { key: 'dores',    emoji: '🩹', titulo: 'DORES',    pergunta: 'O que dói pra esse jovem hoje, no contexto escolar e profissional?', sugestoes: ['escola desconectada da vida real', 'não saber por onde começar a empreender', 'medo de errar', 'falta de referências locais', 'pais cobrando estabilidade'] },
+  { key: 'duvidas',  emoji: '❓', titulo: 'DÚVIDAS',  pergunta: 'O que ele não sabe e quer saber?',                                       sugestoes: ['o que é empreender, na prática', 'eu sirvo pra isso?', 'preciso de muito dinheiro pra começar?', 'como tirar uma ideia da cabeça', 'como saber se a ideia presta'] },
+  { key: 'dilemas',  emoji: '⚖️', titulo: 'DILEMAS',  pergunta: 'Quais escolhas difíceis ele está enfrentando?',                          sugestoes: ['faculdade ou empreender', 'sair da cidade ou ficar', 'seguir a paixão ou o que paga', 'individual ou coletivo', 'urgência ou propósito'] },
+  { key: 'desejos',  emoji: '🌅', titulo: 'DESEJOS',  pergunta: 'O que ele sonha alcançar, sem filtro?',                                   sugestoes: ['ter renda própria cedo', 'transformar o bairro', 'ser referência', 'ter autonomia', 'fazer algo que importa'] },
+];
+
+const TONS = [
+  { id: 'descoberta', emoji: '🔭', palavra: 'DESCOBERTA', desc: 'Acabei de ver algo que eu não sabia que existia.' },
+  { id: 'ousadia',    emoji: '🚀', palavra: 'OUSADIA',    desc: 'Me senti um pouco fora da minha zona.' },
+  { id: 'leveza',     emoji: '🪁', palavra: 'LEVEZA',     desc: 'Foi divertido, não parecia trabalho.' },
+  { id: 'pertencimento', emoji: '🤝', palavra: 'PERTENCIMENTO', desc: 'Tem gente como eu aqui.' },
+  { id: 'pulso',      emoji: '⚡', palavra: 'PULSO',      desc: 'Estou ligado, com energia, querendo mais.' },
+  { id: 'foco',       emoji: '🎯', palavra: 'FOCO',       desc: 'Saí com uma direção clara do que fazer.' },
+  { id: 'orgulho',    emoji: '🏆', palavra: 'ORGULHO',    desc: 'Conquistei algo, tenho o que contar.' },
+  { id: 'curiosidade', emoji: '🧭', palavra: 'CURIOSIDADE', desc: 'Saí com mais perguntas do que respostas, no bom sentido.' },
+  { id: 'confianca',  emoji: '🦁', palavra: 'CONFIANÇA',  desc: 'Acho que eu consigo fazer isso.' },
+  { id: 'inspiracao', emoji: '✨', palavra: 'INSPIRAÇÃO', desc: 'Vi alguém ou algo que me virou a chave.' },
+  { id: 'jogo',       emoji: '🎮', palavra: 'JOGO',       desc: 'Foi adrenalina, competição, brincadeira.' },
+  { id: 'futuro',     emoji: '🌅', palavra: 'FUTURO',     desc: 'Consigo me imaginar daqui pra frente.' },
+];
+
+const MOTE_SUGESTOES = {
+  quem: ['jovem alagoano', 'estudante curioso', 'futuro empreendedor', 'aluno que ainda não sabe que empreende', 'estudante de escola pública', 'jovem que sonha grande', 'caravaneiro'],
+  verbo: ['descobrir', 'mirar', 'lançar', 'desbravar', 'acender', 'experimentar', 'mapear', 'plantar', 'destravar', 'acelerar'],
+  simbolo: ['primeira ideia', 'próxima escalada', 'lua', 'rota', 'faísca', 'centelha', 'primeira meta', 'salto'],
+};
+
+const EXPERIENCIAS = [
+  { id: 'jogos-totem',    emoji: '🎮', nome: 'Jogos do Totem' },
+  { id: 'caca-ar',        emoji: '📱', nome: 'Caça ao Tesouro AR' },
+  { id: 'mini-oficinas',  emoji: '🧪', nome: 'Mini-Oficinas (9)' },
+  { id: 'palestras',      emoji: '🎤', nome: 'Palestras' },
+  { id: 'pre-cadastro',   emoji: '✍️', nome: 'Pré-Cadastro Escalada' },
+  { id: 'parede-escalada', emoji: '🧗', nome: 'Parede de Escalada Financeira' },
+  { id: 'brindes',        emoji: '🎁', nome: 'Brindes Gamificados' },
+];
+
+const FASES = [
+  { id: 'entrada',    num: '1', nome: 'ENTRADA',    desc: 'A primeira impressão. O que chama o olhar.' },
+  { id: 'descoberta', num: '2', nome: 'DESCOBERTA', desc: 'Onde o jovem se mete em algo novo.' },
+  { id: 'climax',     num: '3', nome: 'CLÍMAX',     desc: 'O pico da experiência. O momento "uau".' },
+  { id: 'partilha',   num: '4', nome: 'PARTILHA',   desc: 'Quando vira história pra contar.' },
+  { id: 'pos',        num: '5', nome: 'PÓS',        desc: 'O que ele leva pra fora do evento.' },
+];
+
+const SELO_6D = [
+  { num: '1', nome: 'Sensor de Realidade', tocadoSe: () => Object.values(state.realidade).some(v => v.trim().length > 0) || state.tom.length > 0 },
+  { num: '2', nome: 'Roteiro de Impacto',  tocadoSe: () => state.mote.versoes.some(v => v.escolhida) },
+  { num: '3', nome: 'Espiral da Ação',     tocadoSe: () => totalExperienciasMapa() > 0 },
+  { num: '4', nome: 'Referencial Vivo',    tocadoSe: () => false, nota: 'aplicado na ficha técnica TNL pós-cocriação' },
+  { num: '5', nome: 'Arquitetura Orgânica (RTF)', tocadoSe: () => Object.keys(state.costura).length > 0 },
+  { num: '6', nome: 'SQD',                 tocadoSe: () => false, nota: 'rubrica TNL aplicada na curadoria final' },
+];
+
+function goStage(id) {
+  document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('stage-' + id);
+  if (target) target.classList.add('active');
+  state.stage = id;
+  updateSidebar();
+  saveState();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (id === 'costura') renderCostura();
+  if (id === 'resultado') gerarResultado();
+}
+
+function updateSidebar() {
+  const order = ['capa', 'sensor', 'mote', 'mapa', 'costura', 'resultado'];
+  const currentIdx = order.indexOf(state.stage);
+  document.querySelectorAll('.step-item').forEach((item, idx) => {
+    item.classList.remove('active', 'done');
+    if (idx === currentIdx) item.classList.add('active');
+    else if (idx < currentIdx) item.classList.add('done');
+  });
+}
+
+document.querySelectorAll('.step-item').forEach(item => {
+  item.addEventListener('click', () => goStage(item.dataset.stage));
+});
+
+document.getElementById('reset-link').addEventListener('click', (e) => {
+  e.preventDefault();
+  resetState();
+});
+
+function render4Ds() {
+  const grid = document.getElementById('quatro-d-grid');
+  grid.innerHTML = '';
+  QUATRO_DS.forEach(qd => {
+    const card = document.createElement('div');
+    card.className = 'quatro-d-card';
+    const valor = (state.realidade[qd.key] || '').replace(/"/g, '&quot;');
+    card.innerHTML = `
+      <div class="qd-header">
+        <span class="qd-emoji">${qd.emoji}</span>
+        <span class="qd-titulo">${qd.titulo}</span>
+      </div>
+      <div class="qd-pergunta">${qd.pergunta}</div>
+      <textarea data-key="${qd.key}" placeholder="Liste de 2 a 3 itens, separados por vírgula ou linha.">${valor}</textarea>
+      <div class="qd-chips">
+        ${qd.sugestoes.map(s => `<span class="qd-chip" data-key="${qd.key}" data-sug="${s.replace(/"/g, '&quot;')}">+ ${s}</span>`).join('')}
+      </div>
+    `;
+    const ta = card.querySelector('textarea');
+    ta.addEventListener('input', () => {
+      state.realidade[qd.key] = ta.value;
+      saveState();
+      updateSensorNext();
+    });
+    card.querySelectorAll('.qd-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const sug = chip.dataset.sug;
+        const atual = state.realidade[qd.key] || '';
+        state.realidade[qd.key] = atual ? `${atual.replace(/[\.,]\s*$/, '')}, ${sug}` : sug;
+        ta.value = state.realidade[qd.key];
+        saveState();
+        updateSensorNext();
+      });
+    });
+    grid.appendChild(card);
+  });
+}
+
+function updateSensorNext() {
+  const algumD = Object.values(state.realidade).some(v => v.trim().length > 0);
+  const algumTom = state.tom.length > 0;
+  document.getElementById('sensor-next').disabled = !(algumD && algumTom);
+}
+
+function renderTom() {
+  const grid = document.getElementById('tom-grid');
+  grid.innerHTML = '';
+  TONS.forEach(t => {
+    const isSelected = state.tom.includes(t.id);
+    const isDisabled = !isSelected && state.tom.length >= 3;
+    const card = document.createElement('div');
+    card.className = 'tom-card' + (isSelected ? ' selected' : '') + (isDisabled ? ' disabled' : '');
+    card.innerHTML = `
+      <span class="tom-emoji">${t.emoji}</span>
+      <div class="tom-word">${t.palavra}</div>
+      <div class="tom-desc">"${t.desc}"</div>
+      <span class="tom-check">✓</span>
+    `;
+    card.addEventListener('click', () => toggleTom(t.id));
+    grid.appendChild(card);
+  });
+  document.getElementById('tom-count').textContent = state.tom.length;
+  updateSensorNext();
+}
+
+function toggleTom(id) {
+  const idx = state.tom.indexOf(id);
+  if (idx >= 0) state.tom.splice(idx, 1);
+  else if (state.tom.length < 3) state.tom.push(id);
+  renderTom();
+  saveState();
+}
+
+function renderMote() {
+  ['quem', 'verbo', 'simbolo'].forEach(k => {
+    const slot = document.querySelector(`.mote-slot[data-slot="${k}"]`);
+    if (state.mote[k]) {
+      slot.textContent = state.mote[k];
+      slot.classList.remove('empty');
+    } else {
+      const placeholders = { quem: 'quem é esse jovem?', verbo: 'o que ele faz?', simbolo: 'qual o símbolo?' };
+      slot.textContent = placeholders[k];
+      slot.classList.add('empty');
+    }
+  });
+  document.querySelectorAll('.mote-slot').forEach(slot => {
+    slot.onclick = () => mostrarSugestoesMote(slot.dataset.slot);
+  });
+  renderMoteVersoes();
+}
+
+function mostrarSugestoesMote(slotKey) {
+  const cont = document.getElementById('mote-sugestoes');
+  const labels = { quem: 'QUEM É ESSE JOVEM?', verbo: 'O QUE ELE FAZ?', simbolo: 'QUAL O SÍMBOLO?' };
+  let html = `<div class="mote-sugestoes-label">${labels[slotKey]}</div><div class="mote-sugestoes-list">`;
+  MOTE_SUGESTOES[slotKey].forEach(s => {
+    const escaped = s.replace(/'/g, "\\'");
+    html += `<span class="mote-chip" onclick="preencherSlot('${slotKey}', '${escaped}')">${s}</span>`;
+  });
+  html += `<span class="mote-chip" style="border-color: var(--lua); color: var(--lua);" onclick="abrirInputCustom('${slotKey}')">✏️ outro...</span>`;
+  html += `</div>`;
+  cont.innerHTML = html;
+  cont.classList.add('active');
+}
+
+function preencherSlot(key, valor) {
+  state.mote[key] = valor;
+  document.getElementById('mote-sugestoes').classList.remove('active');
+  renderMote();
+  saveState();
+}
+
+function abrirInputCustom(key) {
+  const valor = prompt('Digite a palavra ou expressão:', state.mote[key] || '');
+  if (valor && valor.trim()) preencherSlot(key, valor.trim());
+}
+
+function motePreencherAleatorio() {
+  ['quem', 'verbo', 'simbolo'].forEach(k => {
+    const opts = MOTE_SUGESTOES[k];
+    state.mote[k] = opts[Math.floor(Math.random() * opts.length)];
+  });
+  document.getElementById('mote-sugestoes').classList.remove('active');
+  renderMote();
+  saveState();
+}
+
+function moteSalvarVersao() {
+  const { quem, verbo, simbolo } = state.mote;
+  if (!quem || !verbo || !simbolo) {
+    alert('Preencha os três campos antes de salvar a versão.');
+    return;
+  }
+  const texto = `No Neon, o ${quem} vai ${verbo} sua ${simbolo}.`;
+  if (state.mote.versoes.some(v => v.texto === texto)) {
+    alert('Essa versão já está salva.');
+    return;
+  }
+  state.mote.versoes.push({ texto, escolhida: state.mote.versoes.length === 0 });
+  renderMote();
+  saveState();
+}
+
+function escolherVersao(idx) {
+  state.mote.versoes.forEach((v, i) => v.escolhida = (i === idx));
+  renderMoteVersoes();
+  saveState();
+}
+
+function removerVersao(idx) {
+  state.mote.versoes.splice(idx, 1);
+  if (!state.mote.versoes.some(v => v.escolhida) && state.mote.versoes.length > 0) {
+    state.mote.versoes[0].escolhida = true;
+  }
+  renderMoteVersoes();
+  saveState();
+}
+
+function renderMoteVersoes() {
+  const cont = document.getElementById('mote-versoes');
+  if (state.mote.versoes.length === 0) {
+    cont.innerHTML = '<p style="color: var(--cinza-medio); font-style: italic; font-size: 14px;">Nenhuma versão salva ainda. Preencha a frase acima e clique em "Salvar versão".</p>';
+    document.getElementById('mote-next').disabled = true;
+    return;
+  }
+  cont.innerHTML = state.mote.versoes.map((v, i) => `
+    <div class="mote-versao ${v.escolhida ? 'escolhida' : ''}">
+      <span class="versao-star" onclick="escolherVersao(${i})" title="Escolher como oficial">${v.escolhida ? '★' : '☆'}</span>
+      <span class="versao-texto">${v.texto}</span>
+      <button class="versao-remover" onclick="removerVersao(${i})" title="Remover">×</button>
+    </div>
+  `).join('');
+  document.getElementById('mote-next').disabled = !state.mote.versoes.some(v => v.escolhida);
+}
+
+let dragData = null;
+
+function renderMapa() {
+  const pool = document.getElementById('mapa-pool');
+  pool.innerHTML = '';
+  EXPERIENCIAS.forEach(exp => {
+    const card = document.createElement('div');
+    card.className = 'exp-card';
+    card.draggable = true;
+    card.innerHTML = `<span class="exp-emoji">${exp.emoji}</span><div class="exp-nome">${exp.nome}</div>`;
+    card.addEventListener('dragstart', () => {
+      dragData = { tipo: 'pool', expId: exp.id };
+      card.classList.add('dragging');
+    });
+    card.addEventListener('dragend', () => card.classList.remove('dragging'));
+    pool.appendChild(card);
+  });
+
+  const board = document.getElementById('mapa-board');
+  board.innerHTML = '';
+  FASES.forEach(fase => {
+    const col = document.createElement('div');
+    col.className = 'mapa-fase';
+    col.dataset.fase = fase.id;
+    col.innerHTML = `
+      <div class="fase-num">FASE ${fase.num}</div>
+      <div class="fase-nome">${fase.nome}</div>
+      <div class="fase-desc">${fase.desc}</div>
+      <div class="fase-drop" data-fase="${fase.id}"></div>
+    `;
+    const dropZone = col.querySelector('.fase-drop');
+    col.addEventListener('dragover', (e) => { e.preventDefault(); col.classList.add('drag-over'); });
+    col.addEventListener('dragleave', () => col.classList.remove('drag-over'));
+    col.addEventListener('drop', (e) => {
+      e.preventDefault();
+      col.classList.remove('drag-over');
+      if (!dragData) return;
+      if (dragData.tipo === 'pool') {
+        adicionarExperiencia(fase.id, dragData.expId);
+      } else if (dragData.tipo === 'fase' && dragData.faseOrigem !== fase.id) {
+        moverExperiencia(dragData.faseOrigem, dragData.instanciaIdx, fase.id);
+      }
+      dragData = null;
+    });
+
+    state.mapa[fase.id].forEach((exp, idx) => {
+      const expData = EXPERIENCIAS.find(e => e.id === exp.id);
+      if (!expData) return;
+      const expCard = document.createElement('div');
+      expCard.className = 'exp-card';
+      expCard.draggable = true;
+      expCard.innerHTML = `
+        <span class="exp-emoji">${expData.emoji}</span>
+        <div class="exp-nome"><span>${expData.nome}</span><button class="exp-remover" onclick="removerExperiencia('${fase.id}', ${idx})" title="Remover">×</button></div>
+      `;
+      expCard.addEventListener('dragstart', () => {
+        dragData = { tipo: 'fase', expId: exp.id, faseOrigem: fase.id, instanciaIdx: idx };
+        expCard.classList.add('dragging');
+      });
+      expCard.addEventListener('dragend', () => expCard.classList.remove('dragging'));
+      dropZone.appendChild(expCard);
+    });
+
+    board.appendChild(col);
+  });
+
+  document.getElementById('mapa-next').disabled = totalExperienciasMapa() === 0;
+}
+
+function adicionarExperiencia(faseId, expId) {
+  state.mapa[faseId].push({ id: expId, instancia: Date.now() + Math.random() });
+  renderMapa();
+  saveState();
+}
+
+function moverExperiencia(faseOrigem, idx, faseDestino) {
+  const exp = state.mapa[faseOrigem].splice(idx, 1)[0];
+  state.mapa[faseDestino].push(exp);
+  renderMapa();
+  saveState();
+}
+
+function removerExperiencia(faseId, idx) {
+  const exp = state.mapa[faseId][idx];
+  state.mapa[faseId].splice(idx, 1);
+  const key = `${faseId}__${exp.instancia}`;
+  delete state.costura[key];
+  renderMapa();
+  saveState();
+}
+
+function totalExperienciasMapa() {
+  return Object.values(state.mapa).reduce((acc, arr) => acc + arr.length, 0);
+}
+
+const CHECK_FIELDS = [
+  { key: 'fornecedor',   label: 'Fornecedor confirmado?',          detalhe: 'Quem entrega?',           tipo: 'input',    rtf: 'RAIZES' },
+  { key: 'metodologia',  label: 'Metodologia/roteiro conhecido?',  detalhe: 'Como funciona?',          tipo: 'textarea', rtf: 'RAIZES' },
+  { key: 'tematica',     label: 'Temática/conteúdo definido?',     detalhe: 'Sobre o quê?',            tipo: 'input',    rtf: 'TRONCO' },
+  { key: 'responsavel',  label: 'Responsável definido?',           detalhe: 'Quem do nosso lado toca?', tipo: 'input',    rtf: 'FRUTOS' },
+];
+
+function renderCostura() {
+  const cont = document.getElementById('costura-lista');
+  cont.innerHTML = '';
+  let total = 0;
+  FASES.forEach(fase => {
+    state.mapa[fase.id].forEach(exp => {
+      total++;
+      const expData = EXPERIENCIAS.find(e => e.id === exp.id);
+      if (!expData) return;
+      const key = `${fase.id}__${exp.instancia}`;
+      if (!state.costura[key]) state.costura[key] = { checks: {}, valores: {} };
+      const c = state.costura[key];
+
+      const card = document.createElement('div');
+      card.className = 'costura-card';
+      card.innerHTML = `
+        <div class="costura-card-header">
+          <span class="costura-card-emoji">${expData.emoji}</span>
+          <span class="costura-card-titulo">${expData.nome}</span>
+          <span class="costura-card-fase">FASE ${fase.num} · ${fase.nome}</span>
+        </div>
+        <div class="costura-rtf">
+          <div class="rtf-pill">🌱 RAÍZES (o que sustenta)</div>
+          <div class="rtf-pill">🌳 TRONCO (o que conduz)</div>
+          <div class="rtf-pill">🍎 FRUTOS (o que entrega)</div>
+        </div>
+        <div class="costura-checklist">
+          ${CHECK_FIELDS.map(f => {
+            const ckId = `ck-${key}-${f.key}`;
+            const checked = c.checks[f.key] ? 'checked' : '';
+            const val = (c.valores[f.key] || '').replace(/"/g, '&quot;');
+            const inputHtml = f.tipo === 'textarea'
+              ? `<textarea rows="2" data-key="${key}" data-field="${f.key}" placeholder="Escreva aqui...">${val}</textarea>`
+              : `<input type="text" data-key="${key}" data-field="${f.key}" placeholder="..." value="${val}">`;
+            return `
+              <div class="costura-bloco">
+                <div class="costura-item">
+                  <input type="checkbox" class="costura-check" id="${ckId}" ${checked}>
+                  <label for="${ckId}">${f.label}</label>
+                </div>
+                <div class="costura-detalhe">
+                  <label>${f.detalhe.toUpperCase()}</label>
+                  ${inputHtml}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+
+      card.querySelectorAll('.costura-check').forEach(cb => {
+        cb.addEventListener('change', () => {
+          const parts = cb.id.split('-');
+          const fkey = parts[parts.length - 1];
+          c.checks[fkey] = cb.checked;
+          saveState();
+        });
+      });
+      card.querySelectorAll('[data-field]').forEach(inp => {
+        inp.addEventListener('input', () => {
+          c.valores[inp.dataset.field] = inp.value;
+          saveState();
+        });
+      });
+
+      cont.appendChild(card);
+    });
+  });
+
+  if (total === 0) {
+    cont.innerHTML = '<div class="costura-vazio">Nenhuma experiência mapeada ainda. Volte ao Ato 3 e arraste pelo menos uma.</div>';
+  }
+}
+
+function gerarResultado() {
+  const cont = document.getElementById('resultado-conteudo');
+  const hoje = new Date().toLocaleDateString('pt-BR');
+  const moteEscolhido = state.mote.versoes.find(v => v.escolhida);
+
+  let html = `
+    <div class="resultado-header">
+      <div>
+        <div class="resultado-titulo">Lunoscópio · Carta da Jornada Neon</div>
+        <div class="resultado-sub">COCRIAÇÃO SEBRAE AL · ${hoje}</div>
+      </div>
+      <div class="resultado-brand">
+        <img src="../assets/logo-tnl-h.png" alt="Tiro na Lua" style="filter: invert(1);" />
+      </div>
+    </div>
+  `;
+
+  html += `<div class="resultado-secao">
+    <div class="resultado-secao-label">SENSOR DE REALIDADE · 4DS DO JOVEM</div>
+    <div class="resultado-4d">
+      ${QUATRO_DS.map(qd => `
+        <div class="resultado-4d-card">
+          <div class="resultado-4d-titulo">${qd.emoji} ${qd.titulo}</div>
+          ${state.realidade[qd.key].trim()
+            ? `<div class="resultado-4d-texto">${state.realidade[qd.key]}</div>`
+            : `<div class="resultado-4d-vazio">não mapeado</div>`}
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
+
+  html += `<div class="resultado-secao">
+    <div class="resultado-secao-label">TOM EMOCIONAL ALVO</div>
+    <div class="resultado-tom-chips">
+      ${state.tom.map(id => {
+        const t = TONS.find(x => x.id === id);
+        return t ? `<span class="resultado-tom-chip">${t.emoji} ${t.palavra}</span>` : '';
+      }).join('') || '<span class="resultado-4d-vazio">não definido</span>'}
+    </div>
+  </div>`;
+
+  html += `<div class="resultado-secao">
+    <div class="resultado-secao-label">MOTE OFICIAL · ROTEIRO DE IMPACTO</div>
+    <div class="resultado-mote">${moteEscolhido ? moteEscolhido.texto : '(nenhuma versão escolhida)'}</div>
+  </div>`;
+
+  html += `<div class="resultado-secao">
+    <div class="resultado-secao-label">JORNADA DO PARTICIPANTE · ESPIRAL DA AÇÃO</div>
+    <div class="resultado-mapa">
+      ${FASES.map(fase => `
+        <div class="resultado-fase">
+          <div class="resultado-fase-nome">${fase.num}. ${fase.nome}</div>
+          ${state.mapa[fase.id].map(exp => {
+            const e = EXPERIENCIAS.find(x => x.id === exp.id);
+            return e ? `<div class="resultado-fase-exp">${e.emoji} ${e.nome}</div>` : '';
+          }).join('') || '<div style="font-size:10px; color:#999; font-style:italic; text-align:center; padding:8px 0;">vazio</div>'}
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
+
+  const linhas = [];
+  FASES.forEach(fase => {
+    state.mapa[fase.id].forEach(exp => {
+      const expData = EXPERIENCIAS.find(e => e.id === exp.id);
+      if (!expData) return;
+      const key = `${fase.id}__${exp.instancia}`;
+      const c = state.costura[key] || { checks: {}, valores: {} };
+      linhas.push({
+        fase: fase.nome,
+        exp: `${expData.emoji} ${expData.nome}`,
+        fornecedor: c.checks.fornecedor,
+        fornecedorNome: c.valores.fornecedor || '?',
+        metodologia: c.checks.metodologia,
+        metodologiaNome: c.valores.metodologia || '?',
+        tematica: c.checks.tematica,
+        tematicaNome: c.valores.tematica || '?',
+        responsavel: c.checks.responsavel,
+        responsavelNome: c.valores.responsavel || '?',
+      });
+    });
+  });
+
+  html += `<div class="resultado-secao">
+    <div class="resultado-secao-label">ENCAMINHAMENTOS · ARQUITETURA ORGÂNICA (RTF)</div>
+    <table class="resultado-pendencias">
+      <thead>
+        <tr>
+          <th>FASE</th>
+          <th>EXPERIÊNCIA</th>
+          <th>FORNECEDOR (RAÍZES)</th>
+          <th>METODOLOGIA (RAÍZES)</th>
+          <th>TEMÁTICA (TRONCO)</th>
+          <th>RESPONSÁVEL (FRUTOS)</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${linhas.map(l => `
+          <tr>
+            <td>${l.fase}</td>
+            <td>${l.exp}</td>
+            <td><span class="${l.fornecedor ? 'check-ok' : 'check-pending'}">${l.fornecedor ? '✓' : '✗'}</span> ${l.fornecedorNome}</td>
+            <td><span class="${l.metodologia ? 'check-ok' : 'check-pending'}">${l.metodologia ? '✓' : '✗'}</span> ${l.metodologiaNome}</td>
+            <td><span class="${l.tematica ? 'check-ok' : 'check-pending'}">${l.tematica ? '✓' : '✗'}</span> ${l.tematicaNome}</td>
+            <td><span class="${l.responsavel ? 'check-ok' : 'check-pending'}">${l.responsavel ? '✓' : '✗'}</span> ${l.responsavelNome}</td>
+          </tr>
+        `).join('') || '<tr><td colspan="6" style="text-align:center; color:#999; padding:20px;">Nenhuma experiência mapeada.</td></tr>'}
+      </tbody>
+    </table>
+  </div>`;
+
+  html += `<div class="resultado-secao">
+    <div class="resultado-selo">
+      <div class="resultado-selo-header">
+        <div class="resultado-selo-icon">6D</div>
+        <div class="resultado-selo-titulo">SELO 6D TNL · APLICAÇÃO NESTA CARTA</div>
+      </div>
+      <div class="resultado-selo-grid">
+        ${SELO_6D.map(s => {
+          const tocado = s.tocadoSe();
+          const nota = s.nota ? ` <span style="opacity:0.6;">(${s.nota})</span>` : '';
+          return `<div class="resultado-selo-item ${tocado ? 'tocado' : ''}">
+            <span class="ss-check">${tocado ? '●' : '○'}</span>
+            <span><span class="resultado-selo-item-name">${s.num}. ${s.nome}</span>${nota}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  </div>`;
+
+  html += `<div class="resultado-footer">
+    <div>Lunoscópio · uma ferramenta Tiro na Lua · ${hoje}</div>
+    <div>Evento Neon Sebrae AL · 11 a 13 Jun 2026 · Maceió</div>
+  </div>`;
+
+  cont.innerHTML = html;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadState();
+  render4Ds();
+  renderTom();
+  renderMote();
+  renderMapa();
+  if (state.stage === 'costura') renderCostura();
+  if (state.stage === 'resultado') gerarResultado();
+  goStage(state.stage || 'capa');
+});
+</script>
+
+</body>
+</html>
