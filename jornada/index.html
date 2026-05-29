@@ -247,6 +247,11 @@ html,body{font-family:var(--body);color:var(--branco);background:var(--navy);ove
 .cont{display:grid;grid-template-columns:.82fr 1.18fr;gap:40px;align-items:start}
 .cont .mosaic{column-count:2;column-gap:14px}
 .cont .post{margin-bottom:14px}
+.cont .post img{height:228px;object-fit:cover;object-position:top center}
+.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:start;margin-top:4px}
+.gal-item .ph{border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.16);box-shadow:0 16px 40px rgba(0,0,0,.34);background:#0b0f1e}
+.gal-item .ph img{width:100%;height:min(330px,38vh);object-fit:cover;object-position:top center;display:block}
+.gal-item .cap{font-family:var(--mono);font-size:12px;letter-spacing:.05em;text-transform:uppercase;opacity:.82;margin-top:12px;color:var(--ciano)}
 
 /* mosaico de posts da comunidade */
 .mosaic{column-count:3;column-gap:18px}
@@ -655,18 +660,10 @@ html,body{font-family:var(--body);color:var(--branco);background:var(--navy);ove
     <p class="kicker" style="margin-bottom:12px;color:var(--ciano)">A comunidade virou lugar de cuidado, não só de aula</p>
     <h2 class="protagonista" style="font-size:clamp(30px,3.6vw,52px);margin-bottom:14px">O Neon acaba. A comunidade <span class="mk mk-verde">não para</span>.</h2>
     <p class="lead" style="font-size:clamp(18px,2vw,25px);font-style:italic;max-width:1180px;margin-bottom:22px;opacity:.95">"Aqui virou minha nova rede social. Alguém usa a Escalada mais que o Insta e o WhatsApp?"<span style="font-style:normal;font-family:var(--mono);font-size:12px;opacity:.6;display:block;margin-top:7px">Lanna Maria · comunidade Escalada, abr/2026</span></p>
-    <div class="cont">
-      <div class="esc-side">
-        <div class="pt"><span class="ic">🎓</span><div><h5>Nos estudantes</h5><p>Postam, agradecem e voltam todo dia. O Escalada vira a <strong>rede social</strong> deles.</p></div></div>
-        <div class="pt"><span class="ic">🧑‍🏫</span><div><h5>Nos professores</h5><p>Viram <strong>multiplicadores</strong>: um professor formado, 200 atendimentos numa semana.</p></div></div>
-        <div class="pt"><span class="ic">🔁</span><div><h5>Na continuidade</h5><p>Relacionamento <strong>recorrente, não despesa por evento</strong>. A centelha não apaga.</p></div></div>
-      </div>
-      <div class="mosaic">
-        <div class="post"><img class="zoom" src="img/evidencias/feed-01.png" alt="Posts no feed da comunidade Escalada"></div>
-        <div class="post"><img class="zoom" src="img/evidencias/feed-05.png" alt="Post no feed da comunidade Escalada"></div>
-        <div class="post"><img class="zoom" src="img/evidencias/feed-02.png" alt="Post no feed da comunidade Escalada"></div>
-        <div class="post"><img class="zoom" src="img/evidencias/feed-06.png" alt="Post no feed da comunidade Escalada"></div>
-      </div>
+    <div class="gal">
+      <div class="gal-item"><div class="ph"><img class="zoom" src="img/evidencias/whatsapp-01.png" alt="Grupo de WhatsApp da comunidade Escalada"></div><div class="cap">Grupos ativos · cuidado em tempo real</div></div>
+      <div class="gal-item"><div class="ph"><img class="zoom" src="img/evidencias/feed-01.png" alt="Posts de agradecimento no feed da comunidade Escalada"></div><div class="cap">Postam e agradecem todo dia</div></div>
+      <div class="gal-item"><div class="ph"><img class="zoom" src="img/evidencias/multiplicadores.png" alt="Educadores que viraram multiplicadores"></div><div class="cap">Professores viram multiplicadores</div></div>
     </div>
   </div>
   <div class="footer-tech"><span>Prints reais do feed, puxados da apresentação Escalada · clique pra ampliar</span><span class="slide-counter">11 / 15</span></div>
