@@ -2653,7 +2653,9 @@ $('op-confirm-yes').addEventListener('click', async () => {
   const pin = prompt('Senha de operador pra encerrar a caravana:');
   if (!pin) return;
   const ok = await closeCurrentCaravana(pin);
-  if (ok) showScreen('start');
+  // Recarrega a tela pra ela ler o estado novo do banco (caravana nova, ranking
+  // zerado). Sem isso, a tela inicial fica congelada mostrando a caravana antiga.
+  if (ok) location.reload();
 });
 $('op-confirm-no').addEventListener('click', () => showOpView('op-view-menu'));
 $('op-action-history').addEventListener('click', async () => {
@@ -2666,7 +2668,7 @@ $('op-reset-yes').addEventListener('click', async () => {
   const pin = prompt('Senha de operador pra APAGAR TUDO:');
   if (!pin) return;
   const ok = await resetAllCaravan(pin);
-  if (ok) showScreen('start');
+  if (ok) location.reload();
 });
 $('op-reset-no').addEventListener('click', () => showOpView('op-view-menu'));
 

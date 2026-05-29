@@ -22,7 +22,7 @@ create or replace function public.operador_acao(p_acao text, p_pin text)
 returns json
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_ok boolean;
