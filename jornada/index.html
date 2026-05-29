@@ -252,6 +252,10 @@ html,body{font-family:var(--body);color:var(--branco);background:var(--navy);ove
 .gal-item .ph{border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.16);box-shadow:0 16px 40px rgba(0,0,0,.34);background:#0b0f1e}
 .gal-item .ph img{width:100%;height:min(330px,38vh);object-fit:cover;object-position:top center;display:block}
 .gal-item .cap{font-family:var(--mono);font-size:12px;letter-spacing:.05em;text-transform:uppercase;opacity:.82;margin-top:12px;color:var(--ciano)}
+.cmosaic{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:4px}
+.cmosaic .tile{border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:#fff;height:160px;box-shadow:0 10px 26px rgba(0,0,0,.3)}
+.cmosaic .tile img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;cursor:zoom-in;transition:transform .2s}
+.cmosaic .tile img:hover{transform:scale(1.04)}
 
 /* mosaico de posts da comunidade */
 .mosaic{column-count:3;column-gap:18px}
@@ -637,15 +641,15 @@ html,body{font-family:var(--body);color:var(--branco);background:var(--navy);ove
   <div class="slide-inner">
     <p class="kicker" style="margin-bottom:12px;color:var(--ciano)">Antes de apontar pra ele</p>
     <h2 class="protagonista" style="font-size:clamp(40px,4.8vw,72px);margin-bottom:14px">O que é o <span class="mk mk-verde">Escalada</span>.</h2>
-    <p class="body-l" style="font-size:21px;max-width:1180px;opacity:.85;margin-bottom:26px">A plataforma nacional de educação empreendedora do Sebrae. Trilhas em cinco módulos, comunidade ativa e dados em tempo real. É o que segue com o jovem depois que o evento acaba.</p>
+    <p class="body-l" style="font-size:21px;max-width:1180px;opacity:.85;margin-bottom:24px">A plataforma nacional de educação empreendedora do Sebrae. Vídeo-aulas em módulos, conteúdos pra baixar e uma comunidade viva. Um método aplicado que segue com o jovem depois que o evento acaba.</p>
     <div class="whatis">
       <div>
-        <div class="frame-soft"><img class="zoom" src="img/escalada-plataforma.jpg" alt="Plataforma Escalada"></div>
-        <div class="cap">A plataforma · o jovem entra e começa a trilha</div>
+        <div class="frame-soft"><img class="zoom" src="img/escalada-cursos.png" alt="Módulos do Escalada com vídeo-aulas"></div>
+        <div class="cap">Módulos com vídeo-aulas, do "Modo Protagonista" ao "Kit do Amanhã"</div>
       </div>
       <div class="whatis-side">
-        <div class="mod-frame"><img class="zoom" src="img/escalada-modulos.png" alt="Os cinco módulos da jornada do estudante no Escalada"></div>
-        <p class="body-l" style="font-size:16px;opacity:.84;margin-top:2px;line-height:1.5">Cinco módulos, do <strong>autoconhecimento</strong> à <strong>mobilização</strong>. Cada jovem sobe a trilha no ritmo dele, com método, comunidade e acompanhamento.</p>
+        <div class="frame-soft"><img class="zoom" src="img/escalada-aula.png" alt="Aula do Escalada com vídeo e materiais pra baixar"></div>
+        <p class="body-l" style="font-size:16px;opacity:.84;margin-top:12px;line-height:1.5">Cada aula tem <strong>vídeo, artigo e ferramenta pra baixar</strong>. Método aplicado, não conteúdo solto. É isso que segue com o jovem depois do evento.</p>
       </div>
     </div>
   </div>
@@ -660,10 +664,19 @@ html,body{font-family:var(--body);color:var(--branco);background:var(--navy);ove
     <p class="kicker" style="margin-bottom:12px;color:var(--ciano)">A comunidade virou lugar de cuidado, não só de aula</p>
     <h2 class="protagonista" style="font-size:clamp(30px,3.6vw,52px);margin-bottom:14px">O Neon acaba. A comunidade <span class="mk mk-verde">não para</span>.</h2>
     <p class="lead" style="font-size:clamp(18px,2vw,25px);font-style:italic;max-width:1180px;margin-bottom:22px;opacity:.95">"Aqui virou minha nova rede social. Alguém usa a Escalada mais que o Insta e o WhatsApp?"<span style="font-style:normal;font-family:var(--mono);font-size:12px;opacity:.6;display:block;margin-top:7px">Lanna Maria · comunidade Escalada, abr/2026</span></p>
-    <div class="gal">
-      <div class="gal-item"><div class="ph"><img class="zoom" src="img/evidencias/whatsapp-01.png" alt="Grupo de WhatsApp da comunidade Escalada"></div><div class="cap">Grupos ativos · cuidado em tempo real</div></div>
-      <div class="gal-item"><div class="ph"><img class="zoom" src="img/evidencias/feed-01.png" alt="Posts de agradecimento no feed da comunidade Escalada"></div><div class="cap">Postam e agradecem todo dia</div></div>
-      <div class="gal-item"><div class="ph"><img class="zoom" src="img/evidencias/multiplicadores.png" alt="Educadores que viraram multiplicadores"></div><div class="cap">Professores viram multiplicadores</div></div>
+    <div class="cmosaic">
+      <div class="tile"><img class="zoom" src="img/escalada-plano.png" alt="Estudante compartilhando seu plano de estudos no calendário"></div>
+      <div class="tile"><img class="zoom" src="img/evidencias/feed-03.png" alt="Post: virou minha nova rede social"></div>
+      <div class="tile"><img class="zoom" src="img/evidencias/whatsapp-01.png" alt="Grupo de WhatsApp da comunidade Escalada"></div>
+      <div class="tile"><img class="zoom" src="img/evidencias/feed-01.png" alt="Posts no feed da comunidade Escalada"></div>
+      <div class="tile"><img class="zoom" src="img/evidencias/whatsapp-02.png" alt="Grupo de WhatsApp da comunidade Escalada"></div>
+      <div class="tile"><img class="zoom" src="img/evidencias/multiplicadores.png" alt="Educadores que viraram multiplicadores"></div>
+      <div class="tile"><img class="zoom" src="img/evidencias/feed-02.png" alt="Post no feed da comunidade Escalada"></div>
+      <div class="tile"><img class="zoom" src="img/evidencias/whatsapp-03.png" alt="Grupo de WhatsApp da comunidade Escalada"></div>
+      <div class="tile"><img class="zoom" src="img/evidencias/feed-04.png" alt="Post no feed da comunidade Escalada"></div>
+      <div class="tile"><img class="zoom" src="img/evidencias/whatsapp-04.png" alt="Grupo de WhatsApp da comunidade Escalada"></div>
+      <div class="tile"><img class="zoom" src="img/evidencias/feed-05.png" alt="Post no feed da comunidade Escalada"></div>
+      <div class="tile"><img class="zoom" src="img/evidencias/feed-06.png" alt="Post no feed da comunidade Escalada"></div>
     </div>
   </div>
   <div class="footer-tech"><span>Prints reais do feed, puxados da apresentação Escalada · clique pra ampliar</span><span class="slide-counter">11 / 15</span></div>
