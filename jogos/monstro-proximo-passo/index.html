@@ -1878,23 +1878,20 @@ async function updateCaravanaBadge() {
 // UPDATE/DELETE em caravanas. Qualquer visitante com DevTools podia disparar
 // e derrubar o evento. Agora: o botão do operador só mostra instrução pra
 // rodar no SQL Editor do Supabase. RLS do banco também rejeita anon agora.
-async function closeCurrentCaravana() {
-  alert(
-    'Encerrar caravana agora é feito via SQL Editor do Supabase.\n\n' +
-    'Cola e roda:\n\n' +
-    'update public.caravanas set ativa=false, encerrada_em=now() where ativa=true;\n' +
-    'insert into public.caravanas (numero, ativa) values\n' +
-    '  ((select coalesce(max(numero),0)+1 from public.caravanas), true);'
-  );
+// Ações destrutivas religadas (29/05/2026), mas protegidas: chamam operador_acao
+// no banco, que exige a senha de operador. A chave anon segue sem poder de
+// escrita direta, então a CVE-006 continua fechada (sem senha, o banco recusa).
+async function closeCurrentCaravana(pin) {
+  const r = await window.NeonStore.operadorAcao('encerrar', pin);
+  if (!r.ok) { alert('Não deu pra encerrar: ' + r.error); return false; }
+  await refreshCaravanaAtiva();
+  return true;
 }
-async function resetAllCaravan() {
-  alert(
-    'Reset agora é feito via SQL Editor do Supabase.\n\n' +
-    'Pra zerar TUDO (apaga partidas e caravanas):\n\n' +
-    'delete from public.partidas;\n' +
-    'delete from public.caravanas;\n' +
-    'insert into public.caravanas (numero, ativa) values (1, true);'
-  );
+async function resetAllCaravan(pin) {
+  const r = await window.NeonStore.operadorAcao('reset', pin);
+  if (!r.ok) { alert('Não deu pra apagar: ' + r.error); return false; }
+  await refreshCaravanaAtiva();
+  return true;
 }
 
 // ranking agora vem da caravana atual via NeonStore (Supabase com fallback localStorage)
@@ -2653,8 +2650,10 @@ $('op-action-next').addEventListener('click', () => {
   showOpView('op-view-confirm');
 });
 $('op-confirm-yes').addEventListener('click', async () => {
-  await closeCurrentCaravana();
-  showScreen('start');
+  const pin = prompt('Senha de operador pra encerrar a caravana:');
+  if (!pin) return;
+  const ok = await closeCurrentCaravana(pin);
+  if (ok) showScreen('start');
 });
 $('op-confirm-no').addEventListener('click', () => showOpView('op-view-menu'));
 $('op-action-history').addEventListener('click', async () => {
@@ -2664,8 +2663,10 @@ $('op-action-history').addEventListener('click', async () => {
 $('op-history-back').addEventListener('click', () => showOpView('op-view-menu'));
 $('op-action-reset').addEventListener('click', () => showOpView('op-view-confirm-reset'));
 $('op-reset-yes').addEventListener('click', async () => {
-  await resetAllCaravan();
-  showScreen('start');
+  const pin = prompt('Senha de operador pra APAGAR TUDO:');
+  if (!pin) return;
+  const ok = await resetAllCaravan(pin);
+  if (ok) showScreen('start');
 });
 $('op-reset-no').addEventListener('click', () => showOpView('op-view-menu'));
 

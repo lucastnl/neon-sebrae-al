@@ -506,7 +506,7 @@ body::before {
 
   <div class="view-section" id="view-placar">
   <h1 class="page-title">QUEM TÁ NO TOPO<br>DA MONTANHA?</h1>
-  <p class="page-sub">Top jogadores em tempo real.</p>
+  <p class="page-sub">Top jogadores da turma da vez. <span id="placar-caravana-atual"></span></p>
 
   <!-- KPIs do evento, faixa no topo (dá sensação de "tá bombando") -->
   <div class="kpi-row kpi-row-placar">
@@ -699,16 +699,24 @@ function renderPlayers(partidas) {
 
 async function refreshRanking() {
   try {
-    // Carrega tudo em paralelo: ranking caravanas, top jogadores, e stats agregadas
-    // (pros KPIs e medos do placar, que agora vivem ao vivo na TV).
+    // Placar escopado na CARAVANA ATIVA: cada turma compete só contra ela mesma.
+    // Podium (topPartidasGeral) e KPIs (estatisticasGerais) recebem o id da turma
+    // da vez; ao encerrar a caravana, tudo zera junto. A comparação ENTRE turmas
+    // fica no ranking de caravanas (rankingCaravanas), que segue global.
+    const caravana = await window.NeonStore.getCaravanaAtiva();
+    const caravanaId = caravana ? caravana.id : null;
     const [ranking, topPlayers, stats] = await Promise.all([
       window.NeonStore.rankingCaravanas(),
-      window.NeonStore.topPartidasGeral(15),
-      window.NeonStore.estatisticasGerais()
+      window.NeonStore.topPartidasGeral(15, caravanaId),
+      window.NeonStore.estatisticasGerais(caravanaId)
     ]);
     renderTable(ranking);
     renderPlayers(topPlayers);
     if (stats) renderPlacarStats(stats);
+    const elCar = document.getElementById('placar-caravana-atual');
+    if (elCar && caravana) {
+      elCar.textContent = 'CARAVANA ' + String(caravana.numero).padStart(2, '0') + ' · ao vivo';
+    }
   } catch (e) {
     console.error('[dashboard] erro carregando ranking:', e);
   }

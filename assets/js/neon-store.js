@@ -210,18 +210,21 @@ async function salvarPartida(partida) {
   return { ok: true, data: payload };
 }
 
-async function topPartidasGeral(limit) {
+async function topPartidasGeral(limit, caravanaId) {
+  // Top jogadores. Se caravanaId vier, escopa só naquela caravana (turma da vez
+  // no placar); sem ele, soma o evento inteiro.
   limit = limit || 20;
   if (useSupabase) {
-    const { data } = await sb
+    let q = sb
       .from('partidas')
       .select('nome_jogador, score, fase_max, medo_escolhido, created_at, caravana_id')
-      .eq('em_auditoria', false)
-      .order('score', { ascending: false })
-      .limit(limit);
+      .eq('em_auditoria', false);
+    if (caravanaId) q = q.eq('caravana_id', caravanaId);
+    const { data } = await q.order('score', { ascending: false }).limit(limit);
     return data || [];
   }
-  const partidas = JSON.parse(localStorage.getItem('neon-partidas-local') || '[]');
+  let partidas = JSON.parse(localStorage.getItem('neon-partidas-local') || '[]');
+  if (caravanaId) partidas = partidas.filter(p => p.caravana_id === caravanaId);
   return partidas.sort((a, b) => b.score - a.score).slice(0, limit);
 }
 
@@ -243,19 +246,23 @@ async function ultimasPartidas(limit) {
     .slice(0, limit);
 }
 
-async function estatisticasGerais() {
+async function estatisticasGerais(caravanaId) {
   // Calcula stats agregadas pra view de INSIGHTS no dashboard.
   // 61 partidas hoje, mas pode escalar pra milhares no evento real.
   // Tudo client-side: o volume é pequeno e Supabase free não tem RPC fácil.
+  // Se caravanaId vier, escopa só naquela caravana (placar por turma da vez).
   let partidas;
   if (useSupabase) {
-    const { data } = await sb
+    let q = sb
       .from('partidas')
       .select('nome_jogador, score, fase_max, medo_escolhido, acertos, combo_max, created_at')
       .eq('em_auditoria', false);
+    if (caravanaId) q = q.eq('caravana_id', caravanaId);
+    const { data } = await q;
     partidas = data || [];
   } else {
     partidas = JSON.parse(localStorage.getItem('neon-partidas-local') || '[]');
+    if (caravanaId) partidas = partidas.filter(p => p.caravana_id === caravanaId);
   }
   if (partidas.length === 0) {
     return { total: 0, jogadoresUnicos: 0, totalAcertos: 0, melhorCombo: 0,
@@ -358,6 +365,20 @@ function subscribeNovasPartidas(callback) {
   return () => sb.removeChannel(channel);
 }
 
+// ============ OPERADOR (ações protegidas por senha) ============
+
+// Chama a função operador_acao no banco, que só executa com a senha certa.
+// O poder destrutivo mora no servidor (SECURITY DEFINER), não nesta chave anon,
+// então expor isto no client não reabre a CVE-006: sem a senha, o banco recusa.
+async function operadorAcao(acao, pin) {
+  if (!useSupabase) {
+    return { ok: false, error: 'Sem conexão com o banco. Ações de operador exigem o jogo online.' };
+  }
+  const { data, error } = await sb.rpc('operador_acao', { p_acao: acao, p_pin: pin });
+  if (error) return { ok: false, error: error.message };
+  return { ok: true, data };
+}
+
 // ============ RESET (operador) ============
 
 async function resetarTudo() {
@@ -385,13 +406,14 @@ window.NeonStore = {
   estatisticasGerais,
   topPartidasCaravanaAtiva,
   rankingCaravanas,
-  subscribeNovasPartidas
-  // criarNovaCaravana, encerrarCaravanaAtiva, resetarTudo:
-  // REMOVIDAS do export público pra fechar CVE-006. Operações destrutivas
-  // não podem ficar acessíveis via window.NeonStore.* no DevTools de qualquer
-  // visitante. RLS de caravanas tambem foi restrita (migration 040000), entao
-  // mesmo que alguém recriasse a função, a chave anon não tem permissão.
-  // Pra encerrar caravana / reset durante o evento: SQL Editor do Supabase
-  // (queries comentadas em supabase/migrations/20260517040000).
+  subscribeNovasPartidas,
+  operadorAcao
+  // criarNovaCaravana, encerrarCaravanaAtiva, resetarTudo (versões antigas):
+  // REMOVIDAS do export público pra fechar CVE-006. Faziam UPDATE/DELETE direto
+  // com a chave anon, então qualquer visitante com DevTools derrubava o evento.
+  // Encerrar caravana / reset agora passam por operadorAcao(), que chama a função
+  // operador_acao no banco: ela exige a senha de operador (hash bcrypt, fora do
+  // client) e só aí roda como SECURITY DEFINER. A chave anon segue sem permissão
+  // de escrita nas tabelas. Migration: 20260529120000_operador_acoes_protegidas.
 };
 })();
