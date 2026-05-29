@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Costura do Neon · Tiro na Lua</title>
+<meta name="description" content="Como costuramos as experiências do espaço de Educação Empreendedora do Neon Sebrae AL numa jornada só: do processo de design ao mote, à ficha técnica e aos jogos do totem.">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://neon-sebrae-al.netlify.app/jornada/">
+<meta property="og:title" content="A Costura do Neon · Tiro na Lua">
+<meta property="og:description" content="Do processo de design à jornada costurada: o espaço de Educação Empreendedora do Neon Sebrae AL, 11 a 13 de junho, Maceió.">
+<meta property="og:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --verde:#00D95C; --verde-claro:#00FF85;
+  --magenta:#FF00FF; --magenta-claro:#FF76FF;
+  --ciano:#00F9FF; --azul:#2A4FDA;
+  --branco:#FFFFFF; --navy:#0A0F36; --navy-2:#11163F;
+  --display:'Space Grotesk', system-ui, sans-serif;
+  --body:'Figtree', system-ui, sans-serif;
+  --mono:'JetBrains Mono', monospace;
+  --slide-duration:0.85s;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:var(--body);color:var(--branco);background:var(--navy);overflow:hidden;height:100vh}
+
+/* engine · cross-fade rápido */
+#slider{position:relative;height:100vh;width:100vw}
+.slide{position:absolute;top:0;left:0;height:100vh;width:100vw;display:flex;flex-direction:column;padding:74px 92px;overflow:hidden;opacity:0;pointer-events:none;transition:opacity .18s ease-out;z-index:1}
+.slide.active{opacity:1;pointer-events:auto;z-index:2}
+.slide-inner{flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:5;min-height:0}
+
+/* fundos */
+.bg-aspiracional{background:linear-gradient(155deg,#FF00FF 0%,#FF76FF 48%,#00F9FF 100%)}
+.bg-energetico{background:#00D95C;color:var(--navy)}
+.bg-noturno{background:linear-gradient(160deg,#0A0F36 0%,#2A4FDA 62%,#FF00FF 130%)}
+.bg-provocativo{background:linear-gradient(150deg,#FF00FF,#7B2DFF)}
+.bg-verde-claro{background:#00FF85;color:var(--navy)}
+.bg-navy{background:var(--navy)}
+.bg-navy-2{background:radial-gradient(ellipse at 75% 12%, rgba(42,79,218,.28) 0%, transparent 58%), var(--navy)}
+
+/* chrome */
+.logo-top{position:absolute;top:42px;left:60px;display:flex;align-items:center;gap:16px;height:34px;z-index:20}
+.logo-top img.tnl{height:30px;width:auto;display:block}
+.logo-top img.sebrae{height:24px;width:auto;display:block;opacity:.92}
+.logo-top .sep{width:1px;height:20px;background:currentColor;opacity:.28}
+.rail-tick{position:absolute;left:22px;top:50%;font-family:var(--mono);font-size:10px;letter-spacing:.18em;writing-mode:vertical-rl;transform:translateY(-50%) rotate(180deg);opacity:.6;z-index:20}
+.footer-tech{position:absolute;bottom:30px;left:60px;right:60px;display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.5;z-index:20}
+.slide-counter{font-family:var(--mono);font-weight:700}
+
+/* tipografia */
+.kicker{font-family:var(--mono);font-weight:700;font-size:13px;letter-spacing:.18em;text-transform:uppercase;opacity:.85}
+.protagonista{font-family:var(--display);font-weight:700;letter-spacing:-.04em;line-height:.98}
+.lead{font-family:var(--display);font-weight:500;letter-spacing:-.02em;line-height:1.18}
+.body-l{font-family:var(--body);font-weight:400;line-height:1.5}
+.label-mono{font-family:var(--mono);font-weight:600;font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+
+/* markers */
+.mk{padding:0 .06em;font-weight:700;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.mk-ciano{box-shadow:inset 0 -.28em 0 0 var(--ciano)}
+.mk-verde{box-shadow:inset 0 -.28em 0 0 var(--verde)}
+.mk-magenta{box-shadow:inset 0 -.28em 0 0 var(--magenta-claro)}
+.chip{padding:.02em .18em;border-radius:8px;font-weight:700}
+.chip-navy{background:var(--navy);color:#fff}
+.chip-verde{background:var(--verde-claro);color:var(--navy)}
+.chip-ciano{background:var(--ciano);color:var(--navy)}
+
+/* cards */
+.card-glass{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);backdrop-filter:blur(8px);border-radius:18px;padding:26px}
+.card-solid{background:var(--navy);color:var(--branco);border-radius:18px;padding:26px}
+.card-light{background:rgba(10,15,54,.06);border:1px solid rgba(10,15,54,.14);border-radius:18px;padding:26px;color:var(--navy)}
+
+/* pills */
+.pill{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;background:rgba(255,255,255,.13);font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+.bg-energetico .pill,.bg-verde-claro .pill{background:rgba(10,15,54,.12);color:var(--navy)}
+.pill-ciano{background:var(--ciano);color:var(--navy)}
+.pill-verde{background:var(--verde);color:var(--navy)}
+.pill-navy{background:var(--navy);color:#fff}
+
+/* escada 3d */
+.shape3d{filter:drop-shadow(-24px 40px 70px rgba(8,11,46,.28))}
+
+/* ===== PIECES ===== */
+.pieces{display:flex;flex-wrap:wrap;gap:13px;max-width:1180px}
+.piece{display:flex;align-items:center;gap:10px;padding:13px 20px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);font-size:18px;font-weight:500}
+.piece .dot{width:9px;height:9px;border-radius:50%;background:var(--ciano)}
+
+/* ===== PROCESSO ===== */
+.proc{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.proc-step{display:flex;flex-direction:column;gap:14px}
+.proc-num{width:52px;height:52px;border-radius:13px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:16px;color:var(--ciano)}
+.proc-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:24px;flex:1}
+.proc-card .t{font-family:var(--display);font-size:23px;font-weight:700;letter-spacing:-.02em;margin-bottom:10px;line-height:1.1}
+.proc-card .d{font-size:16px;line-height:1.5;font-weight:400;opacity:.82}
+.proc-card .d strong{font-weight:700;opacity:1}
+
+/* ===== 4Ds ===== */
+.ds{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.d-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:24px;border-top:3px solid var(--ciano)}
+.d-card.c2{border-top-color:var(--verde)}.d-card.c3{border-top-color:var(--magenta-claro)}.d-card.c4{border-top-color:var(--verde-claro)}
+.d-card .h{font-family:var(--display);font-size:21px;font-weight:700;margin-bottom:13px;display:flex;align-items:center;gap:9px}
+.d-card .h .e{font-size:23px}
+.d-card ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.d-card li{font-size:16px;line-height:1.35;font-weight:400;opacity:.84;padding-left:14px;position:relative}
+.d-card li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--ciano);position:absolute;left:0;top:9px}
+.tom{display:flex;align-items:center;gap:14px;margin-top:26px;flex-wrap:wrap}
+.tom .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+.tom-pill{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:999px;font-family:var(--display);font-size:20px;font-weight:700;border:2px solid}
+.tom-pill.a{color:var(--verde-claro);border-color:var(--verde-claro)}
+.tom-pill.b{color:var(--ciano);border-color:var(--ciano)}
+.tom-pill.c{color:var(--magenta-claro);border-color:var(--magenta-claro)}
+
+/* ===== LUNOSCÓPIO DEMO (tela animada) ===== */
+.luno-wrap{display:grid;grid-template-columns:1.05fr 1.35fr;gap:54px;align-items:center}
+.luno-screen{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:16/10;background:#070A28;border:1px solid rgba(255,255,255,.16);box-shadow:0 30px 70px rgba(0,0,0,.4)}
+.luno-bar{position:absolute;top:0;left:0;right:0;height:38px;display:flex;align-items:center;gap:7px;padding:0 14px;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.1);z-index:6}
+.luno-bar i{width:11px;height:11px;border-radius:50%;display:block}
+.luno-bar i.r{background:#FF5F57}.luno-bar i.y{background:#FEBC2E}.luno-bar i.g{background:#28C840}
+.luno-bar .u{margin-left:12px;font-family:var(--mono);font-size:10px;opacity:.5;letter-spacing:.08em}
+.luno-stage{position:absolute;top:38px;left:0;right:0;bottom:0;padding:30px 34px}
+.luno-frame{position:absolute;inset:38px 0 0 0;padding:30px 34px;opacity:0;display:flex;flex-direction:column;justify-content:center;gap:14px}
+.luno-frame .step{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ciano)}
+.luno-frame .ti{font-family:var(--display);font-size:24px;font-weight:700;letter-spacing:-.02em}
+.lf1{animation:q1 13s infinite}.lf2{animation:q2 13s infinite}.lf3{animation:q3 13s infinite}.lf4{animation:q4 13s infinite}
+@keyframes q1{0%,2%{opacity:0}5%,21%{opacity:1}24%,100%{opacity:0}}
+@keyframes q2{0%,26%{opacity:0}29%,46%{opacity:1}49%,100%{opacity:0}}
+@keyframes q3{0%,51%{opacity:0}54%,71%{opacity:1}74%,100%{opacity:0}}
+@keyframes q4{0%,76%{opacity:0}79%,96%{opacity:1}99%,100%{opacity:0}}
+.luno-mini4{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.luno-mini{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:12px 14px;font-size:14px}
+.luno-mini b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--ciano);margin-bottom:4px;text-transform:uppercase}
+.luno-mote{font-family:var(--display);font-size:26px;font-weight:700;line-height:1.2}
+.luno-dots{display:flex;align-items:center;gap:0;justify-content:space-between;margin-top:6px}
+.luno-dots .dt{width:42px;height:42px;border-radius:50%;border:2px solid var(--ciano);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;color:var(--ciano);font-size:14px;background:#070A28;z-index:2}
+.luno-dots .ln{flex:1;height:2px;background:linear-gradient(90deg,var(--verde),var(--magenta-claro));opacity:.5}
+.luno-tbl{width:100%;border-collapse:collapse;font-size:14px}
+.luno-tbl td{padding:8px 6px;border-bottom:1px solid rgba(255,255,255,.1)}
+.luno-tbl td:first-child{font-weight:700}
+.luno-cursor{position:absolute;width:22px;height:22px;z-index:8;animation:cur 13s infinite;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+@keyframes cur{0%{top:60%;left:20%}18%{top:55%;left:30%}24%{top:55%;left:30%}40%{top:62%;left:56%}48%{top:62%;left:56%}66%{top:48%;left:70%}74%{top:48%;left:70%}92%{top:70%;left:44%}100%{top:60%;left:20%}}
+.luno-side .pt{display:flex;gap:14px;align-items:flex-start;margin-bottom:18px}
+.luno-side .pt .n{font-family:var(--mono);font-weight:700;color:var(--ciano);font-size:15px;flex-shrink:0;margin-top:2px}
+.luno-side .pt .x{font-size:18px;line-height:1.45;opacity:.88}
+.luno-side .pt .x b{opacity:1}
+
+/* ===== JORNADA ===== */
+.journey{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;position:relative}
+.j-line{position:absolute;top:30px;left:9%;right:9%;height:2px;background:linear-gradient(90deg,var(--verde),var(--ciano),var(--magenta-claro));opacity:.5;z-index:0}
+.j-stage{position:relative;z-index:1;display:flex;flex-direction:column;gap:12px}
+.j-dot{width:60px;height:60px;border-radius:50%;background:var(--navy);border:2px solid var(--ciano);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;font-size:24px;color:var(--ciano)}
+.j-stage.s1 .j-dot{border-color:var(--verde);color:var(--verde)}
+.j-stage.s3 .j-dot,.j-stage.s4 .j-dot{border-color:var(--magenta-claro);color:var(--magenta-claro)}
+.j-stage.s5 .j-dot{border-color:var(--verde-claro);color:var(--verde-claro)}
+.j-name{font-family:var(--display);font-size:21px;font-weight:700;letter-spacing:-.02em}
+.j-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:16px;flex:1;display:flex;flex-direction:column;gap:9px}
+.j-exp{font-size:15px;line-height:1.3;display:flex;gap:8px;opacity:.88}
+.j-exp .e{font-size:17px}
+.j-exp b{font-weight:700;opacity:1}
+
+/* ===== FICHA ===== */
+.tbl{width:100%;border-collapse:collapse;font-family:var(--body);font-size:18px}
+.tbl th,.tbl td{padding:13px 16px;text-align:left;border-bottom:1px solid rgba(255,255,255,.14);vertical-align:middle}
+.tbl thead th{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.7;font-weight:700}
+.tbl td:first-child{font-family:var(--display);font-weight:700;font-size:19px}
+.tbl tr.tnl td:first-child{color:var(--ciano)}
+.ph{font-family:var(--mono);font-size:9px;padding:5px 9px;border-radius:5px;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;font-weight:700}
+.ph1{background:var(--verde);color:var(--navy)}.ph2{background:var(--ciano);color:var(--navy)}.ph3{background:var(--magenta);color:#fff}.ph4{background:var(--azul);color:#fff}.ph5{background:var(--verde-claro);color:var(--navy)}
+
+/* ===== PEDIDO ===== */
+.ask{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.ask-card{border-radius:18px;padding:32px;background:var(--navy);color:#fff;display:flex;flex-direction:column}
+.ask-card .n{font-family:var(--display);font-weight:700;font-size:42px;line-height:.9;margin-bottom:16px}
+.ask-card.a1 .n{color:var(--ciano)}.ask-card.a2 .n{color:var(--verde-claro)}
+.ask-card .t{font-family:var(--display);font-size:27px;font-weight:700;line-height:1.12;margin-bottom:12px}
+.ask-card .d{font-size:18px;line-height:1.5;font-weight:400;opacity:.86}
+.ask-card .d strong{font-weight:700;opacity:1}
+.collect{margin-top:22px;background:var(--navy);color:#fff;border-radius:16px;padding:24px 30px}
+.collect .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--verde-claro);margin-bottom:14px}
+.collect .row{display:flex;flex-wrap:wrap;gap:11px;margin-bottom:14px}
+.collect .it{font-size:15px;padding:9px 15px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:8px}
+.collect .it strong{font-weight:700}
+.collect .note{font-size:16px;opacity:.85}
+.collect .note strong{opacity:1;font-weight:700}
+.qr-chip{display:flex;align-items:center;gap:14px;margin-top:16px;padding-top:15px;border-top:1px solid rgba(255,255,255,.16)}
+.qr-chip .qr{width:48px;height:48px;flex-shrink:0;border-radius:8px}
+.qr-chip .qr-lbl{font-family:var(--mono);font-size:11px;letter-spacing:.05em;opacity:.8;line-height:1.4;text-transform:uppercase}
+
+/* ===== ESCALADA EVIDÊNCIA ===== */
+.esc{display:grid;grid-template-columns:1.4fr 1fr;gap:42px;align-items:center}
+.esc .browser img{height:min(560px,52vh);object-fit:cover;object-position:top center}
+.browser{border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.16);box-shadow:0 30px 70px rgba(0,0,0,.45);background:#0b0f1e}
+.browser-bar{height:36px;display:flex;align-items:center;gap:7px;padding:0 14px;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.1)}
+.browser-bar i{width:11px;height:11px;border-radius:50%}
+.browser-bar i.r{background:#FF5F57}.browser-bar i.y{background:#FEBC2E}.browser-bar i.g{background:#28C840}
+.browser-bar .u{margin-left:12px;font-family:var(--mono);font-size:10px;opacity:.5}
+.browser img{width:100%;display:block}
+.esc-side .pt{display:flex;gap:14px;margin-bottom:20px}
+.esc-side .pt .ic{font-size:26px;flex-shrink:0}
+.esc-side .pt h5{font-family:var(--display);font-size:21px;font-weight:700;margin-bottom:5px;line-height:1.1}
+.esc-side .pt p{font-size:16px;line-height:1.45;opacity:.84}
+.esc-side .pt p strong{opacity:1;font-weight:700}
+.esc-stats{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.esc-stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px 18px;flex:1;min-width:120px}
+.esc-stat .v{font-family:var(--display);font-size:32px;font-weight:700;color:var(--ciano);line-height:1}
+.esc-stat .k{font-size:13px;opacity:.7;margin-top:6px;line-height:1.3}
+
+/* depoimentos */
+.depo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.depo{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.depo .pic{height:min(250px,32vh);overflow:hidden;background:#0b141a;border-bottom:1px solid rgba(255,255,255,.1);position:relative}
+.depo .pic img{width:100%;height:100%;object-fit:cover;object-position:50% 88%}
+.depo .pic::after{content:"";position:absolute;inset:0;box-shadow:inset 0 26px 24px -18px rgba(10,15,54,.9)}
+.depo .q{padding:20px 22px;flex:1}
+.depo .q .t{font-family:var(--display);font-size:19px;font-weight:700;line-height:1.3}
+.depo .q .s{font-family:var(--mono);font-size:10px;opacity:.6;margin-top:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ciano)}
+
+/* lightbox (clicar amplia) */
+.zoom{cursor:zoom-in;transition:transform .2s}
+.zoom:hover{transform:scale(1.015)}
+#lightbox{position:fixed;inset:0;z-index:200;background:rgba(4,6,18,.93);display:none;align-items:center;justify-content:center;padding:40px;cursor:zoom-out;backdrop-filter:blur(6px)}
+#lightbox.open{display:flex}
+#lightbox img{max-width:90vw;max-height:88vh;border-radius:12px;box-shadow:0 30px 90px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.16)}
+#lightbox .x{position:absolute;top:22px;right:30px;color:#fff;font-family:var(--mono);font-size:24px;opacity:.75;cursor:pointer}
+#lightbox .hint{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;letter-spacing:.14em;opacity:.45;text-transform:uppercase}
+
+/* escalada · o que é */
+.whatis{display:grid;grid-template-columns:1.35fr 1fr;gap:38px;align-items:center}
+.frame-soft{border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.16);box-shadow:0 26px 60px rgba(0,0,0,.42)}
+.frame-soft img{width:100%;display:block;height:min(420px,44vh);object-fit:cover;object-position:top center}
+.whatis-side{display:flex;flex-direction:column;gap:16px}
+.mod-frame{border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:#fff}
+.mod-frame img{width:100%;display:block;height:min(282px,32vh);object-fit:contain;background:#fff}
+.cap{font-family:var(--mono);font-size:11px;letter-spacing:.1em;opacity:.6;text-transform:uppercase;margin-top:9px}
+
+/* continuidade · impacto + comunidade */
+.cont{display:grid;grid-template-columns:.82fr 1.18fr;gap:40px;align-items:start}
+.cont .mosaic{column-count:2;column-gap:14px}
+.cont .post{margin-bottom:14px}
+
+/* mosaico de posts da comunidade */
+.mosaic{column-count:3;column-gap:18px}
+.post{break-inside:avoid;margin-bottom:18px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.14);background:#fff;box-shadow:0 14px 36px rgba(0,0,0,.32)}
+.post img{width:100%;display:block}
+
+/* mock selfie / personalidade */
+.selfie{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.selfie-face{width:42%;aspect-ratio:3/4;border:2px dashed var(--magenta-claro);border-radius:50% 50% 46% 46%;position:relative;opacity:.85}
+.selfie-face .eye{position:absolute;top:32%;width:11%;height:7%;border-radius:50%;background:rgba(255,255,255,.55)}
+.selfie-face .eye.l{left:28%}.selfie-face .eye.r{right:28%}
+.selfie-scan{position:absolute;left:8%;right:8%;height:3px;background:var(--ciano);box-shadow:0 0 14px var(--ciano);animation:scan 2.8s ease-in-out infinite;top:18%}
+@keyframes scan{0%,100%{top:18%;opacity:.4}50%{top:80%;opacity:1}}
+.selfie-result{position:absolute;bottom:9%;left:50%;background:#11163F;border:2px solid var(--verde-claro);border-radius:12px;padding:10px 18px;text-align:center;animation:pop 3.6s ease-in-out infinite;z-index:3}
+@keyframes pop{0%,38%{opacity:0;transform:translate(-50%,10px)}54%,90%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,10px)}}
+.selfie-result .r1{font-family:var(--mono);font-size:8px;color:var(--ciano);letter-spacing:.12em}
+.selfie-result .r2{font-family:var(--display);font-weight:700;font-size:18px;margin-top:3px}
+.selfie-result .r3{font-size:11px;opacity:.82;margin-top:2px}
+
+/* impacto Escalada (números) */
+.impact{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.imp{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:22px 24px;border-top:3px solid var(--ciano)}
+.imp:nth-child(2){border-top-color:var(--magenta-claro)}.imp:nth-child(3){border-top-color:var(--lime)}.imp:nth-child(4){border-top-color:var(--gold)}.imp:nth-child(5){border-top-color:var(--ciano)}.imp:nth-child(6){border-top-color:var(--verde-claro)}
+.imp .v{font-family:var(--display);font-size:clamp(32px,3.3vw,50px);font-weight:900;letter-spacing:-.03em;line-height:1;color:var(--ciano)}
+.imp:nth-child(2) .v{color:var(--magenta-claro)}.imp:nth-child(3) .v{color:var(--lime)}.imp:nth-child(4) .v{color:var(--gold)}.imp:nth-child(6) .v{color:var(--verde-claro)}
+.imp .k{font-size:14px;opacity:.78;margin-top:8px;line-height:1.3}
+.impact-foot{margin-top:20px;display:grid;grid-template-columns:1fr 1.2fr;gap:18px;align-items:center}
+.impact-foot .hl{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:18px 22px}
+.impact-foot .hl .t{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ciano);margin-bottom:6px}
+.impact-foot .hl .b{font-family:var(--display);font-size:21px;font-weight:700}
+.impact-foot .ph{font-family:var(--display);font-size:22px;font-weight:600;font-style:italic;line-height:1.3;opacity:.95}
+
+/* mock Torre da Ideia (animado: blocos caem e empilham + faísca) */
+.tower{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding-bottom:10%}
+.tblock{width:46%;height:13%;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:9px;color:var(--navy);font-weight:700;margin-top:5px;letter-spacing:.06em;transform-origin:bottom;opacity:0}
+.tb1{background:var(--verde-claro);animation:drop 5s cubic-bezier(.34,1.4,.5,1) infinite;animation-delay:.3s}
+.tb2{background:var(--ciano);animation:drop 5s cubic-bezier(.34,1.4,.5,1) infinite;animation-delay:1s}
+.tb3{background:var(--verde);animation:drop 5s cubic-bezier(.34,1.4,.5,1) infinite;animation-delay:1.7s}
+.tb4{background:var(--magenta-claro);color:#fff;animation:drop 5s cubic-bezier(.34,1.4,.5,1) infinite;animation-delay:2.4s}
+@keyframes drop{0%{opacity:0;transform:translateY(-52px) scaleY(.5)}5%{opacity:1;transform:translateY(0) scaleY(1)}8%{transform:translateY(0) scaleY(.8)}12%,86%{opacity:1;transform:translateY(0) scaleY(1)}94%,100%{opacity:0;transform:translateY(-52px) scaleY(.5)}}
+.tblock.slide-top{position:absolute;top:7%;background:var(--gold);color:var(--navy);margin:0;opacity:1;animation:slideX 1.5s ease-in-out infinite}
+@keyframes slideX{0%,100%{transform:translateX(-44%)}50%{transform:translateX(44%)}}
+.tower .spark{position:absolute;top:22%;font-family:var(--mono);font-size:11px;color:var(--gold);opacity:0;animation:sparkPop 5s infinite;animation-delay:3.1s;text-shadow:0 0 10px var(--gold)}
+@keyframes sparkPop{0%,56%{opacity:0;transform:scale(.6)}64%{opacity:1;transform:scale(1.18)}82%{opacity:1;transform:scale(1)}92%,100%{opacity:0}}
+
+/* ===== JOGOS ===== */
+.game-intro{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center;padding:26px 32px;margin-bottom:24px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-left:4px solid var(--magenta-claro);border-radius:0 16px 16px 0}
+.game-intro .b{width:78px;height:78px;border-radius:18px;background:rgba(255,0,255,.14);border:1px solid var(--magenta-claro);display:flex;align-items:center;justify-content:center;font-size:40px;flex-shrink:0}
+.game-intro h4{font-family:var(--display);font-size:30px;font-weight:700;line-height:1.1;margin-bottom:8px}
+.game-intro p{font-size:18px;line-height:1.5;opacity:.86;max-width:1080px}
+.game-intro p strong{opacity:1;font-weight:700}
+.game-row{display:grid;grid-template-columns:430px 1fr;gap:30px;align-items:center}
+.scr{position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.16);box-shadow:0 24px 60px rgba(0,0,0,.45);aspect-ratio:16/11;background:#02030f}
+.scr img{width:100%;height:100%;object-fit:cover}
+.gd .st{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--verde-claro);margin-bottom:14px;display:inline-flex;align-items:center;gap:8px}
+.gd .nm{font-family:var(--display);font-size:38px;font-weight:700;letter-spacing:-.03em;line-height:1;margin-bottom:12px}
+.gd .mc{font-size:19px;line-height:1.5;opacity:.86;margin-bottom:20px;max-width:740px}
+.gd .mc strong{opacity:1;font-weight:700}
+.gd-tags{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:18px}
+.gd-tag{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:14px 18px}
+.gd-tag .k{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;margin-bottom:7px}
+.gd-tag .v{font-size:17px;font-weight:700}
+.gd-links{display:flex;gap:13px}
+.gd-link{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:10px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;font-weight:700;border:2px solid var(--ciano);color:var(--ciano)}
+.gd-link.solid{background:var(--ciano);color:var(--navy)}
+.gd-link.magenta{border-color:var(--magenta-claro);color:var(--magenta-claro)}
+
+/* mocks dos novos jogos */
+.twin{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.tc{display:flex;flex-direction:column;gap:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:24px;border-top:3px solid var(--verde-claro)}
+.tc.c2{border-top-color:var(--ciano)}
+.tc-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.tc-name{font-family:var(--display);font-size:27px;font-weight:700;letter-spacing:-.02em}
+.tc-stat{font-family:var(--mono);font-size:9px;opacity:.6;text-transform:uppercase;letter-spacing:.06em}
+.mock{position:relative;border-radius:12px;overflow:hidden;aspect-ratio:16/9;background:#070A28;border:1px solid rgba(255,255,255,.14)}
+.mock .hud{position:absolute;top:9px;left:12px;right:12px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:8px;opacity:.6;z-index:4}
+.sep-card{position:absolute;top:50%;left:50%;width:44%;padding:14px 10px;border-radius:10px;background:#11163F;border:2px solid var(--verde-claro);text-align:center;font-family:var(--display);font-weight:700;font-size:15px;animation:nudge 2.6s ease-in-out infinite;z-index:3}
+@keyframes nudge{0%,100%{transform:translate(-58%,-50%) rotate(-4deg)}50%{transform:translate(-42%,-50%) rotate(4deg)}}
+.sep-z{position:absolute;top:0;bottom:0;width:26%;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;z-index:2}
+.sep-z.l{left:0;color:var(--magenta-claro);background:linear-gradient(90deg,rgba(255,118,255,.2),transparent)}
+.sep-z.r{right:0;color:var(--verde-claro);background:linear-gradient(270deg,rgba(0,255,133,.2),transparent)}
+.aim-t{position:absolute;border-radius:50%;border:2px solid var(--ciano);box-shadow:0 0 12px var(--ciano)}
+.aim-t.t1{width:28px;height:28px;top:26%;left:60%;animation:fl 3s ease-in-out infinite}
+.aim-t.t2{width:16px;height:16px;top:36%;left:78%;animation:fl 3.6s ease-in-out infinite reverse}
+.aim-bait{position:absolute;top:30%;left:32%;width:58px;height:58px;border-radius:50%;background:radial-gradient(circle,var(--magenta-claro),transparent 72%);opacity:.6}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-13px)}}
+.aim-sling{position:absolute;bottom:12%;left:50%;transform:translateX(-50%);width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-bottom:24px solid var(--verde-claro);z-index:3}
+.aim-line{position:absolute;bottom:18%;left:50%;width:2px;height:50%;background:repeating-linear-gradient(180deg,var(--ciano) 0 5px,transparent 5px 11px);transform:translateX(-50%) rotate(22deg);transform-origin:bottom;z-index:2}
+.tc .mc{font-size:16px;line-height:1.45;opacity:.86}
+.tc .mc strong{opacity:1;font-weight:700}
+.tc-tag{font-family:var(--mono);font-size:13px;opacity:.8;line-height:1.5}
+.tc-tag b{color:var(--ciano)}
+.tc-hook{font-size:15px;line-height:1.45;opacity:.86;border-left:2px solid var(--verde-claro);padding-left:14px}
+.tc.c2 .tc-hook{border-left-color:var(--ciano)}
+.tc-hook strong{font-weight:700;opacity:1}
+
+/* ===== SISTEMA ===== */
+.sys{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.sys-card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:26px 22px}
+.sys-card .ic{font-size:32px;margin-bottom:13px}
+.sys-card .t{font-family:var(--display);font-size:21px;font-weight:700;margin-bottom:9px;line-height:1.1}
+.sys-card .d{font-size:15px;line-height:1.45;opacity:.88}
+.sys-card .d strong{font-weight:700;opacity:1}
+.sys-foot{margin-top:24px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:24px 36px;text-align:center}
+.sys-foot .q{font-family:var(--display);font-size:26px;font-weight:700;line-height:1.3}
+
+/* fecho */
+.closing{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.closing .ct{font-family:var(--display);font-size:clamp(48px,7vw,96px);font-weight:700;letter-spacing:-.04em;line-height:1.04;max-width:1200px;margin-bottom:26px;color:var(--navy)}
+.closing .cg{font-size:24px;font-weight:500;color:rgba(10,15,54,.85);max-width:880px;line-height:1.45;margin-bottom:48px;font-family:var(--display)}
+.closing .logos{display:flex;align-items:center;gap:22px}
+.closing .logos img.tnl{height:34px}
+.closing .logos img.sebrae{height:28px}
+.closing .logos .sep{width:1px;height:26px;background:rgba(10,15,54,.3)}
+
+/* ===== UI ===== */
+#print-btn{position:fixed;bottom:22px;right:22px;z-index:50;background:var(--navy);color:#fff;border:none;border-radius:14px;padding:13px 20px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;cursor:pointer;box-shadow:0 12px 32px rgba(0,0,0,.3)}
+#print-btn:hover{background:var(--magenta)}
+#nav-ui{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:16px;background:rgba(10,15,54,.85);backdrop-filter:blur(12px);border-radius:999px;padding:9px 20px;font-family:var(--mono);font-size:12px;letter-spacing:.12em}
+#nav-ui button{background:transparent;border:none;color:#fff;cursor:pointer;font-size:18px;font-weight:700;padding:2px 8px}
+#nav-ui button:hover{color:var(--ciano)}
+#nav-ui .ind .cur{color:var(--ciano)}
+#progress{position:fixed;top:0;left:0;height:3px;width:100%;background:rgba(255,255,255,.08);z-index:60}
+#progress-bar{height:100%;width:7%;background:linear-gradient(90deg,var(--ciano),var(--magenta));transition:width .6s ease}
+
+/* mobile */
+@media (max-width:900px){
+  html,body{overflow:auto;height:auto}
+  #slider{height:auto}
+  .slide{position:relative!important;opacity:1!important;pointer-events:auto!important;transition:none!important;height:auto;min-height:100vh;padding:88px 24px 92px}
+  #nav-ui{display:none}
+  .logo-top{left:22px;top:22px}.rail-tick{display:none}
+  .footer-tech{left:22px;right:22px;bottom:18px;font-size:9px}
+  .proc,.ds,.journey,.ask,.sys,.twin,.gd-tags{grid-template-columns:1fr!important}
+  .ds{grid-template-columns:1fr 1fr!important}
+  .j-line{display:none}
+  .luno-wrap,.esc,.game-row{grid-template-columns:1fr!important;gap:24px}
+  .tbl{font-size:13px;display:block;overflow-x:auto;white-space:nowrap}
+  .esc-stats{flex-wrap:wrap}
+  #print-btn{bottom:12px;right:12px;padding:9px 13px;font-size:9px}
+}
+/* print */
+@media print{
+  @page{size:A4 landscape;margin:0}
+  html,body{overflow:visible;height:auto;background:var(--navy);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #slider{height:auto}
+  .slide{position:relative!important;opacity:1!important;pointer-events:auto!important;page-break-after:always;break-after:page;height:100vh!important;padding:42px 56px;display:flex!important}
+  #nav-ui,#progress,#print-btn{display:none!important}
+  .luno-cursor,.lf1,.lf2,.lf3,.lf4{animation:none!important}
+  .lf1{opacity:1!important}
+}
+</style>
+</head>
+<body>
+
+<div id="progress"><div id="progress-bar"></div></div>
+
+<main id="slider">
+
+<!-- 01 · CAPA -->
+<section class="slide bg-aspiracional">
+  <div class="logo-top"><img src="../assets/logo-tnl-h.png" class="tnl" alt="Tiro na Lua"><span class="sep"></span><img src="../assets/logo-sebrae-branca.webp" class="sebrae" alt="Sebrae"></div>
+  <span class="rail-tick">N° 01 · CAPA</span>
+  <div class="slide-inner">
+    <div style="position:absolute;top:-60px;right:-90px;z-index:1">
+      <svg class="shape3d" width="720" height="720" viewBox="0 0 600 600" style="transform:rotate(-6deg)">
+        <defs>
+          <linearGradient id="tG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00FF85"/><stop offset="1" stop-color="#00F9FF"/></linearGradient>
+          <linearGradient id="lG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00D95C"/><stop offset="1" stop-color="#00853A"/></linearGradient>
+          <linearGradient id="rG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00F9FF"/><stop offset="1" stop-color="#2A4FDA"/></linearGradient>
+        </defs>
+        <g><polygon points="60,360 240,260 480,360 300,460" fill="url(#tG)"/><polygon points="60,360 60,440 300,540 300,460" fill="url(#lG)"/><polygon points="300,460 300,540 480,440 480,360" fill="url(#rG)"/></g>
+        <g transform="translate(0,-80)"><polygon points="120,330 240,260 420,330 300,400" fill="url(#tG)"/><polygon points="120,330 120,410 300,480 300,400" fill="url(#lG)"/><polygon points="300,400 300,480 420,410 420,330" fill="url(#rG)"/></g>
+        <g transform="translate(0,-180)"><polygon points="180,300 240,260 360,300 300,340" fill="url(#tG)"/><polygon points="180,300 180,380 300,420 300,340" fill="url(#lG)"/><polygon points="300,340 300,420 360,380 360,300" fill="url(#rG)"/></g>
+      </svg>
+    </div>
+    <div style="max-width:920px;position:relative;z-index:10">
+      <p class="kicker" style="margin-bottom:22px;color:var(--navy)">Espaço Educação Empreendedora</p>
+      <h1 class="protagonista" style="font-size:clamp(72px,10.5vw,156px);margin-bottom:30px;color:#fff">A Costura<br>do <span style="color:var(--navy)">Neon</span></h1>
+      <p class="lead" style="font-size:clamp(21px,2.3vw,29px);max-width:740px;color:var(--navy)">Muitos fornecedores, muitas experiências, <strong style="font-weight:700">uma jornada só</strong>. Do nosso processo de design ao mote, à ficha técnica e aos jogos do totem.</p>
+    </div>
+  </div>
+  <div class="footer-tech" style="color:var(--navy)">
+    <span>Neon Sebrae Alagoas · 11 a 13 de junho · Maceió</span>
+    <span class="slide-counter">01 / 14</span>
+  </div>
+</section>
+
+<!-- 02 · POR QUÊ -->
+<section class="slide bg-navy-2">
+  <div class="logo-top"><img src="../assets/logo-tnl-h.png" class="tnl" alt="TNL"><span class="sep"></span><img src="../assets/logo-sebrae-branca.webp" class="sebrae" alt="Sebrae"></div>
+  <span class="rail-tick">N° 02 · POR QUÊ</span>
+  <div class="slide-inner">
+    <p class="kicker" style="margin-bottom:20px;color:var(--ciano)">Por que esta conversa</p>
+    <h2 class="protagonista" style="font-size:clamp(46px,5.6vw,86px);margin-bottom:26px">Um espaço pode virar<br><span class="mk mk-magenta">feira de atividades soltas</span>.<br>Ou pode virar uma travessia.</h2>
+    <p class="body-l" style="font-size:22px;max-width:1120px;opacity:.85;margin-bottom:32px">No espaço de Educação Empreendedora vão acontecer muitas coisas boas ao mesmo tempo. Cada um de vocês traz uma. O risco é o jovem sair com a memória de peças avulsas, não de uma experiência inteira.</p>
+    <div class="pieces">
+      <div class="piece"><span class="dot"></span>Palestras</div>
+      <div class="piece"><span class="dot"></span>Oficinas Supernova</div>
+      <div class="piece"><span class="dot"></span>Escalada Financeira</div>
+      <div class="piece"><span class="dot"></span>Realidade Virtual</div>
+      <div class="piece"><span class="dot"></span>Jogos do Totem</div>
+      <div class="piece"><span class="dot"></span>Grêmio Estudantil</div>
+      <div class="piece"><span class="dot"></span>Caça ao Tesouro</div>
+    </div>
+  </div>
+  <div class="footer-tech"><span>A nossa parte é costurar tudo num enredo só</span><span class="slide-counter">02 / 14</span></div>
+</section>
+
+<!-- 03 · PROCESSO -->
+<section class="slide bg-noturno">
+  <div class="logo-top"><img src="../assets/logo-tnl-h.png" class="tnl" alt="TNL"><span class="sep"></span><img src="../assets/logo-sebrae-branca.webp" class="sebrae" alt="Sebrae"></div>
+  <span class="rail-tick">N° 03 · PROCESSO</span>
+  <div class="slide-inner">
+    <p class="kicker" style="margin-bottom:16px;color:var(--ciano)">Nosso processo de design</p>
+    <h2 class="protagonista" style="font-size:clamp(40px,4.8vw,72px);margin-bottom:40px">A gente não chegou com um estande pronto.<br>A gente <span class="mk mk-ciano">desenhou a experiência</span>.</h2>
+    <div class="proc">
+      <div class="proc-step"><div class="proc-num">01</div><div class="proc-card"><div class="t">Mergulho no jovem</div><div class="d">Antes de qualquer atividade, entendemos as <strong>dores, dúvidas, dilemas e desejos</strong> do jovem alagoano.</div></div></div>
+      <div class="proc-step"><div class="proc-num">02</div><div class="proc-card"><div class="t">Cocriação com o Sebrae</div><div class="d">Sentamos com a Renata e a Maísa e rodamos o <strong>Lunoscópio</strong>. O mote nasceu junto, não imposto.</div></div></div>
+      <div class="proc-step"><div class="proc-num">03</div><div class="proc-card"><div class="t">Desenho da jornada</div><div class="d">O mote virou <strong>jornada de cinco fases</strong>, onde cada experiência tem lugar e papel claros.</div></div></div>
+      <div class="proc-step"><div class="proc-num">04</div><div class="proc-card"><div class="t">Produção e costura</div><div class="d">Construímos os ativos próprios (<strong>jogos, placar ao vivo, sistema de pontos</strong>) e a ficha que amarra todos.</div></div></div>
+    </div>
+  </div>
+  <div class="footer-tech"><span>Como a ideia do evento nasceu</span><span class="slide-counter">03 / 14</span></div>
+</section>
+
+<!-- 04 · COCRIAÇÃO / 4Ds -->
+<section class="slide bg-navy">
+  <div class="logo-top"><img src="../assets/logo-tnl-h.png" class="tnl" alt="TNL"><span class="sep"></span><img src="../assets/logo-sebrae-branca.webp" class="sebrae" alt="Sebrae"></div>
+  <span class="rail-tick">N° 04 · SENSOR</span>
+  <div class="slide-inner">
+    <p class="kicker" style="margin-bottom:16px;color:var(--ciano)">O sensor de realidade do Lunoscópio</p>
+    <h2 class="protagonista" style="font-size:clamp(40px,5vw,76px);margin-bottom:34px">Quem é o jovem que vai <span class="mk mk-verde">acender a centelha</span>?</h2>
+    <div class="ds">
+      <div class="d-card c1"><div class="h"><span class="e">🩹</span>Dores</div><ul><li>Escola longe da vida real</li><li>Falta de referências locais</li><li>Medo de errar</li></ul></div>
+      <div class="d-card c2"><div class="h"><span class="e">❓</span>Dúvidas</div><ul><li>Eu sirvo pra isso?</li><li>Como tirar a ideia da cabeça?</li><li>Preciso de muito dinheiro?</li></ul></div>
+      <div class="d-card c3"><div class="h"><span class="e">⚖️</span>Dilemas</div><ul><li>Paixão ou o que paga</li><li>Faculdade ou empreender</li></ul></div>
+      <div class="d-card c4"><div class="h"><span class="e">🌅</span>Desejos</div><ul><li>Ter renda própria cedo</li><li>Fazer algo que importa</li></ul></div>
+    </div>
+    <div class="tom">
+      <span class="lbl">Tom emocional alvo</span>
+      <span class="tom-pill a">🏆 Orgulho</span>
+      <span class="tom-pill b">🔭 Descoberta</span>
+      <span class="tom-pill c">🪁 Leveza</span>
+    </div>
+  </div>
+  <div class="footer-tech"><span>Cocriação com o Sebrae AL · 25/05</span><span class="slide-counter">04 / 14</span></div>
+</section>
+
+<!-- 05 · LUNOSCÓPIO EM AÇÃO -->
+<section class="slide bg-noturno">
+  <div class="logo-top"><img src="../assets/logo-tnl-h.png" class="tnl" alt="TNL"><span class="sep"></span><img src="../assets/logo-sebrae-branca.webp" class="sebrae" alt="Sebrae"></div>
+  <span class="rail-tick">N° 05 · FERRAMENTA</span>
+  <div class="slide-inner">
+    <div class="luno-wrap">
+      <div class="luno-side">
+        <p class="kicker" style="margin-bottom:16px;color:var(--ciano)">A ferramenta em ação</p>
+        <h2 class="protagonista" style="font-size:clamp(36px,4.2vw,62px);margin-bottom:28px">O <span class="mk mk-ciano">Lunoscópio</span>, ao vivo.</h2>
+        <div class="pt"><span class="n">01</span><span class="x"><b>Sensor de realidade.</b> A gente lê dores, dúvidas, dilemas e desejos do público.</span></div>
+        <div class="pt"><span class="n">02</span><span class="x"><b>Roteiro de impacto.</b> Sai o mote, a frase-bússola da experiência.</span></div>
+        <div class="pt"><span class="n">03</span><span class="x"><b>Espiral da ação.</b> A jornada se monta em cinco fases.</span></div>
+        <div class="pt"><span class="n">04</span><span class="x"><b>Ficha técnica.</b> Cada experiência ganha lugar, responsável e tema.</span></div>
+      </div>
+      <div class="luno-screen">
+        <div class="luno-bar"><i class="r"></i><i class="y"></i><i class="g"></i><span class="u">lunoscópio · cocriação ao vivo</span></div>
+        <div class="luno-frame lf1">
+          <span class="step">1 · Sensor de Realidade</span>
+          <div class="luno-mini4">
+            <div class="luno-mini"><b>Dores</b>Medo de errar</div>
+            <div class="luno-mini"><b>Dúvidas</b>Eu sirvo pra isso?</div>
+            <div class="luno-mini"><b>Dilemas</b>Paixão ou o que paga</div>
+            <div class="luno-mini"><b>Desejos</b>Renda própria cedo</div>
+          </div>
+        </div>
+        <div class="luno-frame lf2">
+          <span class="step">2 · Roteiro de Impacto</span>
+          <div class="luno-mote">"O jovem alagoano <span class="mk mk-ciano">planta a semente</span> e <span class="mk mk-verde">acende a centelha</span>."</div>
+        </div>
+        <div class="luno-frame lf3">
+          <span class="step">3 · Espiral da Ação</span>
+          <div class="luno-dots"><span class="dt">1</span><span class="ln"></span><span class="dt">2</span><span class="ln"></span><span class="dt">3</span><span class="ln"></span><span class="dt">4</span><span class="ln"></span><span class="dt">5</span></div>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;opacity:.7;margin-top:8px"><span>Entrada</span><span>Descoberta</span><span>Clímax</span><span>Partilha</span><span>Pós</span></div>
+        </div>
+        <div class="luno-frame lf4">
+          <span class="step">4 · Arquitetura Orgânica</span>
+          <table class="luno-tbl"><tbody>
+            <tr><td>Jogos do Totem</td><td style="opacity:.7">Descoberta</td></tr>
+            <tr><td>Escalada Financeira</td><td style="opacity:.7">Clímax</td></tr>
+            <tr><td>Caça ao Tesouro</td><td style="opacity:.7">Partilha</td></tr>
+          </tbody></table>
+        </div>
+        <svg class="luno-cursor" viewBox="0 0 24 24" fill="#fff" stroke="#0A0F36" stroke-width="1.5"><path d="M4 2l6 18 2.5-7L20 10.5z"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="footer-tech"><span>Em ~30 minutos, do sensor à jornada costurada</span><span class="slide-counter">05 / 14</span></div>
+</section>
+
+<!-- 06 · MOTE -->
+<section class="slide bg-aspiracional">
+  <div class="logo-top"><img src="../assets/logo-tnl-h.png" class="tnl" alt="TNL"><span class="sep"></span><img src="../assets/logo-sebrae-branca.webp" class="sebrae" alt="Sebrae"></div>
+  <span class="rail-tick" style="color:var(--navy)">N° 06 · MOTE</span>
+  <div class="slide-inner" style="align-items:center;text-align:center">
+    <div style="font-size:52px;margin-bottom:22px">🌱✨</div>
+    <h2 class="protagonista" style="font-size:clamp(44px,6.4vw,104px);color:var(--navy);max-width:1500px;margin-bottom:30px;line-height:1.1">No Neon, o jovem alagoano<br><span class="chip chip-verde">planta a semente</span> e <span class="chip chip-navy">acende a centelha</span>.</h2>
+    <p class="lead" style="font-size:clamp(20px,2.2vw,27px);color:var(--navy);max-width:1040px;font-weight:500">Não é o slogan do evento. É a bússola narrativa que todos nós dividimos. A semente é o primeiro passo que cada atividade ajuda a plantar; a centelha é o brilho que faz o jovem querer continuar. Casa com o São João: a roça e a fogueira.</p>
+  </div>
+  <div class="footer-tech" style="color:var(--navy)"><span>Roteiro de Impacto · cocriado com o Sebrae AL</span><span class="slide-counter">06 / 14</span></div>
+</section>
+
+<!-- 07 · JORNADA -->
+<section class="slide bg-navy">
+  <div class="logo-top"><img src="../assets/logo-tnl-h.png" class="tnl" alt="TNL"><span class="sep"></span><img src="../assets/logo-sebrae-branca.webp" class="sebrae" alt="Sebrae"></div>
+  <span class="rail-tick">N° 07 · JORNADA</span>
+  <div class="slide-inner">
+    <p class="kicker" style="margin-bottom:16px;color:var(--ciano)">Espiral da Ação · 5 fases</p>
+    <h2 class="protagonista" style="font-size:clamp(40px,5vw,76px);margin-bottom:40px">Cada experiência tem um <span class="mk mk-ciano">lugar na travessia</span>.</h2>
+    <div class="journey">
+      <div class="j-line"></div>
+      <div class="j-stage s1"><div class="j-dot">1</div><div class="j-name">Entrada</div><div class="j-card"><div class="j-exp"><span class="e">✍️</span><span>Pré-cadastro <b>Escalada</b></span></div><div class="j-exp"><span class="e">🎫</span><span>Crachá do participante</span></div></div></div>
+      <div class="j-stage s2"><div class="j-dot">2</div><div class="j-name">Descoberta</div><div class="j-card"><div class="j-exp"><span class="e">🎮</span><span><b>Jogos do Totem</b></span></div><div class="j-exp"><span class="e">🎨</span><span>Parede Bobbie Goods</span></div></div></div>
+      <div class="j-stage s3"><div class="j-dot">3</div><div class="j-name">Clímax</div><div class="j-card"><div class="j-exp"><span class="e">🧪</span><span>Oficinas Supernova</span></div><div class="j-exp"><span class="e">🧗</span><span>Escalada Financeira</span></div><div class="j-exp"><span class="e">🥽</span><span>Realidade Virtual</span></div><div class="j-exp"><span class="e">🎤</span><span>Palestras</span></div></div></div>
+      <div class="j-stage s4"><div class="j-dot">4</div><div class="j-name">Partilha</div><div class="j-card"><div class="j-exp"><span class="e">📱</span><span>Caça ao Tesouro</span></div><div class="j-exp"><span class="e">🏛️</span><span>Grêmio Estudantil</span></div></div></div>
+      <div class="j-stage s5"><div class="j-dot">5</div><div class="j-name">Pós</div><div class="j-card"><div class="j-exp"><span class="e">🎁</span><span>Brindes gamificados</span></div><div class="j-exp"><span class="e">🚀</span><span>Continuar no <b>Escalada</b></span></div></div></div>
+    </div>
+  </div>
+  <div class="footer-tech"><span>Da entrada ao pós, tudo conecta</span><span class="slide-counter">07 / 14</span></div>
+</section>
+
+<!-- 08 · FICHA -->
+<section class="slide bg-navy">
+  <div class="logo-top"><img src="../assets/logo-tnl-h.png" class="tnl" alt="TNL"><span class="sep"></span><img src="../assets/logo-sebrae-branca.webp" class="sebrae" alt="Sebrae"></div>
+  <span class="rail-tick">N° 08 · FICHA</span>
+  <div class="slide-inner">
+    <p class="kicker" style="margin-bottom:16px;color:var(--ciano)">Arquitetura Orgânica · quem entrega o quê</p>
+    <h2 class="protagonista" style="font-size:clamp(38px,4.6vw,70px);margin-bottom:26px">O mapa de quem <span class="mk mk-magenta">costura cada parte</span>.</h2>
+    <table class="tbl">
+      <thead><tr><th>Experiência</th><th>Fornecedor</th><th>Fase</th><th>Conexão com a centelha</th></tr></thead>
+      <tbody>
+        <tr class="tnl"><td>Pré-cadastro Escalada</td><td>Tiro na Lua</td><td><span class="ph ph1">Entrada</span></td><td style="opacity:.84">Onde a semente é registrada e a jornada começa</td></tr>
+        <tr class="tnl"><td>Jogos do Totem</td><td>Tiro na Lua</td><td><span class="ph ph2">Descoberta</span></td><td style="opacity:.84">Competências empreendedoras viram jogo rápido</td></tr>
+        <tr><td>Oficinas Supernova</td><td>Instituto Ideias do Futuro</td><td><span class="ph ph3">Clímax</span></td><td style="opacity:.84">Ideação e finanças, da ideia ao primeiro passo</td></tr>
+        <tr><td>Escalada Financeira</td><td>Escalada Edu Inova Simples</td><td><span class="ph ph3">Clímax</span></td><td style="opacity:.84">Decisões financeiras viram desafio físico</td></tr>
+        <tr><td>Realidade Virtual · Empatize</td><td>Inspira não Pira</td><td><span class="ph ph3">Clímax</span></td><td style="opacity:.84">Empatia e empreendedorismo inclusivo</td></tr>
+        <tr><td>Palestras</td><td>Junior Achievement · Maxwell Melo</td><td><span class="ph ph3">Clímax</span></td><td style="opacity:.84">"O melhor produto é você" e IA na escola</td></tr>
+        <tr><td>Grêmio Estudantil</td><td>UNCME</td><td><span class="ph ph4">Partilha</span></td><td style="opacity:.84">Protagonismo coletivo, levar a centelha pra escola</td></tr>
+        <tr class="tnl"><td>Brindes e pós-evento</td><td>Sebrae AL · Tiro na Lua</td><td><span class="ph ph5">Pós</span></td><td style="opacity:.84">O que faz a centelha continuar acesa depois</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="footer-tech"><span>Ficha técnica do evento</span><span class="slide-counter">08 / 14</span></div>
+</section>
+
+<!-- 09 · PEDIDO -->
+<section class="slide bg-energetico">
+  <div class="logo-top"><img src="../assets/logo-tnl-h.png" class="tnl" alt="TNL" style="filter:invert(1)"><span class="sep"></span><img src="../assets/logo-sebrae.png" class="sebrae" alt="Sebrae"></div>
+  <span class="rail-tick" style="color:var(--navy)">N° 09 · ALINHAMENTO</span>
+  <div class="slide-inner">
+    <p class="kicker" style="margin-bottom:14px;color:var(--navy)">O conteúdo de vocês se mantém integral</p>
+    <h2 class="protagonista" style="font-size:clamp(38px,4.6vw,70px);color:var(--navy);margin-bottom:14px">Pra todos contarmos a mesma história,<br>só <span class="chip chip-navy">duas coisinhas</span>.</h2>
+    <div class="ask" style="margin-top:18px">
+      <div class="ask-card a1"><div class="n">01</div><div class="t">Falar a língua da centelha</div><div class="d">Mantenham 100% do conteúdo e da metodologia. Só peço que <strong>amarrem ao mote</strong>: o jovem está aqui pra plantar a semente e acender a própria centelha. Um aceno já basta.</div></div>
+      <div class="ask-card a2"><div class="n">02</div><div class="t">Apontar pro Escalada no fim</div><div class="d">Sem trabalho pra vocês: a gente entrega <strong>um link de parceiro com QR e um slide do Escalada prontos</strong>. Vocês só fecham a atividade com eles. É a ponte que faz a experiência continuar depois do evento.</div><div class="qr-chip"><svg class="qr" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="10" fill="#fff"/><g fill="#0A0F36"><rect x="12" y="12" width="22" height="22" rx="3"/><rect x="18" y="18" width="10" height="10" fill="#fff"/><rect x="66" y="12" width="22" height="22" rx="3"/><rect x="72" y="18" width="10" height="10" fill="#fff"/><rect x="12" y="66" width="22" height="22" rx="3"/><rect x="18" y="72" width="10" height="10" fill="#fff"/><rect x="44" y="14" width="6" height="6"/><rect x="54" y="24" width="6" height="6"/><rect x="44" y="34" width="6" height="6"/><rect x="64" y="44" width="6" height="6"/><rect x="74" y="54" width="6" height="6"/><rect x="44" y="54" width="6" height="6"/><rect x="54" y="64" width="6" height="6"/><rect x="24" y="54" width="6" height="6"/><rect x="44" y="74" width="6" height="6"/><rect x="64" y="74" width="6" height="6"/><rect x="74" y="84" width="6" height="6"/></g></svg><span class="qr-lbl">Link + QR por parceiro,<br>a gente manda pronto</span></div></div>
+    </div>
+    <div class="collect">
+      <div class="lbl">E pra montar a ficha técnica do evento, manda pra gente</div>
+      <div class="row">
+        <span class="it"><strong>O que sua atividade entrega</strong></span>
+        <span class="it"><strong>Responsável</strong> e quem facilita</span>
+        <span class="it"><strong>Temática</strong> e duração</span>
+        <span class="it"><strong>Material visual</strong> (foto, plotagem, logo)</span>
+      </div>
+      <div class="note">Se já tiver ficha pronta, manda. Se não, sem problema: manda o material que tem e <strong>a gente produz a ficha final pra todo mundo</strong>.</div>
+    </div>
+  </div>
+  <div class="footer-tech" style="color:var(--navy)"><span>Liberdade total no conteúdo</span><span class="slide-counter">09 / 14</span></div>
+</section>
+
+<!-- 10 · O QUE É O ESCALADA (evidência) -->
+<section class="slide bg-navy-2">
+  <div class="logo-top"><img src="../assets/logo-tnl-h.png" class="tnl" alt="TNL"><span class="sep"></span><img src="../assets/logo-sebrae-branca.webp" class="sebrae" alt="Sebrae"></div>
+  <span class="rail-tick">N° 10 · ESCALADA</span>
+  <div class="slide-inner">
+    <p class="kicker" style="margin-bottom:12px;color:var(--ciano)">Antes de apontar pra ele</p>
+    <h2 class="protagonista" style="font-size:clamp(40px,4.8vw,72px);margin-bottom:14px">O que é o <span class="mk mk-verde">Escalada</span>.</h2>
+    <p class="body-l" style="font-size:21px;max-width:1180px;opacity:.85;margin-bottom:26px">A plataforma nacional de educação empreendedora do Sebrae. Trilhas em cinco módulos, comunidade ativa e dados em tempo real. É o que segue com o jovem depois que o evento acaba.</p>
+    <div class="whatis">
+      <div>
+        <div class="frame-soft"><img class="zoom" src="img/escalada-plataforma.jpg" alt="Plataforma Escalada"></div>
+        <div class="cap">A plataforma · o jovem entra e começa a trilha</div>
+      </div>
+      <div class="whatis-side">
+        <div class="mod-frame"><img class="zoom" src="img/escalada-modulos.png" alt="Os cinco módulos da jornada do estudante no Escalada"></div>
+        <p class="body-l" style="font-size:16px;opacity:.84;margin-top:2px;line-height:1.5">Cinco módulos, do <strong>autoconhecimento</strong> à <strong>mobilização</strong>. Cada jovem sobe a trilha no ritmo dele, com método, comunidade e acompanhamento.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer-tech"><span>É a continuidade que sobra depois que o Neon acaba</span><span class="slide-counter">10 / 15</span></div>
+</section>
+
+<!-- 11 · COMUNIDADE / IMPACTO -->
+<section class="slide bg-navy">
+  <div class="logo-top"><img src="../assets/logo-tnl-h.png" class="tnl" alt="TNL"><span class="sep"></span><img src="../assets/logo-sebrae-branca.webp" class="sebrae" alt="Sebrae"></div>
+  <span class="rail-tick">N° 11 · COMUNIDADE</span>
+  <div class="slide-inner">
+    <p class="kicker" style="margin-bottom:12px;color:var(--ciano)">A comunidade virou lugar de cuidado, não só de aula</p>
+    <h2 class="protagonista" style="font-size:clamp(30px,3.6vw,52px);margin-bottom:14px">O Neon acaba. A comunidade <span class="mk mk-verde">não para</span>.</h2>
+    <p class="lead" style="font-size:clamp(18px,2vw,25px);font-style:italic;max-width:1180px;margin-bottom:22px;opacity:.95">"Aqui virou minha nova rede social. Alguém usa a Escalada mais que o Insta e o WhatsApp?"<span style="font-style:normal;font-family:var(--mono);font-size:12px;opacity:.6;display:block;margin-top:7px">Lanna Maria · comunidade Escalada, abr/2026</span></p>
+    <div class="cont">
+      <div class="esc-side">
+        <div class="pt"><span class="ic">🎓</span><div><h5>Nos estudantes</h5><p>Postam, agradecem e voltam todo dia. O Escalada vira a <strong>rede social</strong> deles.</p></div></div>
+        <div class="pt"><span class="ic">🧑‍🏫</span><div><h5>Nos professores</h5><p>Viram <strong>multiplicadores</strong>: um professor formado, 200 atendimentos numa semana.</p></div></div>
+        <div class="pt"><span class="ic">🔁</span><div><h5>Na continuidade</h5><p>Relacionamento <strong>recorrente, não despesa por evento</strong>. A centelha não apaga.</p></div></div>
+      </div>
+      <div class="mosaic">
+        <div class="post"><img class="zoom" src="img/evidencias/feed-01.png" alt="Posts no feed da comunidade Escalada"></div>
+        <div class="post"><img class="zoom" src="img/evidencias/feed-05.png" alt="Post no feed da comunidade Escalada"></div>
+        <div class="post"><img class="zoom" src="img/evidencias/feed-02.png" alt="Post no feed da comunidade Escalada"></div>
+        <div class="post"><img class="zoom" src="img/evidencias/feed-06.png" alt="Post no feed da comunidade Escalada"></div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-tech"><span>Prints reais do feed, puxados da apresentação Escalada · clique pra ampliar</span><span class="slide-counter">11 / 15</span></div>
+</section>
+
+<!-- 12 · JOGOS + MONSTRO -->
+<section class="slide bg-navy">
+  <div class="logo-top"><img src="../assets/logo-tnl-h.png" class="tnl" alt="TNL"><span class="sep"></span><img src="../assets/logo-sebrae-branca.webp" class="sebrae" alt="Sebrae"></div>
+  <span class="rail-tick">N° 11 · JOGOS</span>
+  <div class="slide-inner">
+    <div class="game-intro">
+      <div class="b">🕹️</div>
+      <div><h4>Três experiências no totem, <span style="color:var(--magenta-claro)">partidas de 2 a 3 minutos</span></h4><p>Ranking ao vivo por caravana. Cada uma trabalha uma <strong>competência do Escalada</strong> (coragem, ideia, autoconhecimento), com a estética que o jovem não espera num evento Sebrae.</p></div>
+    </div>
+    <div class="game-row">
+      <div class="scr"><img src="img/monstro.jpg" alt="Jogo Monstro do Próximo Passo"></div>
+      <div class="gd">
+        <span class="st">● Pronto e no ar</span>
+        <div class="nm" style="color:var(--magenta-claro)">Monstro do Próximo Passo</div>
+        <div class="mc">Você enfrenta o monstro do medo de começar. Reflexo e <strong>agilidade</strong> pra dar o próximo passo antes que a dúvida te pare.</div>
+        <div class="gd-tags">
+          <div class="gd-tag"><div class="k">Competência motora</div><div class="v">Agilidade e reflexo</div></div>
+          <div class="gd-tag"><div class="k">Tema</div><div class="v">Medo de dar o primeiro passo</div></div>
+        </div>
+        <div class="gd-links">
+          <a class="gd-link solid" href="https://neon-sebrae-al.netlify.app/jogar/monstro/" target="_blank" rel="noopener">▶ Jogar agora</a>
+          <a class="gd-link magenta" href="https://neon-sebrae-al.netlify.app/jogos/monstro-proximo-passo/ficha/" target="_blank" rel="noopener">Ver ficha técnica</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-tech"><span>Ativo próprio · produção Tiro na Lua</span><span class="slide-counter">11 / 14</span></div>
+</section>
+
+<!-- 12 · 2 NOVOS JOGOS -->
+<section class="slide bg-navy">
+  <div class="logo-top"><img src="../assets/logo-tnl-h.png" class="tnl" alt="TNL"><span class="sep"></span><img src="../assets/logo-sebrae-branca.webp" class="sebrae" alt="Sebrae"></div>
+  <span class="rail-tick">N° 12 · CONCEITO</span>
+  <div class="slide-inner">
+    <p class="kicker" style="margin-bottom:14px;color:var(--ciano)">Mockups · três jeitos de jogar, três competências do Escalada</p>
+    <h2 class="protagonista" style="font-size:clamp(36px,4.4vw,64px);margin-bottom:26px">Reflexo, ideia e <span class="mk mk-ciano">quem você é</span>.</h2>
+    <div class="twin">
+      <div class="tc">
+        <div class="tc-head"><span class="tc-name" style="color:var(--verde-claro)">Torre da Ideia</span><span class="tc-stat">● Mockup · conceito</span></div>
+        <div class="mock"><div class="hud"><span>CARAVANA 07</span><span>ALTURA 06</span></div><div class="tower"><div class="tblock slide-top">AÇÃO</div><div class="tblock tb4">PLANO</div><div class="tblock tb3">SOLUÇÃO</div><div class="tblock tb2">CLIENTE</div><div class="tblock tb1">IDEIA</div></div></div>
+        <div class="mc">Você empilha as partes da ideia no tempo certo: problema, cliente, solução, plano. Encaixe firme, a torre sobe alta. É <strong>escalar a própria ideia</strong>.</div>
+        <div class="tc-tag"><b>Timing</b> · Criatividade e Planejamento · A jornada do empreender</div>
+        <div class="tc-hook">Encaixe torto enfraquece a base, igual ideia sem fundamento. <strong>A torre mais alta da caravana vence.</strong></div>
+      </div>
+      <div class="tc c2">
+        <div class="tc-head"><span class="tc-name" style="color:var(--ciano)">Que Estrela Você É?</span><span class="tc-stat">● Mockup · conceito</span></div>
+        <div class="mock"><div class="hud"><span>FILTRO ON</span><span>3 PERGUNTAS</span></div><div class="selfie"><div class="selfie-face"><span class="eye l"></span><span class="eye r"></span></div><div class="selfie-scan"></div><div class="selfie-result"><div class="r1">SEU PERFIL</div><div class="r2">A Visionária ✦</div><div class="r3">tipo Anitta · módulo Autoconhecimento</div></div></div></div>
+        <div class="mc">Selfie + 3 perguntas rápidas. O totem revela seu perfil com humor: <strong>"você é tipo a Anitta, poderosa e dona do rolê"</strong>.</div>
+        <div class="tc-tag"><b>Filtro + quiz</b> · Autoconhecimento · A cara do Escalada</div>
+        <div class="tc-hook">Cada resultado cai num dos <strong>módulos do Escalada</strong>. Diverte e já mostra por onde a trilha dele começa.</div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-tech"><span>Conceito pronto pra prototipar</span><span class="slide-counter">12 / 14</span></div>
+</section>
+
+<!-- 13 · SISTEMA -->
+<section class="slide bg-provocativo">
+  <div class="logo-top"><img src="../assets/logo-tnl-h.png" class="tnl" alt="TNL"><span class="sep"></span><img src="../assets/logo-sebrae-branca.webp" class="sebrae" alt="Sebrae"></div>
+  <span class="rail-tick">N° 13 · PLACAR</span>
+  <div class="slide-inner">
+    <p class="kicker" style="margin-bottom:14px">Um placar só · a costura virando jogo</p>
+    <h2 class="protagonista" style="font-size:clamp(38px,4.6vw,70px);margin-bottom:34px">As experiências não competem.<br>Elas <span class="chip chip-navy">somam pontos juntas</span>.</h2>
+    <div class="sys">
+      <div class="sys-card"><div class="ic">🏁</div><div class="t">Pontos por caravana</div><div class="d">Cada experiência rende ponto pro <strong>coletivo da escola</strong>. Ranking ao vivo no totem.</div></div>
+      <div class="sys-card"><div class="ic">🎁</div><div class="t">Brindes como moeda</div><div class="d">Os brindes do Sebrae viram <strong>prêmio aspiracional</strong>, distribuído entre as experiências.</div></div>
+      <div class="sys-card"><div class="ic">✍️</div><div class="t">Escalada é o gate</div><div class="d">O pré-cadastro completo <strong>destrava prêmio</strong> e abre a porta da continuidade.</div></div>
+      <div class="sys-card"><div class="ic">🚀</div><div class="t">O pós importa</div><div class="d">Maratona depois do evento pra <strong>manter a centelha acesa</strong> na plataforma.</div></div>
+    </div>
+    <div class="sys-foot"><div class="q">Quando o jovem joga, escala, assiste e se cadastra, tudo conta pra mesma história.</div></div>
+  </div>
+  <div class="footer-tech"><span>Sistema unificado de pontos</span><span class="slide-counter">13 / 14</span></div>
+</section>
+
+<!-- 14 · FECHO -->
+<section class="slide bg-verde-claro">
+  <div class="logo-top"><img src="../assets/logo-tnl-h.png" class="tnl" alt="TNL" style="filter:invert(1)"><span class="sep"></span><img src="../assets/logo-sebrae.png" class="sebrae" alt="Sebrae"></div>
+  <span class="rail-tick" style="color:var(--navy)">N° 14 · FECHO</span>
+  <div class="closing">
+    <div class="ct">Quem cuida do todo<br><span class="chip chip-navy">costura cada parte</span>.</div>
+    <p class="cg">Vocês trazem experiências potentes. A gente garante que, juntas, elas virem uma travessia que o jovem alagoano não esquece.</p>
+    <div class="logos"><img src="../assets/logo-tnl-h.png" class="tnl" alt="Tiro na Lua" style="filter:invert(1)"><span class="sep"></span><img src="../assets/logo-sebrae.png" class="sebrae" alt="Sebrae"></div>
+  </div>
+  <div class="footer-tech" style="color:var(--navy)"><span>Neon Sebrae Alagoas · Educação Empreendedora</span><span class="slide-counter">14 / 14</span></div>
+</section>
+
+</main>
+
+<button id="print-btn" onclick="window.print()">↓ PDF</button>
+<div id="nav-ui">
+  <button onclick="prevSlide()" aria-label="Anterior">‹</button>
+  <span class="ind"><span class="cur" id="curr-ind">01</span> / <span id="total-ind">14</span></span>
+  <button onclick="nextSlide()" aria-label="Próximo">›</button>
+</div>
+
+<div id="lightbox"><span class="x">✕</span><img id="lightbox-img" src="" alt="Print ampliado"><span class="hint">clique pra fechar · Esc</span></div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const totalSlides = slides.length;
+  let currentSlide = 0, animating = false;
+  const progressBar = document.getElementById('progress-bar');
+  const currInd = document.getElementById('curr-ind');
+  const totalInd = document.getElementById('total-ind');
+  const totStr = String(totalSlides).padStart(2,'0');
+  totalInd.textContent = totStr;
+  // auto-numera rodapé e rail-tick (robusto à inserção de slides)
+  slides.forEach((s,i)=>{
+    const n = String(i+1).padStart(2,'0');
+    const c = s.querySelector('.slide-counter'); if(c) c.textContent = n+' / '+totStr;
+    const r = s.querySelector('.rail-tick'); if(r){ const p = r.textContent.split('·'); r.textContent = 'N° '+n+(p[1]?' ·'+p[1]:''); }
+  });
+  function update(){
+    slides.forEach((s,i)=>s.classList.toggle('active', i===currentSlide));
+    progressBar.style.width = `${((currentSlide+1)/totalSlides)*100}%`;
+    currInd.textContent = String(currentSlide+1).padStart(2,'0');
+  }
+  function nextSlide(){ if(animating||currentSlide>=totalSlides-1)return; animating=true;currentSlide++;update();setTimeout(()=>animating=false,200); }
+  function prevSlide(){ if(animating||currentSlide<=0)return; animating=true;currentSlide--;update();setTimeout(()=>animating=false,200); }
+  update();
+  window.addEventListener('keydown',e=>{
+    if(['ArrowDown','ArrowRight',' ','PageDown'].includes(e.key)){e.preventDefault();nextSlide();}
+    else if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();prevSlide();}
+    else if(e.key==='Home'){currentSlide=0;update();}
+    else if(e.key==='End'){currentSlide=totalSlides-1;update();}
+  });
+  let wheelLock=false;
+  window.addEventListener('wheel',e=>{
+    if(animating||wheelLock||window.innerWidth<=900)return;
+    if(Math.abs(e.deltaY)<30)return;
+    wheelLock=true;
+    if(e.deltaY>0)nextSlide();else prevSlide();
+    setTimeout(()=>wheelLock=false,280);
+  },{passive:true});
+  let touchY=0;
+  window.addEventListener('touchstart',e=>touchY=e.changedTouches[0].screenY,{passive:true});
+  window.addEventListener('touchend',e=>{ if(window.innerWidth<=900)return; const d=touchY-e.changedTouches[0].screenY; if(d>50)nextSlide(); if(d<-50)prevSlide(); },{passive:true});
+
+  // lightbox: clicar em qualquer print amplia
+  const lb=document.getElementById('lightbox'), lbImg=document.getElementById('lightbox-img');
+  document.querySelectorAll('.zoom').forEach(im=>im.addEventListener('click',ev=>{ ev.stopPropagation(); lbImg.src=im.getAttribute('src'); lb.classList.add('open'); }));
+  lb.addEventListener('click',()=>lb.classList.remove('open'));
+  window.addEventListener('keydown',e=>{ if(e.key==='Escape') lb.classList.remove('open'); });
+</script>
+</body>
+</html>
