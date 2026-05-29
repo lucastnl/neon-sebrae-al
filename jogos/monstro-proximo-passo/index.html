@@ -1644,6 +1644,7 @@ html, body {
       <p class="op-title">🔧 OPERADOR</p>
       <p class="op-sub" id="op-current-caravana">CARAVANA 01 EM ANDAMENTO</p>
       <button class="op-menu-card" id="op-action-next"><span class="menu-icon">📝</span>ENCERRAR E INICIAR NOVA CARAVANA</button>
+      <button class="op-menu-card" id="op-action-clear" style="border-color: var(--amarelo); color: var(--amarelo);"><span class="menu-icon">🧹</span>LIMPAR ESTA CARAVANA</button>
       <button class="op-menu-card" id="op-action-history"><span class="menu-icon">📊</span>VER CARAVANAS ANTERIORES</button>
       <button class="op-menu-card" id="op-action-reset" style="border-color: var(--vermelho); color: var(--vermelho);"><span class="menu-icon">🗑️</span>APAGAR TUDO</button>
       <button class="skip-button" id="op-menu-back" style="margin-top:8px;">VOLTAR PRO JOGO</button>
@@ -1662,6 +1663,15 @@ html, body {
       <p class="op-title">CARAVANAS ANTERIORES</p>
       <div class="op-history-list" id="op-history-list"></div>
       <button class="skip-button" id="op-history-back">VOLTAR</button>
+    </div>
+
+    <div id="op-view-confirm-clear" hidden>
+      <p class="op-title">LIMPAR ESTA CARAVANA?</p>
+      <p class="op-confirm">Apaga as partidas da <strong id="op-clear-caravana">Caravana 02</strong> pra ela recomeçar zerada. As caravanas anteriores não são tocadas.</p>
+      <div class="btn-row">
+        <button class="end-button" id="op-clear-yes" style="background:var(--amarelo);">✓ LIMPAR</button>
+        <button class="skip-button" id="op-clear-no">VOLTAR</button>
+      </div>
     </div>
 
     <div id="op-view-confirm-reset" hidden>
@@ -1885,6 +1895,11 @@ async function closeCurrentCaravana(pin) {
   const r = await window.NeonStore.operadorAcao('encerrar', pin);
   if (!r.ok) { alert('Não deu pra encerrar: ' + r.error); return false; }
   await refreshCaravanaAtiva();
+  return true;
+}
+async function clearCurrentCaravana(pin) {
+  const r = await window.NeonStore.operadorAcao('limpar_atual', pin);
+  if (!r.ok) { alert('Não deu pra limpar: ' + r.error); return false; }
   return true;
 }
 async function resetAllCaravan(pin) {
@@ -2581,7 +2596,7 @@ document.addEventListener('keydown', e => {
 let opCode = '';
 
 function showOpView(viewId) {
-  ['op-view-code', 'op-view-menu', 'op-view-confirm', 'op-view-history', 'op-view-confirm-reset']
+  ['op-view-code', 'op-view-menu', 'op-view-confirm', 'op-view-history', 'op-view-confirm-clear', 'op-view-confirm-reset']
     .forEach(id => { const el = $(id); if (el) el.hidden = id !== viewId; });
 }
 
@@ -2658,6 +2673,17 @@ $('op-confirm-yes').addEventListener('click', async () => {
   if (ok) location.reload();
 });
 $('op-confirm-no').addEventListener('click', () => showOpView('op-view-menu'));
+$('op-action-clear').addEventListener('click', () => {
+  $('op-clear-caravana').textContent = formatCaravana(getCurrentCaravana());
+  showOpView('op-view-confirm-clear');
+});
+$('op-clear-yes').addEventListener('click', async () => {
+  const pin = prompt('Senha de operador pra limpar esta caravana:');
+  if (!pin) return;
+  const ok = await clearCurrentCaravana(pin);
+  if (ok) location.reload();
+});
+$('op-clear-no').addEventListener('click', () => showOpView('op-view-menu'));
 $('op-action-history').addEventListener('click', async () => {
   await renderHistory();
   showOpView('op-view-history');

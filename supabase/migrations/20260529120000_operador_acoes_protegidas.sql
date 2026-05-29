@@ -42,6 +42,13 @@ begin
     insert into public.caravanas (numero, ativa) values (v_numero, true);
     return json_build_object('acao', 'encerrar', 'nova_caravana', v_numero);
 
+  elsif p_acao = 'limpar_atual' then
+    -- Apaga so as partidas da caravana ativa (turma da vez recomeca limpa).
+    -- Nao toca nas caravanas anteriores nem na propria caravana ativa.
+    delete from public.partidas
+      where caravana_id = (select id from public.caravanas where ativa = true);
+    return json_build_object('acao', 'limpar_atual');
+
   elsif p_acao = 'reset' then
     -- Apaga tudo e recomeca da Caravana 01. Nao da pra desfazer.
     delete from public.partidas;
