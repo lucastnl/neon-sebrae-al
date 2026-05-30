@@ -22,7 +22,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.106.2/dist/umd/supabase.js" integrity="sha384-m/8UHFJHeU6nrCKP2hBnAseuvAKUmLF+8e5bWos5CJL023vuxX7kiVL5t8yjsJhV" crossorigin="anonymous"></script>
-<script src="../assets/js/neon-store.js?v=6"></script>
+<script src="../assets/js/neon-store.js?v=7"></script>
 
 <style>
 :root {
@@ -105,6 +105,39 @@ body::before {
   box-shadow: 0 0 10px var(--vermelho);
   animation: liveBlink 1s infinite;
 }
+/* Modo histórico: badge vira "ENCERRADA" amarelo, sem pulsar */
+.live-dot.is-encerrada { color: var(--amarelo); text-shadow: 0 0 8px var(--amarelo); }
+.live-dot.is-encerrada::before { background: var(--amarelo); box-shadow: 0 0 10px var(--amarelo); animation: none; }
+
+/* Seletor de caravanas: fileira de chips */
+.caravana-selector {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.caravana-chip {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.6);
+  background: rgba(10, 15, 54, 0.7);
+  border: 2px solid rgba(255,255,255,0.18);
+  border-radius: 10px;
+  padding: 11px 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+}
+.caravana-chip:hover { border-color: var(--ciano); color: var(--branco); }
+.caravana-chip.ativa-evento .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--vermelho); box-shadow: 0 0 8px var(--vermelho); animation: liveBlink 1s infinite; }
+.caravana-chip .sub { font-size: 7px; color: rgba(255,255,255,0.4); letter-spacing: 1px; }
+/* Selecionado (em foco no placar) */
+.caravana-chip.selecionada { color: var(--branco); border-color: var(--ciano); box-shadow: 0 0 16px rgba(0, 249, 255, 0.3); background: rgba(0, 249, 255, 0.08); }
+.caravana-chip.selecionada.encerrada-sel { border-color: var(--amarelo); box-shadow: 0 0 16px rgba(255, 217, 61, 0.3); background: rgba(255, 217, 61, 0.08); }
 
 .view-section { display: block; }
 .view-section[hidden] { display: none; }
@@ -500,13 +533,16 @@ body::before {
     <div class="top-brand-slot" aria-hidden="true"></div>
     <div class="meta">
       <span class="tag">PLACAR · NEON 2026</span>
-      <span class="live-dot">AO VIVO</span>
+      <span class="live-dot" id="live-badge">AO VIVO</span>
     </div>
   </div>
 
   <div class="view-section" id="view-placar">
   <h1 class="page-title">QUEM TÁ NO TOPO<br>DA MONTANHA?</h1>
   <p class="page-sub">Top jogadores da turma da vez. <span id="placar-caravana-atual"></span></p>
+
+  <!-- Seletor de caravanas: ativa (ao vivo) + encerradas (snapshot). Populado em JS. -->
+  <div class="caravana-selector" id="caravana-selector"></div>
 
   <!-- KPIs do evento, faixa no topo (dá sensação de "tá bombando") -->
   <div class="kpi-row kpi-row-placar">
@@ -697,13 +733,99 @@ function renderPlayers(partidas) {
   }).join('');
 }
 
+// Estado da visão: qual caravana o placar está mostrando agora.
+// isLive = true só quando é a caravana ativa do evento (recebe realtime + auto-refresh).
+// Quando o operador escolhe uma caravana encerrada, vira snapshot congelado.
+let viewState = { caravana: null, isLive: true };
+let caravanaAtivaId = null;
+
+// Monta os chips do seletor: caravana ativa + todas as encerradas, em ordem de número.
+async function montarSeletor() {
+  const el = document.getElementById('caravana-selector');
+  if (!el) return;
+  try {
+    const ativa = await window.NeonStore.getCaravanaAtiva();
+    const historico = await window.NeonStore.listarHistoricoCaravanas();
+    caravanaAtivaId = ativa ? ativa.id : null;
+    // Lista única: ativa marcada, históricas como snapshot. Ordena por número.
+    const todas = [];
+    if (ativa) todas.push({ id: ativa.id, numero: ativa.numero, ativa: true });
+    historico.forEach(h => todas.push({ id: h.id, numero: h.numero, ativa: false }));
+    todas.sort((a, b) => (Number(a.numero) || 0) - (Number(b.numero) || 0));
+    if (todas.length <= 1) { el.innerHTML = ''; return; } // só uma caravana: sem seletor
+
+    el.innerHTML = todas.map(c => {
+      const num = String(Number(c.numero) || 0).padStart(2, '0');
+      const sel = (viewState.caravana && viewState.caravana.id === c.id) ? ' selecionada' : '';
+      const selEnc = (sel && !c.ativa) ? ' encerrada-sel' : '';
+      const aoVivo = c.ativa ? ' ativa-evento' : '';
+      const dot = c.ativa ? '<span class="dot"></span>' : '';
+      const sub = c.ativa ? 'ao vivo' : 'encerrada';
+      return '<button class="caravana-chip' + aoVivo + sel + selEnc + '" data-id="' + esc(c.id) + '" data-num="' + num + '" data-ativa="' + c.ativa + '">'
+        + dot + 'CARAVANA ' + num + ' <span class="sub">' + sub + '</span></button>';
+    }).join('');
+
+    el.querySelectorAll('.caravana-chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selecionarCaravana({
+          id: btn.dataset.id,
+          numero: btn.dataset.num,
+          ativa: btn.dataset.ativa === 'true'
+        });
+      });
+    });
+  } catch (e) {
+    console.error('[dashboard] erro montando seletor:', e);
+  }
+}
+
+// Troca a caravana em foco no placar e re-renderiza tudo (inclusive o ticker).
+async function selecionarCaravana(caravana) {
+  viewState.caravana = caravana;
+  viewState.isLive = !!caravana.ativa;
+
+  // Badge AO VIVO ↔ ENCERRADA
+  const badge = document.getElementById('live-badge');
+  if (badge) {
+    if (viewState.isLive) { badge.textContent = 'AO VIVO'; badge.classList.remove('is-encerrada'); }
+    else { badge.textContent = 'ENCERRADA'; badge.classList.add('is-encerrada'); }
+  }
+  // Marca o chip selecionado
+  document.querySelectorAll('.caravana-chip').forEach(b => {
+    const on = b.dataset.id === caravana.id;
+    b.classList.toggle('selecionada', on);
+    b.classList.toggle('encerrada-sel', on && b.dataset.ativa !== 'true');
+  });
+
+  await refreshRanking();
+  await recarregarTicker();
+}
+
+async function recarregarTicker() {
+  const tickerList = document.getElementById('ticker-list');
+  const tickerTitle = document.querySelector('.ticker-title');
+  if (!tickerList) return;
+  tickerList.innerHTML = '';
+  const escopo = viewState.isLive ? null : (viewState.caravana ? viewState.caravana.id : null);
+  if (tickerTitle) tickerTitle.textContent = viewState.isLive ? '⚡ ÚLTIMAS JOGADAS' : '⚡ JOGADAS DA CARAVANA';
+  try {
+    const historico = await window.NeonStore.ultimasPartidas(10, escopo);
+    if (!historico.length) {
+      tickerList.innerHTML = '<div class="empty-state" style="padding: 24px;">Sem jogadas registradas.</div>';
+      return;
+    }
+    historico.slice().reverse().forEach(p => pushTicker(p));
+  } catch (e) {
+    console.warn('[dashboard] erro recarregando ticker:', e);
+  }
+}
+
 async function refreshRanking() {
   try {
-    // Placar escopado na CARAVANA ATIVA: cada turma compete só contra ela mesma.
-    // Podium (topPartidasGeral) e KPIs (estatisticasGerais) recebem o id da turma
-    // da vez; ao encerrar a caravana, tudo zera junto. A comparação ENTRE turmas
-    // fica no ranking de caravanas (rankingCaravanas), que segue global.
-    const caravana = await window.NeonStore.getCaravanaAtiva();
+    // O placar mostra a caravana em FOCO (viewState), não necessariamente a ativa.
+    // Ativa = ao vivo (cada turma compete só contra ela mesma). Encerrada = snapshot.
+    // A tabela de Caravanas (rankingCaravanas) é sempre global, pra comparar turmas.
+    const caravana = viewState.caravana || await window.NeonStore.getCaravanaAtiva();
     const caravanaId = caravana ? caravana.id : null;
     const [ranking, topPlayers, stats] = await Promise.all([
       window.NeonStore.rankingCaravanas(),
@@ -715,7 +837,8 @@ async function refreshRanking() {
     if (stats) renderPlacarStats(stats);
     const elCar = document.getElementById('placar-caravana-atual');
     if (elCar && caravana) {
-      elCar.textContent = 'CARAVANA ' + String(caravana.numero).padStart(2, '0') + ' · ao vivo';
+      const estado = viewState.isLive ? 'ao vivo' : 'encerrada';
+      elCar.textContent = 'CARAVANA ' + String(caravana.numero).padStart(2, '0') + ' · ' + estado;
     }
   } catch (e) {
     console.error('[dashboard] erro carregando ranking:', e);
@@ -807,21 +930,24 @@ function fmtNumero(n) {
     status.textContent = '○ MODO LOCAL';
     status.className = 'offline';
   }
+  // Abre sempre na caravana ATIVA (ao vivo). O operador troca pelos chips.
+  const ativa = await window.NeonStore.getCaravanaAtiva();
+  viewState = { caravana: ativa, isLive: true };
+  await montarSeletor();
   await refreshRanking();
-  // Resgata o histórico: popula o ticker com as últimas 10 partidas que já estão no banco,
-  // pra que quem abre o dashboard agora veja o que aconteceu antes (não só o realtime).
-  // Insere em ordem cronológica reversa pra que a mais recente fique no topo.
-  try {
-    const historico = await window.NeonStore.ultimasPartidas(10);
-    historico.slice().reverse().forEach(p => pushTicker(p));
-  } catch (e) {
-    console.warn('[dashboard] erro carregando histórico do ticker:', e);
-  }
+  await recarregarTicker();
+
   window.NeonStore.subscribeNovasPartidas(async (partida) => {
+    // Só reage ao realtime quando o placar está focado na caravana AO VIVO.
+    // Vendo um snapshot histórico, ignoramos jogadas novas (são de outra turma).
+    if (!viewState.isLive) return;
     pushTicker(partida);
     await refreshRanking();
   });
-  setInterval(refreshRanking, 8000);
+  // Auto-refresh só faz sentido no ao vivo; snapshot histórico é estático.
+  setInterval(() => { if (viewState.isLive) refreshRanking(); }, 8000);
+  // Caravana pode encerrar/nascer durante o evento: re-sincroniza o seletor de tempos em tempos.
+  setInterval(montarSeletor, 30000);
 })();
 </script>
 </body>

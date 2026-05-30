@@ -228,18 +228,21 @@ async function topPartidasGeral(limit, caravanaId) {
   return partidas.sort((a, b) => b.score - a.score).slice(0, limit);
 }
 
-async function ultimasPartidas(limit) {
+async function ultimasPartidas(limit, caravanaId) {
+  // Sem caravanaId: últimas jogadas do evento inteiro (feed ao vivo).
+  // Com caravanaId: últimas jogadas só daquela caravana (ticker do snapshot histórico).
   limit = limit || 10;
   if (useSupabase) {
-    const { data } = await sb
+    let q = sb
       .from('partidas')
       .select('nome_jogador, score, fase_max, medo_escolhido, created_at, caravana_id')
-      .eq('em_auditoria', false)
-      .order('created_at', { ascending: false })
-      .limit(limit);
+      .eq('em_auditoria', false);
+    if (caravanaId) q = q.eq('caravana_id', caravanaId);
+    const { data } = await q.order('created_at', { ascending: false }).limit(limit);
     return data || [];
   }
-  const partidas = JSON.parse(localStorage.getItem('neon-partidas-local') || '[]');
+  let partidas = JSON.parse(localStorage.getItem('neon-partidas-local') || '[]');
+  if (caravanaId) partidas = partidas.filter(p => p.caravana_id === caravanaId);
   return partidas
     .slice()
     .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
