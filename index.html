@@ -202,6 +202,17 @@ h1 .verde { color: var(--verde-claro); text-shadow: 0 0 16px var(--verde), 4px 4
 .card.dashboard .title { color: var(--ciano); text-shadow: 0 0 8px var(--ciano); }
 .card.dashboard .arrow { color: var(--ciano); }
 
+.card.hub {
+  grid-column: 1 / -1;
+  border-color: var(--verde);
+  box-shadow: 0 0 24px rgba(0, 217, 92, 0.3);
+  text-align: center;
+}
+.card.hub:hover { box-shadow: 0 0 40px rgba(0, 217, 92, 0.6); }
+.card.hub .title { color: var(--verde-claro); text-shadow: 0 0 8px var(--verde); }
+.card.hub .arrow { color: var(--verde-claro); }
+.card.hub .icon { text-align: center; }
+
 .section-divider {
   font-family: 'Press Start 2P', monospace;
   font-size: 9px;
@@ -262,6 +273,13 @@ h1 .verde { color: var(--verde-claro); text-shadow: 0 0 16px var(--verde), 4px 4
   <p class="event-info">11, 12 e 13 DE JUNHO<br>CENTRO DE CONVENÇÕES · MACEIÓ</p>
 
   <div class="cards">
+    <a class="card hub" href="/hub/">
+      <span class="icon">🗺️</span>
+      <div class="title">HUB DO NEON</div>
+      <div class="desc">Toda a experiência num lugar só: jornada, jogos, fichas técnicas e o método por trás.</div>
+      <div class="arrow">▶ ENTRAR NO HUB</div>
+    </a>
+
     <a class="card jogo" href="/jogar/monstro/">
       <span class="icon">👹</span>
       <div class="title">O MONSTRO<br>DO PRÓXIMO PASSO</div>

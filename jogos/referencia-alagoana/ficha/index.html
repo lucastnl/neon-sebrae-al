@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#050822" />
+<title>Ficha · Referência Alagoana (design)</title>
+
+<meta property="og:title" content="Ficha de Design · Referência Alagoana" />
+<meta property="og:description" content="Jogo 3 do totem do Neon Sebrae AL: selfie + perfil que revela qual fazedor de Alagoas combina com você. Proposta de design (red team)." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://neon-sebrae-al.netlify.app/jogos/referencia-alagoana/ficha/" />
+<meta property="og:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../../assets/ficha.css" />
+<style> :root { --accent: #FF00FF; } </style>
+</head>
+<body>
+
+<div class="float-btns">
+  <a class="hub-btn" href="/hub/">◂ HUB</a>
+  <button class="print-btn" onclick="window.print()">⬇ PDF</button>
+</div>
+
+<div class="sheet">
+
+  <header>
+    <div class="logo"><img src="../../../assets/logo-tnl-h.png" alt="Tiro na Lua" /></div>
+    <div class="title">
+      <h1>REFERÊNCIA ALAGOANA</h1>
+      <div class="sub">Jogo 3 do totem (em design) · Espaço Educação Empreendedora · Neon Sebrae AL 2026</div>
+    </div>
+    <div class="badge">DESIGN · <span>v1</span><br>red team 31/05</div>
+  </header>
+
+  <div class="grid">
+
+    <!-- 00 DECISÃO DE DESIGN -->
+    <div class="block full" style="background:rgba(255,0,255,0.05);border-color:rgba(255,118,255,0.4)">
+      <div class="tag" style="color:var(--magenta-claro);text-shadow:0 0 8px var(--magenta)">⚠ DECISÃO DE DESIGN · RED TEAM</div>
+      <p>Evolui a proposta "Que Estrela Você É?" do deck. Motivo: o resultado "tipo a Anitta" usa celebridade nacional e reforça justamente a dor número 1 do Lunoscópio, a falta de referências <strong style="color:var(--verde-claro)">locais</strong>. Trocamos por fazedores reais de Alagoas, o que vira orgulho local em vez de zoeira, e juntamos a semente do Léo (scan do rosto + referência local).</p>
+    </div>
+
+    <!-- 01 CONCEITO -->
+    <div class="block">
+      <div class="tag">01 · CONCEITO</div>
+      <h2>Qual fazedor de Alagoas<br>tem a tua vibe?</h2>
+      <p>Selfie mais um perfil rápido, e o totem revela uma referência empreendedora alagoana real que combina com o jovem. Ele se vê espelhado em alguém que começou pertinho de casa.</p>
+      <p class="muted">Responde de frente a "eu sirvo pra isso?" e a falta de referência local.</p>
+    </div>
+
+    <!-- 02 MECÂNICA -->
+    <div class="block">
+      <div class="tag">02 · MECÂNICA</div>
+      <h2>Selfie + perfil + revelação</h2>
+      <div class="flow">
+        <div class="step"><div><strong>Selfie.</strong> Foto com moldura na câmera do totem.</div></div>
+        <div class="step"><div><strong>Perfil rápido.</strong> 3 perguntas e (opcional) um mini-desafio de mira ou ritmo, pra não ser só quiz.</div></div>
+        <div class="step"><div><strong>Revelação.</strong> O totem cruza as respostas e mostra a referência alagoana + o módulo do Escalada por onde a trilha dele começa.</div></div>
+      </div>
+    </div>
+
+    <!-- 03 ACERVO -->
+    <div class="block">
+      <div class="tag">03 · O ACERVO</div>
+      <h2>Fazedores de Alagoas</h2>
+      <p>Um acervo de referências empreendedoras reais do estado (de diferentes regiões e áreas), cada uma amarrada a um perfil e a um módulo do Escalada.</p>
+      <p class="muted">Curadoria a fechar junto com o Sebrae AL, garantindo diversidade de território, gênero e setor.</p>
+    </div>
+
+    <!-- 04 FORMATO -->
+    <div class="block">
+      <div class="tag">04 · FORMATO</div>
+      <h2>Rápido e com replay</h2>
+      <div class="stat-row">
+        <div class="stat"><span class="n">~60s</span><span class="l">por rodada</span></div>
+        <div class="stat"><span class="n">3</span><span class="l">perguntas + mini-skill</span></div>
+        <div class="stat"><span class="n">∞</span><span class="l">"qual outra eu sou?"</span></div>
+      </div>
+      <p class="muted" style="margin-top:12px;">Estímulo distinto dos outros jogos: social, selfie e leitura de si, com uma pitada de skill.</p>
+    </div>
+
+    <!-- 05 STACK -->
+    <div class="block">
+      <div class="tag">05 · STACK</div>
+      <h2>Câmera com LGPD desde o dia 1</h2>
+      <div class="kv">
+        <p><strong>FRONT</strong> HTML/CSS/JS puro + câmera do totem</p>
+        <p><strong>FOTO</strong> Fica no device, compartilhar é opt-in</p>
+        <p><strong>BACK</strong> Supabase pro placar de perfis (sem subir foto)</p>
+        <p><strong>UX</strong> Touch-first, totem retrato</p>
+      </div>
+    </div>
+
+    <!-- 06 SAÍDA -->
+    <div class="block">
+      <div class="tag">06 · SAÍDA COMPARTILHÁVEL</div>
+      <h2>Minha referência é...</h2>
+      <p>Card com a selfie, o nome da referência alagoana e uma frase de orgulho local. O jovem posta porque tem orgulho, não porque é piada.</p>
+      <p class="muted">Tom da jornada: orgulho e descoberta, não zoeira vazia.</p>
+    </div>
+
+    <!-- 07 EDU -->
+    <div class="block edu">
+      <div class="tag">07 · MAPEAMENTO EDUCACIONAL</div>
+      <h2>Slot "autoconhecimento" · módulo do Escalada</h2>
+      <div class="edu-grid">
+        <div class="edu-col">
+          <h3>ENTRECOMP <span class="src">· Competências Empreendedoras</span></h3>
+          <div class="edu-row">
+            <div class="k">OLHAR</div>
+            <div class="v">Self-awareness & self-efficacy <em>2.1</em>. Reconhecer forças e acreditar que serve pra isso.</div>
+          </div>
+          <div class="edu-row">
+            <div class="k">VISÃO</div>
+            <div class="v">Vision <em>1.3</em>. Projetar um futuro a partir de quem inspira.</div>
+          </div>
+        </div>
+        <div class="edu-col">
+          <h3>BNCC <span class="src">· Competências Gerais</span></h3>
+          <div class="edu-row">
+            <div class="k">SI</div>
+            <div class="v">Autoconhecimento e autocuidado <em>CG 8</em>.</div>
+          </div>
+          <div class="edu-row">
+            <div class="k">CULTURA</div>
+            <div class="v">Repertório cultural <em>CG 3</em>. Valorizar quem faz em Alagoas.</div>
+          </div>
+          <div class="edu-row">
+            <div class="k">PROJETO</div>
+            <div class="v">Trabalho e projeto de vida <em>CG 6</em>.</div>
+          </div>
+        </div>
+      </div>
+      <p class="edu-note">Dor/dúvida atacada: "eu sirvo pra isso?" e a falta de referências locais. Vira o gancho de orgulho que o tom da jornada (orgulho, descoberta, leveza) pede.</p>
+    </div>
+
+  </div>
+
+  <footer>
+    <div>neon-sebrae-al.netlify.app / jogos / referencia-alagoana</div>
+    <div class="stamp">TIRO NA LUA · SEBRAE AL · ESCALADA</div>
+  </footer>
+
+</div>
+
+</body>
+</html>

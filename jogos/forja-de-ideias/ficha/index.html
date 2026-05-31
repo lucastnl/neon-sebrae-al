@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#050822" />
+<title>Ficha · Forja de Ideias (design)</title>
+
+<meta property="og:title" content="Ficha de Design · Forja de Ideias" />
+<meta property="og:description" content="Jogo 2 do totem do Neon Sebrae AL: combinar recurso local + problema real pra forjar uma ideia. Proposta de design (red team)." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://neon-sebrae-al.netlify.app/jogos/forja-de-ideias/ficha/" />
+<meta property="og:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../../assets/ficha.css" />
+<style> :root { --accent: #00FF85; } </style>
+</head>
+<body>
+
+<div class="float-btns">
+  <a class="hub-btn" href="/hub/">◂ HUB</a>
+  <button class="print-btn" onclick="window.print()">⬇ PDF</button>
+</div>
+
+<div class="sheet">
+
+  <header>
+    <div class="logo"><img src="../../../assets/logo-tnl-h.png" alt="Tiro na Lua" /></div>
+    <div class="title">
+      <h1>FORJA DE IDEIAS</h1>
+      <div class="sub">Jogo 2 do totem (em design) · Espaço Educação Empreendedora · Neon Sebrae AL 2026</div>
+    </div>
+    <div class="badge">DESIGN · <span>v1</span><br>red team 31/05</div>
+  </header>
+
+  <div class="grid">
+
+    <!-- 00 DECISÃO DE DESIGN -->
+    <div class="block full" style="background:rgba(255,0,255,0.05);border-color:rgba(255,118,255,0.4)">
+      <div class="tag" style="color:var(--magenta-claro);text-shadow:0 0 8px var(--magenta)">⚠ DECISÃO DE DESIGN · RED TEAM</div>
+      <p>Substitui a proposta "Torre da Ideia" do deck da Costura. Motivo: empilhar blocos no tempo certo é a mesma família motora do Monstro (reflexo/timing), e o pedido é variar o estímulo. A Forja muda a raia pra <strong style="color:var(--verde-claro)">decisão rápida + combinação</strong>, injeta autoria do jogador e gera um artefato fortemente compartilhável.</p>
+    </div>
+
+    <!-- 01 CONCEITO -->
+    <div class="block">
+      <div class="tag">01 · CONCEITO</div>
+      <h2>A ideia não cai do céu.<br>Você forja com o que tem.</h2>
+      <p>O totem sorteia um recurso de Alagoas e um problema real. O jogador combina os dois no tempo certo pra forjar um negócio. Empreender é recombinar o que já existe em volta.</p>
+      <p class="muted">Mata a dúvida "preciso de uma ideia genial e muito dinheiro": a matéria-prima já está aqui.</p>
+    </div>
+
+    <!-- 02 VOCABULÁRIO -->
+    <div class="block">
+      <div class="tag">02 · O QUE COMBINA</div>
+      <h2>Recurso local × problema real</h2>
+      <div class="pair"><div class="a">🥥 COCO</div><div class="arr">+</div><div class="b">TRANSPORTE</div></div>
+      <div class="pair"><div class="a">🌵 SERTÃO</div><div class="arr">+</div><div class="b">ÁGUA</div></div>
+      <div class="pair"><div class="a">🎨 ARTESAN.</div><div class="arr">+</div><div class="b">RENDA</div></div>
+      <div class="pair"><div class="a">🏖️ PRAIA</div><div class="arr">+</div><div class="b">LAZER</div></div>
+      <p class="muted">Baralho de recursos alagoanos e dores reais. Combinações geram negócios plausíveis ou deliciosamente absurdos.</p>
+    </div>
+
+    <!-- 03 MECÂNICA -->
+    <div class="block">
+      <div class="tag">03 · MECÂNICA</div>
+      <h2>Gira, trava, energiza</h2>
+      <div class="flow">
+        <div class="step"><div><strong>Gira.</strong> Duas roletas de cartas correm rápido (recurso e problema).</div></div>
+        <div class="step"><div><strong>Trava.</strong> O jogador para as duas no tempo certo.</div></div>
+        <div class="step"><div><strong>Energiza.</strong> Toques rápidos pra "forjar" antes do tempo acabar.</div></div>
+      </div>
+      <p class="muted">Estímulo motor: decisão sob pressão + ritmo de toques. Sem bloco caindo, diferente do Monstro.</p>
+    </div>
+
+    <!-- 04 PROGRESSÃO -->
+    <div class="block">
+      <div class="tag">04 · PROGRESSÃO</div>
+      <h2>3 fases, dificuldade crescente</h2>
+      <div class="phases">
+        <div class="phase"><span class="n">1</span><span class="pn">A FAÍSCA</span><div class="pd">1 combinação<br>tempo folgado</div></div>
+        <div class="phase p2"><span class="n">2</span><span class="pn">A FORJA</span><div class="pd">roleta mais rápida<br>mais cartas</div></div>
+        <div class="phase p3"><span class="n">3</span><span class="pn">EM SÉRIE</span><div class="pd">∞ · combos<br>placar da caravana</div></div>
+      </div>
+      <p class="muted" style="margin-top:10px;">Pontos por velocidade do trava e por viabilidade da combinação. Combo sobe o placar.</p>
+    </div>
+
+    <!-- 05 STACK -->
+    <div class="block">
+      <div class="tag">05 · STACK</div>
+      <h2>Reaproveita o que já existe</h2>
+      <div class="kv">
+        <p><strong>FRONT</strong> HTML/CSS/JS puro, sem build</p>
+        <p><strong>BACK</strong> Supabase, mesma tabela partidas (jogo='forja'), 11 camadas de hardening</p>
+        <p><strong>REUSO</strong> neon-store.js do Monstro, ~2h de implementação</p>
+        <p><strong>UX</strong> Touch-first, totem retrato</p>
+      </div>
+    </div>
+
+    <!-- 06 SAÍDA -->
+    <div class="block">
+      <div class="tag">06 · SAÍDA COMPARTILHÁVEL</div>
+      <h2>A Patente Maluca</h2>
+      <p>Toda partida fecha com um card da ideia que o jovem forjou, com o nome dele e um selo de "patente". O negócio absurdo-mas-plausível vira print pra postar.</p>
+      <p class="muted">É o gancho instagramável: gente adora compartilhar o negócio doido que "inventou".</p>
+    </div>
+
+    <!-- 07 CONTEXTO + EDU -->
+    <div class="block edu">
+      <div class="tag">07 · MAPEAMENTO EDUCACIONAL</div>
+      <h2>Slot "ideia" · módulo a jornada do empreender</h2>
+      <div class="edu-grid">
+        <div class="edu-col">
+          <h3>ENTRECOMP <span class="src">· Competências Empreendedoras</span></h3>
+          <div class="edu-row">
+            <div class="k">OPORTUN.</div>
+            <div class="v">Spotting opportunities <em>1.1</em>. Achar o negócio escondido no que já existe.</div>
+          </div>
+          <div class="edu-row">
+            <div class="k">CRIAR</div>
+            <div class="v">Creativity <em>1.2</em>. Combinar de formas novas e inesperadas.</div>
+          </div>
+          <div class="edu-row">
+            <div class="k">RECURSOS</div>
+            <div class="v">Mobilising resources <em>2.3</em>. Reconhecer o que se tem em volta como matéria-prima.</div>
+          </div>
+        </div>
+        <div class="edu-col">
+          <h3>BNCC <span class="src">· Competências Gerais</span></h3>
+          <div class="edu-row">
+            <div class="k">CRIAR</div>
+            <div class="v">Pensamento científico, crítico e criativo <em>CG 2</em>.</div>
+          </div>
+          <div class="edu-row">
+            <div class="k">PROJETO</div>
+            <div class="v">Trabalho e projeto de vida <em>CG 6</em>.</div>
+          </div>
+          <div class="edu-row">
+            <div class="k">LOCAL</div>
+            <div class="v">Conhecimento e repertório <em>CG 1 / CG 3</em>. Valorizar os saberes de Alagoas.</div>
+          </div>
+        </div>
+      </div>
+      <p class="edu-note">Dor/dúvida atacada: "como tirar a ideia da cabeça?", "preciso de muito dinheiro?" e a falta de referências locais. Estímulo motor distinto do Monstro (decisão e ritmo, não reflexo de queda).</p>
+    </div>
+
+  </div>
+
+  <footer>
+    <div>neon-sebrae-al.netlify.app / jogos / forja-de-ideias</div>
+    <div class="stamp">TIRO NA LUA · SEBRAE AL · ESCALADA</div>
+  </footer>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#050822" />
+<title>Hub · Espaço Educação Empreendedora · Neon Sebrae AL 2026</title>
+
+<meta property="og:title" content="Hub do Neon · Espaço Educação Empreendedora" />
+<meta property="og:description" content="Toda a experiência num lugar só: a jornada, os jogos do totem, as fichas técnicas e o Lunoscópio. Neon Sebrae AL, 11 a 13 de junho de 2026." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://neon-sebrae-al.netlify.app/hub/" />
+<meta property="og:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="1170" />
+<meta property="og:image:height" content="350" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+:root {
+  --verde: #00D95C; --verde-claro: #00FF85;
+  --magenta: #FF00FF; --magenta-claro: #FF76FF;
+  --ciano: #00F9FF; --azul: #2A4FDA; --azul-claro: #5680FF;
+  --branco: #FFFFFF; --navy: #0A0F36; --navy-deep: #050822; --navy-mid: #1A1F4E;
+  --amarelo: #FFD93D; --laranja: #FF8C42; --vermelho: #FF3060;
+  --muted: rgba(255,255,255,0.66);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+html, body {
+  background: var(--navy-deep);
+  color: var(--branco);
+  font-family: 'Space Grotesk', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: -2;
+  background:
+    linear-gradient(180deg, var(--navy-deep) 0%, var(--navy) 60%, var(--navy-mid) 100%),
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,249,255,0.04) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,249,255,0.04) 40px);
+}
+body::after {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 60;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15) 0, rgba(0,0,0,0.15) 1px, transparent 1px, transparent 3px);
+  mix-blend-mode: multiply; opacity: 0.4;
+}
+.stars {
+  position: fixed; inset: 0; z-index: -1;
+  background-image:
+    radial-gradient(2px 2px at 20% 15%, var(--branco) 50%, transparent 50%),
+    radial-gradient(1px 1px at 60% 25%, var(--ciano) 50%, transparent 50%),
+    radial-gradient(2px 2px at 85% 10%, var(--branco) 50%, transparent 50%),
+    radial-gradient(1px 1px at 40% 35%, var(--branco) 50%, transparent 50%),
+    radial-gradient(1px 1px at 75% 40%, var(--magenta-claro) 50%, transparent 50%),
+    radial-gradient(2px 2px at 15% 60%, var(--ciano) 50%, transparent 50%),
+    radial-gradient(1px 1px at 90% 75%, var(--branco) 50%, transparent 50%),
+    radial-gradient(2px 2px at 30% 85%, var(--magenta) 50%, transparent 50%);
+  animation: twinkle 5s ease-in-out infinite alternate;
+}
+@keyframes twinkle { from { opacity: 0.35; } to { opacity: 0.85; } }
+
+.wrap { position: relative; max-width: 1080px; margin: 0 auto; padding: 40px 24px 90px; }
+
+/* HEADER */
+.top { display: flex; justify-content: center; align-items: center; gap: 16px; margin-bottom: 34px; }
+.top img { height: 30px; opacity: 0.9; }
+.top .sep { width: 1px; height: 22px; background: rgba(255,255,255,0.2); }
+
+.hero { text-align: center; margin-bottom: 56px; }
+.eyebrow {
+  font-family: 'Press Start 2P', monospace; font-size: 10px; color: var(--ciano);
+  letter-spacing: 2px; margin-bottom: 16px; text-shadow: 0 0 8px var(--ciano);
+}
+h1 {
+  font-family: 'Press Start 2P', monospace; font-size: clamp(26px, 5vw, 44px);
+  color: var(--magenta-claro); text-shadow: 0 0 16px var(--magenta), 4px 4px 0 var(--navy-deep);
+  line-height: 1.25; margin-bottom: 16px; letter-spacing: 2px;
+}
+h1 .verde { color: var(--verde-claro); text-shadow: 0 0 16px var(--verde), 4px 4px 0 var(--navy-deep); }
+.tagline { font-size: 17px; font-weight: 500; color: rgba(255,255,255,0.85); margin-bottom: 12px; }
+.event {
+  font-family: 'Press Start 2P', monospace; font-size: 10px; color: var(--amarelo);
+  letter-spacing: 1.5px; text-shadow: 0 0 8px var(--amarelo); line-height: 1.8;
+}
+
+/* MOTE */
+.mote {
+  background: rgba(0,217,92,0.06); border: 1px solid rgba(0,217,92,0.35);
+  border-left: 4px solid var(--verde); border-radius: 12px;
+  padding: 28px 30px; margin-bottom: 56px; text-align: center;
+}
+.mote .seed {
+  font-family: 'Press Start 2P', monospace; font-size: clamp(14px, 2.4vw, 20px);
+  color: var(--verde-claro); line-height: 1.6; margin-bottom: 14px;
+  text-shadow: 0 0 12px rgba(0,255,133,0.45);
+}
+.mote .seed b { color: var(--amarelo); text-shadow: 0 0 12px rgba(255,217,61,0.5); }
+.mote p { font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 680px; margin: 0 auto; }
+
+/* SECTION TITLE */
+.sec-title {
+  font-family: 'Press Start 2P', monospace; font-size: 13px; color: var(--ciano);
+  letter-spacing: 1.5px; margin-bottom: 6px; text-shadow: 0 0 8px var(--ciano);
+}
+.sec-sub { font-size: 14px; color: var(--muted); margin-bottom: 22px; }
+.sec { margin-bottom: 56px; }
+
+/* JORNADA 5 FASES */
+.journey { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.fase {
+  background: rgba(10,15,54,0.6); border: 1px solid rgba(0,249,255,0.18);
+  border-radius: 10px; padding: 16px 12px; text-align: center;
+}
+.fase .num {
+  font-family: 'Press Start 2P', monospace; font-size: 16px; color: var(--magenta-claro);
+  text-shadow: 0 0 8px var(--magenta); display: block; margin-bottom: 8px;
+}
+.fase .nome {
+  font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--branco);
+  letter-spacing: 1px; display: block; margin-bottom: 10px; line-height: 1.5;
+}
+.fase .itens { font-size: 11.5px; color: var(--muted); line-height: 1.6; }
+
+/* CARDS DE EXPERIÊNCIA */
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.card {
+  background: rgba(10,15,54,0.7); border: 2px solid; border-radius: 14px;
+  padding: 20px 18px; text-decoration: none; color: var(--branco);
+  display: flex; flex-direction: column; transition: transform 0.15s, box-shadow 0.2s;
+}
+.card:hover { transform: translateY(-4px); }
+.card .icon { font-size: 30px; display: block; margin-bottom: 10px; }
+.card .ct {
+  font-family: 'Press Start 2P', monospace; font-size: 11px; line-height: 1.4;
+  letter-spacing: 0.5px; margin-bottom: 8px;
+}
+.card .cd { font-size: 12.5px; color: var(--muted); line-height: 1.5; flex: 1; }
+.card .cgo {
+  margin-top: 14px; font-family: 'Press Start 2P', monospace; font-size: 8px;
+  letter-spacing: 1.5px;
+}
+.card .status {
+  font-family: 'Press Start 2P', monospace; font-size: 7px; letter-spacing: 1px;
+  padding: 3px 7px; border-radius: 4px; align-self: flex-start; margin-bottom: 10px;
+}
+.st-live { background: rgba(0,217,92,0.18); color: var(--verde-claro); }
+.st-design { background: rgba(255,140,66,0.18); color: var(--laranja); }
+.st-validar { background: rgba(0,249,255,0.14); color: var(--ciano); }
+
+/* paletas por cor */
+.c-ciano { border-color: var(--ciano); box-shadow: 0 0 22px rgba(0,249,255,0.22); }
+.c-ciano .ct, .c-ciano .cgo { color: var(--ciano); }
+.c-verde { border-color: var(--verde); box-shadow: 0 0 22px rgba(0,217,92,0.22); }
+.c-verde .ct, .c-verde .cgo { color: var(--verde-claro); }
+.c-magenta { border-color: var(--magenta); box-shadow: 0 0 22px rgba(255,0,255,0.22); }
+.c-magenta .ct, .c-magenta .cgo { color: var(--magenta-claro); }
+.c-amarelo { border-color: var(--amarelo); box-shadow: 0 0 22px rgba(255,217,61,0.22); }
+.c-amarelo .ct, .c-amarelo .cgo { color: var(--amarelo); }
+.c-azul { border-color: var(--azul-claro); box-shadow: 0 0 22px rgba(86,128,255,0.22); }
+.c-azul .ct, .c-azul .cgo { color: var(--azul-claro); }
+.c-laranja { border-color: var(--laranja); box-shadow: 0 0 22px rgba(255,140,66,0.22); }
+.c-laranja .ct, .c-laranja .cgo { color: var(--laranja); }
+.card:hover.c-ciano { box-shadow: 0 0 38px rgba(0,249,255,0.5); }
+.card:hover.c-verde { box-shadow: 0 0 38px rgba(0,217,92,0.5); }
+.card:hover.c-magenta { box-shadow: 0 0 38px rgba(255,0,255,0.5); }
+.card:hover.c-amarelo { box-shadow: 0 0 38px rgba(255,217,61,0.5); }
+.card:hover.c-azul { box-shadow: 0 0 38px rgba(86,128,255,0.5); }
+.card:hover.c-laranja { box-shadow: 0 0 38px rgba(255,140,66,0.5); }
+
+/* JOGOS row */
+.games { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.game {
+  background: rgba(10,15,54,0.7); border: 2px solid var(--magenta); border-radius: 12px;
+  padding: 18px 14px; text-align: center; box-shadow: 0 0 20px rgba(255,0,255,0.18);
+}
+.game .gi { font-size: 30px; display: block; margin-bottom: 8px; }
+.game .gn {
+  font-family: 'Press Start 2P', monospace; font-size: 9.5px; color: var(--magenta-claro);
+  line-height: 1.45; margin-bottom: 6px; min-height: 42px;
+}
+.game .gskill { font-size: 11px; color: var(--muted); margin-bottom: 12px; line-height: 1.4; }
+.game .glinks { display: flex; flex-direction: column; gap: 6px; }
+.game a {
+  font-family: 'Press Start 2P', monospace; font-size: 8px; letter-spacing: 1px;
+  text-decoration: none; padding: 7px 4px; border-radius: 6px; display: block;
+}
+.game a.play { background: var(--magenta); color: var(--navy-deep); }
+.game a.fic { background: rgba(255,255,255,0.07); color: var(--ciano); border: 1px solid rgba(0,249,255,0.25); }
+.game.sebrae { border-color: rgba(255,255,255,0.25); box-shadow: none; }
+.game.sebrae .gn { color: rgba(255,255,255,0.8); }
+.game .gtag {
+  font-family: 'Press Start 2P', monospace; font-size: 7px; letter-spacing: 1px;
+  padding: 3px 6px; border-radius: 4px; display: inline-block; margin-bottom: 8px;
+}
+
+/* LINKS RÁPIDOS */
+.links { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.lnk {
+  display: flex; align-items: center; gap: 14px; text-decoration: none;
+  background: rgba(10,15,54,0.6); border: 1px solid rgba(0,249,255,0.18);
+  border-radius: 10px; padding: 16px 18px; color: var(--branco); transition: border-color 0.2s, transform 0.15s;
+}
+.lnk:hover { border-color: var(--ciano); transform: translateX(3px); }
+.lnk .li { font-size: 26px; }
+.lnk .lt { font-family: 'Press Start 2P', monospace; font-size: 10px; color: var(--ciano); margin-bottom: 5px; letter-spacing: 0.5px; }
+.lnk .ld { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+/* FOOTER */
+.foot {
+  margin-top: 30px; padding-top: 24px; border-top: 1px dashed rgba(255,255,255,0.15);
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  font-size: 12px; color: rgba(255,255,255,0.5); text-align: center;
+}
+.foot img { height: 16px; opacity: 0.55; }
+.foot .stamp { font-family: 'Press Start 2P', monospace; font-size: 8px; letter-spacing: 1px; color: rgba(255,255,255,0.4); }
+.foot a { color: var(--ciano); text-decoration: none; }
+
+@media (max-width: 820px) {
+  .journey { grid-template-columns: repeat(2, 1fr); }
+  .cards { grid-template-columns: 1fr 1fr; }
+  .games { grid-template-columns: 1fr 1fr; }
+  .links { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .journey, .cards { grid-template-columns: 1fr; }
+  .games { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="stars"></div>
+
+<div class="wrap">
+
+  <!-- TOPO -->
+  <div class="top">
+    <img src="../assets/logo-sebrae-branca.webp" alt="Sebrae Alagoas" />
+    <div class="sep"></div>
+    <img src="../assets/logo-tnl-h.png" alt="Tiro na Lua" />
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <p class="eyebrow">HUB · ESPAÇO EDUCAÇÃO EMPREENDEDORA</p>
+    <h1>NEON <span class="verde">2026</span></h1>
+    <p class="tagline">Toda a experiência num lugar só: a jornada, os jogos, as fichas e o método por trás.</p>
+    <p class="event">11, 12 E 13 DE JUNHO · CENTRO DE CONVENÇÕES · MACEIÓ</p>
+  </div>
+
+  <!-- MOTE -->
+  <div class="mote">
+    <div class="seed">O JOVEM ALAGOANO<br><b>PLANTA A SEMENTE</b> E <b>ACENDE A CENTELHA</b></div>
+    <p>Não é o slogan do evento, é a bússola narrativa que todo mundo divide. A semente é o primeiro passo que cada atividade ajuda a plantar. A centelha é o brilho que faz o jovem querer continuar. Casa com o São João: a roça e a fogueira.</p>
+  </div>
+
+  <!-- JORNADA -->
+  <div class="sec">
+    <div class="sec-title">A JORNADA</div>
+    <div class="sec-sub">Espiral da ação em 5 fases (resultado do Lunoscópio com o Sebrae AL).</div>
+    <div class="journey">
+      <div class="fase"><span class="num">1</span><span class="nome">ENTRADA</span><div class="itens">Pré-cadastro Escalada<br>Crachá numerado</div></div>
+      <div class="fase"><span class="num">2</span><span class="nome">DESCOBERTA</span><div class="itens">Jogos do Totem<br>Painel Bobby Goods</div></div>
+      <div class="fase"><span class="num">3</span><span class="nome">CLÍMAX</span><div class="itens">Oficinas · Escalada Financeira<br>Realidade Virtual · Palestras</div></div>
+      <div class="fase"><span class="num">4</span><span class="nome">PARTILHA</span><div class="itens">Caça ao Tesouro<br>Grêmio Estudantil</div></div>
+      <div class="fase"><span class="num">5</span><span class="nome">PÓS</span><div class="itens">Brindes gamificados<br>Continuar no Escalada</div></div>
+    </div>
+  </div>
+
+  <!-- EXPERIÊNCIAS -->
+  <div class="sec">
+    <div class="sec-title">AS EXPERIÊNCIAS</div>
+    <div class="sec-sub">Cada uma com ficha técnica (conceito, mecânica e mapeamento EntreComp + BNCC).</div>
+    <div class="cards">
+
+      <a class="card c-amarelo" href="/experiencias/palestras/">
+        <span class="status st-validar">PALCO</span>
+        <span class="icon">🎤</span>
+        <div class="ct">PALESTRAS</div>
+        <div class="cd">Palco e Areninha: referências, marketing pessoal, IA na escola e protagonismo.</div>
+        <div class="cgo">▶ VER FICHA</div>
+      </a>
+
+      <a class="card c-magenta" href="/experiencias/oficinas-supernova/">
+        <span class="status st-validar">SALA MANGABA</span>
+        <span class="icon">🧪</span>
+        <div class="ct">OFICINAS<br>SUPERNOVA</div>
+        <div class="cd">Ideação e finanças nos projetos. Mão na massa com facilitador (Ideias de Futuro + JA).</div>
+        <div class="cgo">▶ VER FICHA</div>
+      </a>
+
+      <a class="card c-verde" href="/experiencias/escalada-financeira/">
+        <span class="status st-live">ATIVA</span>
+        <span class="icon">🧗</span>
+        <div class="ct">ESCALADA<br>FINANCEIRA</div>
+        <div class="cd">Parede de 6m que vira metáfora viva do planejamento financeiro (Lucas Muniz).</div>
+        <div class="cgo">▶ VER FICHA</div>
+      </a>
+
+      <a class="card c-azul" href="/experiencias/realidade-virtual/">
+        <span class="status st-validar">VR · EMPATIZE</span>
+        <span class="icon">🥽</span>
+        <div class="ct">REALIDADE<br>VIRTUAL</div>
+        <div class="cd">Empatia e inclusão na pele: você decide um negócio vivendo a barreira do outro.</div>
+        <div class="cgo">▶ VER FICHA</div>
+      </a>
+
+      <a class="card c-laranja" href="/experiencias/caca-ao-tesouro/">
+        <span class="status st-validar">MOBILE · AR</span>
+        <span class="icon">📱</span>
+        <div class="ct">CAÇA AO<br>TESOURO</div>
+        <div class="cd">Realidade aumentada: 5 pontos escondidos pelo espaço, cada um um aprendizado.</div>
+        <div class="cgo">▶ VER FICHA</div>
+      </a>
+
+      <a class="card c-ciano" href="#jogos">
+        <span class="status st-live">4 TOTENS</span>
+        <span class="icon">🎮</span>
+        <div class="ct">JOGOS<br>DO TOTEM</div>
+        <div class="cd">Arcade rápido com placar ao vivo por caravana. Veja os 4 jogos abaixo.</div>
+        <div class="cgo">▼ VER JOGOS</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- JOGOS DO TOTEM -->
+  <div class="sec" id="jogos">
+    <div class="sec-title">OS JOGOS DO TOTEM</div>
+    <div class="sec-sub">Quatro raias motoras distintas, competências distintas. Três da Tiro na Lua, um do Sebrae.</div>
+    <div class="games">
+
+      <div class="game">
+        <span class="gtag st-live">NO AR · REFLEXO</span>
+        <span class="gi">👹</span>
+        <div class="gn">O MONSTRO DO PRÓXIMO PASSO</div>
+        <div class="gskill">Coragem de começar. Os medos caem, os recursos derrubam.</div>
+        <div class="glinks">
+          <a class="play" href="/jogar/monstro/">▶ JOGAR</a>
+          <a class="fic" href="/jogar/monstro/ficha/">FICHA</a>
+        </div>
+      </div>
+
+      <div class="game">
+        <span class="gtag st-design">DESIGN · COMBINAÇÃO</span>
+        <span class="gi">⚒️</span>
+        <div class="gn">FORJA DE IDEIAS</div>
+        <div class="gskill">Recurso local + problema real. Empreender é recombinar o que tem em volta.</div>
+        <div class="glinks">
+          <a class="fic" href="/jogos/forja-de-ideias/ficha/">VER DESIGN</a>
+        </div>
+      </div>
+
+      <div class="game">
+        <span class="gtag st-design">DESIGN · SELFIE</span>
+        <span class="gi">⭐</span>
+        <div class="gn">REFERÊNCIA ALAGOANA</div>
+        <div class="gskill">Qual fazedor de Alagoas tem a tua vibe? Orgulho local que vira print.</div>
+        <div class="glinks">
+          <a class="fic" href="/jogos/referencia-alagoana/ficha/">VER DESIGN</a>
+        </div>
+      </div>
+
+      <div class="game sebrae">
+        <span class="gtag st-validar">SEBRAE · MEMÓRIA</span>
+        <span class="gi">🔢</span>
+        <div class="gn">JOGO SEBRAE TEAM</div>
+        <div class="gskill">Sequência de luzes. 4º totem, operado pelo Sebrae.</div>
+        <div class="glinks">
+          <a class="fic" href="/placar/">VER PLACAR</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LINKS RÁPIDOS -->
+  <div class="sec">
+    <div class="sec-title">O MÉTODO POR TRÁS</div>
+    <div class="sec-sub">A costura narrativa, o Lunoscópio e o placar que conecta tudo.</div>
+    <div class="links">
+      <a class="lnk" href="/jornada/">
+        <span class="li">🧵</span>
+        <div><div class="lt">A COSTURA DO NEON</div><div class="ld">Deck da jornada: como as ilhas viram uma experiência só.</div></div>
+      </a>
+      <a class="lnk" href="/cocriacao/">
+        <span class="li">🌙</span>
+        <div><div class="lt">LUNOSCÓPIO</div><div class="ld">Os 4Ds, o mote e a espiral da ação. A cocriação com o Sebrae AL.</div></div>
+      </a>
+      <a class="lnk" href="/placar/">
+        <span class="li">📊</span>
+        <div><div class="lt">PLACAR AO VIVO</div><div class="ld">Ranking das caravanas em tempo real nos jogos do totem.</div></div>
+      </a>
+      <a class="lnk" href="/">
+        <span class="li">🏠</span>
+        <div><div class="lt">PÁGINA INICIAL</div><div class="ld">A porta de entrada pública do Espaço Educação Empreendedora.</div></div>
+      </a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="foot">
+    <img src="../assets/logo-tnl-h.png" alt="Tiro na Lua" />
+    <div class="stamp">TIRO NA LUA · SEBRAE ALAGOAS · ESCALADA</div>
+    <a href="https://github.com/lucastnl/neon-sebrae-al" target="_blank">github.com/lucastnl/neon-sebrae-al</a>
+  </div>
+
+</div>
+</body>
+</html>
