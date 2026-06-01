@@ -69,6 +69,11 @@
   [headers.values]
     Cache-Control = "no-store, max-age=0, must-revalidate"
 
+[[headers]]
+  for = "/fichas/*"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0, must-revalidate"
+
 # Rotas amigáveis
 [[redirects]]
   from = "/jogar"

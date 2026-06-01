@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#050822" />
+<title>Matriz das Experiências · Fichas Técnicas · Neon Sebrae AL 2026</title>
+
+<meta property="og:title" content="Matriz das Experiências · Espaço Educação Empreendedora" />
+<meta property="og:description" content="As experiências do Espaço Educação Empreendedora do Neon Sebrae AL numa página só: tema, microtema, BNCC e EntreComp com a competência que cada uma desenvolve, mais o roteiro de impacto e os 4Ds do jovem. Leitura intuitiva, exporta em PDF." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://neon-sebrae-al.netlify.app/fichas/" />
+<meta property="og:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
+<meta property="og:image:type" content="image/jpeg" />
+<meta property="og:image:width" content="1170" />
+<meta property="og:image:height" content="350" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+:root {
+  --verde: #00D95C; --magenta: #FF00FF; --ciano: #00F9FF; --azul: #2A4FDA;
+  --amarelo: #FFD93D; --laranja: #FF8C42;
+  --navy: #0A0F36; --navy-deep: #050822; --navy-mid: #1A1F4E;
+  /* tema claro */
+  --bg: #eaedf6;
+  --paper: #ffffff;
+  --ink: #161a33;
+  --ink-soft: #565d7a;
+  --ink-faint: #8a90a8;
+  --line: #e2e5f0;
+  --line-soft: #eef0f7;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+html, body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Space Grotesk', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ===== HERO ESCURO (identidade Neon) ===== */
+.hero {
+  background:
+    radial-gradient(900px 300px at 80% -20%, rgba(255,0,255,0.25), transparent 60%),
+    radial-gradient(700px 300px at 10% 0%, rgba(0,249,255,0.20), transparent 60%),
+    linear-gradient(180deg, var(--navy-deep) 0%, var(--navy) 100%);
+  color: #fff;
+  padding: 30px 24px 38px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,0.10) 0, rgba(0,0,0,0.10) 1px, transparent 1px, transparent 3px);
+  mix-blend-mode: multiply; opacity: 0.4;
+}
+.hero-in { max-width: 1180px; margin: 0 auto; position: relative; z-index: 1; }
+.hero-top { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
+.hero-top img { height: 26px; opacity: 0.92; }
+.hero-top .sep { width: 1px; height: 20px; background: rgba(255,255,255,0.25); }
+.eyebrow {
+  font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--ciano);
+  letter-spacing: 2px; margin-bottom: 14px; text-shadow: 0 0 8px var(--ciano);
+}
+.hero h1 {
+  font-family: 'Press Start 2P', monospace; font-size: clamp(20px, 3.4vw, 34px);
+  line-height: 1.3; color: #fff; letter-spacing: 1px; margin-bottom: 14px;
+  text-shadow: 0 0 16px rgba(255,0,255,0.5), 3px 3px 0 var(--navy-deep);
+}
+.hero h1 .mg { color: #FF76FF; }
+.hero .lead { font-size: 16px; color: rgba(255,255,255,0.82); max-width: 760px; line-height: 1.55; margin-bottom: 12px; }
+.hero .ev {
+  font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--amarelo);
+  letter-spacing: 1.2px; text-shadow: 0 0 8px var(--amarelo);
+}
+
+/* ===== NAV STICKY (skim) ===== */
+.nav {
+  position: sticky; top: 0; z-index: 40;
+  background: rgba(255,255,255,0.92); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.nav-in {
+  max-width: 1180px; margin: 0 auto; padding: 10px 24px;
+  display: flex; gap: 7px; align-items: center; overflow-x: auto;
+}
+.nav-lbl {
+  font-family: 'Press Start 2P', monospace; font-size: 8px; color: var(--ink-faint);
+  letter-spacing: 1px; white-space: nowrap; margin-right: 4px;
+}
+.nav a {
+  font-size: 12px; font-weight: 600; color: var(--ink-soft); text-decoration: none;
+  padding: 6px 11px; border-radius: 999px; white-space: nowrap;
+  border: 1px solid var(--line); transition: all 0.15s; background: #fff;
+}
+.nav a:hover { color: var(--ink); border-color: var(--ink-faint); transform: translateY(-1px); }
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 34px 24px 110px; }
+
+/* ===== BLOCO ROTEIRO + 4Ds ===== */
+.context { display: grid; grid-template-columns: 1.15fr 1fr; gap: 18px; margin-bottom: 34px; }
+.card-base {
+  background: var(--paper); border: 1px solid var(--line); border-radius: 16px;
+  padding: 22px 24px; box-shadow: 0 6px 22px rgba(20,26,51,0.05);
+}
+.blk-tag {
+  font-family: 'Press Start 2P', monospace; font-size: 8.5px; letter-spacing: 1.2px;
+  color: var(--ink-faint); margin-bottom: 12px;
+}
+.roteiro-mote {
+  font-size: clamp(19px, 2.3vw, 25px); font-weight: 700; line-height: 1.32; margin-bottom: 12px;
+}
+.roteiro-mote .semente { color: #0f9d58; }
+.roteiro-mote .centelha { color: #d11fb0; }
+.roteiro-card p { font-size: 13.5px; color: var(--ink-soft); line-height: 1.55; }
+.roteiro-card p .src { display: block; margin-top: 10px; font-size: 11.5px; color: var(--ink-faint); }
+
+.ds-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ds-item {
+  border: 1px solid var(--line); border-radius: 11px; padding: 11px 13px;
+  background: var(--line-soft);
+}
+.ds-item .d-h { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+.ds-item .d-h .em { font-size: 15px; }
+.ds-item .d-h b { font-family: 'Press Start 2P', monospace; font-size: 8.5px; letter-spacing: 0.5px; color: var(--ink); }
+.ds-item .d-txt { font-size: 11.5px; color: var(--ink-soft); line-height: 1.45; }
+
+/* ===== MATRIZ COMPILADA (skim) ===== */
+.skim-h { display: flex; align-items: baseline; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.skim-h h2 { font-size: 19px; font-weight: 700; }
+.skim-h p { font-size: 13px; color: var(--ink-soft); }
+.tbl-wrap {
+  background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
+  overflow: hidden; box-shadow: 0 6px 22px rgba(20,26,51,0.05); margin-bottom: 40px;
+}
+table.matriz { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+table.matriz thead th {
+  background: #f4f6fc; text-align: left; padding: 11px 14px;
+  font-family: 'Press Start 2P', monospace; font-size: 7.5px; letter-spacing: 0.8px;
+  color: var(--ink-soft); text-transform: uppercase; border-bottom: 1px solid var(--line);
+}
+table.matriz tbody td { padding: 12px 14px; border-bottom: 1px solid var(--line-soft); vertical-align: top; line-height: 1.45; }
+table.matriz tbody tr:last-child td { border-bottom: none; }
+table.matriz tbody tr:hover { background: #fafbff; }
+.m-exp { white-space: nowrap; }
+.m-exp a { color: var(--ink); font-weight: 700; text-decoration: none; border-bottom: 2px solid transparent; }
+.m-exp a:hover { border-bottom-color: currentColor; }
+.m-exp .e { margin-right: 6px; }
+.m-codes { font-family: 'Press Start 2P', monospace; font-size: 8px; color: var(--ink-soft); letter-spacing: 0.3px; line-height: 1.8; }
+.grp-row td {
+  background: var(--navy); color: #fff; font-family: 'Press Start 2P', monospace;
+  font-size: 8.5px; letter-spacing: 1.5px; padding: 9px 14px;
+}
+.grp-row td .gd { color: rgba(255,255,255,0.6); font-family: 'Space Grotesk'; font-size: 11px; letter-spacing: 0; margin-left: 8px; }
+.fase-pill {
+  display: inline-block; font-family: 'Press Start 2P', monospace; font-size: 7px;
+  letter-spacing: 0.5px; padding: 4px 8px; border-radius: 5px; white-space: nowrap;
+}
+.f-desc { background: rgba(0,249,255,0.14); color: #0a7b88; }
+.f-clim { background: rgba(255,0,255,0.12); color: #b01b96; }
+.f-part { background: rgba(255,140,66,0.16); color: #c25e16; }
+
+/* ===== CARTÕES EXPANDIDOS ===== */
+.grp-title {
+  display: flex; align-items: center; gap: 12px; margin: 8px 0 18px;
+}
+.grp-title .gt {
+  font-family: 'Press Start 2P', monospace; font-size: 12px; letter-spacing: 1px; color: var(--ink);
+}
+.grp-title .gline { flex: 1; height: 1px; background: var(--line); }
+.grp-title .gsub { font-size: 12.5px; color: var(--ink-soft); }
+
+.exp {
+  background: var(--paper); border: 1px solid var(--line);
+  border-left: 5px solid var(--ac); border-radius: 16px;
+  padding: 22px 24px; margin-bottom: 18px;
+  box-shadow: 0 6px 22px rgba(20,26,51,0.05);
+}
+.exp-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; flex-wrap: wrap; margin-bottom: 16px; }
+.exp-id { display: flex; gap: 14px; align-items: flex-start; }
+.exp-emoji {
+  font-size: 26px; line-height: 1; flex-shrink: 0;
+  width: 46px; height: 46px; display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--ac) 12%, white); border-radius: 12px;
+}
+.exp-id h3 { font-size: 18px; font-weight: 700; color: var(--ac); line-height: 1.2; margin-bottom: 5px; }
+.exp-tema { font-size: 13.5px; color: var(--ink); font-weight: 600; }
+.exp-tema span { color: var(--ink-soft); font-weight: 400; }
+.exp-meta { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
+.exp-meta .forn {
+  font-size: 11px; color: var(--ink-soft); background: var(--line-soft);
+  padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); white-space: nowrap;
+}
+
+.exp-body { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; padding: 16px 0; border-top: 1px solid var(--line-soft); }
+.comp-col h4 {
+  font-family: 'Press Start 2P', monospace; font-size: 9px; letter-spacing: 0.8px;
+  margin-bottom: 12px; color: var(--ink);
+}
+.comp-col h4 span { font-family: 'Space Grotesk'; font-size: 11px; color: var(--ink-faint); letter-spacing: 0; font-weight: 500; margin-left: 4px; }
+.comp-col.bncc h4 { color: #0f9d58; }
+.comp-col.entre h4 { color: #2f54d8; }
+.comp-row { display: grid; grid-template-columns: auto 1fr; gap: 11px; padding: 8px 0; border-bottom: 1px dashed var(--line); align-items: start; }
+.comp-row:last-child { border-bottom: none; }
+.comp-row .num {
+  font-family: 'Press Start 2P', monospace; font-size: 8.5px; letter-spacing: 0.3px;
+  padding: 5px 7px; border-radius: 6px; white-space: nowrap; line-height: 1.3;
+}
+.bncc .num { background: rgba(15,157,88,0.12); color: #0c7d45; }
+.entre .num { background: rgba(47,84,216,0.12); color: #2444b8; }
+.comp-row .cv b { display: block; font-size: 13px; color: var(--ink); font-weight: 700; line-height: 1.3; margin-bottom: 2px; }
+.comp-row .cv i { font-style: normal; font-size: 12.5px; color: var(--ink-soft); line-height: 1.45; }
+.comp-row .cv i::before { content: '→ '; color: var(--ac); font-weight: 700; }
+
+.exp-foot { padding-top: 15px; border-top: 1px solid var(--line-soft); display: grid; gap: 12px; }
+.roteiro-row { font-size: 13.5px; color: var(--ink); line-height: 1.55; }
+.roteiro-row .lbl, .ds-row .lbl {
+  font-family: 'Press Start 2P', monospace; font-size: 8px; letter-spacing: 0.6px;
+  color: var(--ac); display: inline-block; margin-right: 8px; vertical-align: 1px;
+}
+.ds-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.d-pill {
+  font-size: 11.5px; color: var(--ink-soft); background: var(--line-soft);
+  border: 1px solid var(--line); padding: 4px 10px; border-radius: 999px;
+}
+
+/* ===== FOOTER ===== */
+.foot {
+  max-width: 1180px; margin: 0 auto; padding: 24px; text-align: center;
+  color: var(--ink-faint); font-size: 12px;
+}
+.foot .stamp { font-family: 'Press Start 2P', monospace; font-size: 8px; letter-spacing: 1px; margin-top: 8px; color: var(--ink-soft); }
+.foot a { color: #2f54d8; text-decoration: none; }
+
+/* ===== BOTÕES FLUTUANTES ===== */
+.float-btns { position: fixed; bottom: 24px; right: 24px; z-index: 500; display: flex; gap: 10px; }
+.float-btns a, .float-btns button {
+  font-family: 'Press Start 2P', monospace; font-size: 10px; letter-spacing: 1px;
+  padding: 12px 16px; border: none; border-radius: 999px; cursor: pointer;
+  text-decoration: none; display: inline-block;
+}
+.print-btn { background: #0f9d58; color: #fff; box-shadow: 0 6px 24px rgba(15,157,88,0.4); }
+.hub-btn { background: var(--navy); color: var(--ciano); box-shadow: 0 6px 24px rgba(10,15,54,0.3); }
+.float-btns a:hover, .float-btns button:hover { transform: translateY(-2px); }
+
+/* ===== MOBILE ===== */
+@media (max-width: 860px) {
+  .context { grid-template-columns: 1fr; }
+  .exp-body { grid-template-columns: 1fr; gap: 16px; }
+  .tbl-wrap { overflow-x: auto; }
+  table.matriz { min-width: 680px; }
+  .hero h1 { font-size: 21px; }
+}
+
+/* ===== PRINT A4 ===== */
+@media print {
+  @page { size: A4 portrait; margin: 11mm; }
+  html, body { background: #fff; }
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .nav, .float-btns { display: none !important; }
+  .hero { padding: 0 0 16px; background: #fff; color: var(--navy); border-bottom: 2px solid var(--navy); }
+  .hero::after { display: none; }
+  .hero-top img { filter: none; }
+  .hero .eyebrow { color: #2444b8; text-shadow: none; }
+  .hero h1 { color: var(--navy); text-shadow: none; font-size: 18px; }
+  .hero h1 .mg { color: #b01b96; }
+  .hero .lead { color: #333; }
+  .hero .ev { color: #555; text-shadow: none; }
+  .wrap { padding: 16px 0 0; max-width: none; }
+  .card-base, .exp, .tbl-wrap { box-shadow: none; break-inside: avoid; }
+  .exp { break-inside: avoid; }
+  .grp-row td, .grp-title .gt { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .context { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<div class="float-btns">
+  <a class="hub-btn" href="/hub/">◂ HUB</a>
+  <button class="print-btn" onclick="window.print()">⬇ PDF</button>
+</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-in">
+    <div class="hero-top">
+      <img src="../assets/logo-sebrae-branca.webp" alt="Sebrae Alagoas" />
+      <span class="sep"></span>
+      <img src="../assets/logo-tnl-h.png" alt="Tiro na Lua" />
+    </div>
+    <p class="eyebrow">FICHAS TÉCNICAS · ESPAÇO EDUCAÇÃO EMPREENDEDORA</p>
+    <h1>A MATRIZ DAS <span class="mg">EXPERIÊNCIAS</span></h1>
+    <p class="lead">Todas as experiências numa página só: o que cada uma desperta, em que fase da jornada entra e onde encosta no currículo. BNCC e EntreComp vêm com a competência e o que ela desenvolve, não só o número.</p>
+    <p class="ev">NEON SEBRAE AL · 11, 12 E 13 DE JUNHO DE 2026 · MACEIÓ</p>
+  </div>
+</header>
+
+<!-- NAV SKIM -->
+<nav class="nav">
+  <div class="nav-in">
+    <span class="nav-lbl">IR PARA</span>
+    <a href="#matriz">Matriz</a>
+    <a href="#monstro">Monstro</a>
+    <a href="#forja">Forja de Ideias</a>
+    <a href="#referencia">Referência Alagoana</a>
+    <a href="#palestras">Palestras</a>
+    <a href="#oficinas">Oficinas</a>
+    <a href="#escalada">Escalada Financeira</a>
+    <a href="#vr">Realidade Virtual</a>
+    <a href="#caca">Caça ao Tesouro</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- CONTEXTO: ROTEIRO DE IMPACTO + 4Ds -->
+  <section class="context">
+    <div class="card-base roteiro-card">
+      <div class="blk-tag">⌖ ROTEIRO DE IMPACTO · O FIO QUE LIGA TUDO</div>
+      <p class="roteiro-mote">No Neon, o jovem alagoano <span class="semente">planta a semente</span> e <span class="centelha">acende a centelha</span>.</p>
+      <p>Não é o slogan do evento, é a bússola narrativa que todas as experiências dividem. A semente é o primeiro passo que cada atividade ajuda a plantar; a centelha é o brilho que faz o jovem querer continuar. Casa com o São João: a roça e a fogueira.
+      <span class="src">Cocriado com o Sebrae AL no Lunoscópio · 25/05/2026</span></p>
+    </div>
+
+    <div class="card-base">
+      <div class="blk-tag">◴ OS 4Ds DO JOVEM · O SENSOR DE REALIDADE</div>
+      <div class="ds-grid">
+        <div class="ds-item">
+          <div class="d-h"><span class="em">🩹</span><b>DORES</b></div>
+          <div class="d-txt">Medo de errar · escola desconectada da vida · falta de referências locais.</div>
+        </div>
+        <div class="ds-item">
+          <div class="d-h"><span class="em">❓</span><b>DÚVIDAS</b></div>
+          <div class="d-txt">"Eu sirvo pra isso?" · "preciso de muito dinheiro?" · como tirar a ideia da cabeça.</div>
+        </div>
+        <div class="ds-item">
+          <div class="d-h"><span class="em">⚖️</span><b>DILEMAS</b></div>
+          <div class="d-txt">Paixão ou o que paga · faculdade ou empreender · individual ou coletivo.</div>
+        </div>
+        <div class="ds-item">
+          <div class="d-h"><span class="em">🌅</span><b>DESEJOS</b></div>
+          <div class="d-txt">Renda própria cedo · ser referência · fazer algo que importa.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MATRIZ COMPILADA (SKIM) -->
+  <section id="matriz">
+    <div class="skim-h">
+      <h2>A matriz, de relance</h2>
+      <p>Oito fichas, agrupadas por fase da jornada. Clique no nome pra descer até a ficha completa.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table class="matriz">
+        <thead>
+          <tr>
+            <th style="width:21%">Experiência</th>
+            <th style="width:13%">Fase</th>
+            <th style="width:30%">Tema · microtema</th>
+            <th style="width:18%">BNCC</th>
+            <th style="width:18%">EntreComp</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="grp-row"><td colspan="5">🎮 JOGOS DO TOTEM <span class="gd">arcade rápido, placar ao vivo por caravana</span></td></tr>
+
+          <tr>
+            <td class="m-exp"><a href="#monstro"><span class="e">👹</span>Monstro do Próximo Passo</a></td>
+            <td><span class="fase-pill f-desc">DESCOBERTA</span></td>
+            <td><b>Coragem de começar.</b> Os medos caem, os recursos derrubam.</td>
+            <td class="m-codes">CG6 · CG8<br>CG9 · CG10</td>
+            <td class="m-codes">3.1 · 3.2<br>2.1 · 3.3</td>
+          </tr>
+          <tr>
+            <td class="m-exp"><a href="#forja"><span class="e">⚒️</span>Forja de Ideias</a></td>
+            <td><span class="fase-pill f-desc">DESCOBERTA</span></td>
+            <td><b>Ideação a partir do local.</b> Recurso de Alagoas + problema real.</td>
+            <td class="m-codes">CG1 · CG2<br>CG3 · CG6</td>
+            <td class="m-codes">1.1 · 1.2<br>2.3</td>
+          </tr>
+          <tr>
+            <td class="m-exp"><a href="#referencia"><span class="e">⭐</span>Referência Alagoana</a></td>
+            <td><span class="fase-pill f-desc">DESCOBERTA</span></td>
+            <td><b>Autoconhecimento e pertencimento.</b> Qual fazedor de AL tem a tua vibe.</td>
+            <td class="m-codes">CG3 · CG6<br>CG8</td>
+            <td class="m-codes">1.3 · 2.1</td>
+          </tr>
+
+          <tr class="grp-row"><td colspan="5">✦ ESTAÇÕES DA JORNADA <span class="gd">palco, sala e parede</span></td></tr>
+
+          <tr>
+            <td class="m-exp"><a href="#palestras"><span class="e">🎤</span>Palestras</a></td>
+            <td><span class="fase-pill f-clim">CLÍMAX</span></td>
+            <td><b>Visão e repertório.</b> Marketing pessoal, IA na escola, protagonismo.</td>
+            <td class="m-codes">CG4 · CG5<br>CG6 · CG10</td>
+            <td class="m-codes">1.1 · 1.3<br>2.1</td>
+          </tr>
+          <tr>
+            <td class="m-exp"><a href="#oficinas"><span class="e">🧪</span>Oficinas da Sala Mangaba</a></td>
+            <td><span class="fase-pill f-clim">CLÍMAX</span></td>
+            <td><b>Ideação e finanças na prática.</b> Da ideia ao plano, mão na massa.</td>
+            <td class="m-codes">CG2 · CG6<br>CG10</td>
+            <td class="m-codes">1.1 · 1.2<br>1.4 · 2.4 · 3.2</td>
+          </tr>
+          <tr>
+            <td class="m-exp"><a href="#escalada"><span class="e">🧗</span>Escalada Financeira</a></td>
+            <td><span class="fase-pill f-clim">CLÍMAX</span></td>
+            <td><b>Educação financeira no corpo.</b> Rota, reserva, queda segura, resiliência.</td>
+            <td class="m-codes">CG2 · CG6<br>CG8 · CG10</td>
+            <td class="m-codes">2.2 · 2.4<br>3.2 · 3.3</td>
+          </tr>
+          <tr>
+            <td class="m-exp"><a href="#vr"><span class="e">🥽</span>Realidade Virtual · Empatize</a></td>
+            <td><span class="fase-pill f-clim">CLÍMAX</span></td>
+            <td><b>Empreendedorismo inclusivo.</b> Sentir na pele a barreira do outro.</td>
+            <td class="m-codes">CG8 · CG9<br>CG10</td>
+            <td class="m-codes">1.5 · 2.1<br>3.4</td>
+          </tr>
+          <tr>
+            <td class="m-exp"><a href="#caca"><span class="e">📱</span>Caça ao Tesouro · AR</a></td>
+            <td><span class="fase-pill f-part">PARTILHA</span></td>
+            <td><b>Cultura digital e exploração.</b> 5 pontos em AR consolidam o aprendizado.</td>
+            <td class="m-codes">CG4 · CG5<br>CG6</td>
+            <td class="m-codes">1.1 · 3.5</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== JOGOS DO TOTEM ===== -->
+  <div class="grp-title">
+    <span class="gt">🎮 JOGOS DO TOTEM</span>
+    <span class="gsub">Fase Descoberta · Tiro na Lua · três raias motoras distintas</span>
+    <span class="gline"></span>
+  </div>
+
+  <!-- MONSTRO -->
+  <article class="exp" id="monstro" style="--ac:#0d9aa8">
+    <div class="exp-head">
+      <div class="exp-id">
+        <span class="exp-emoji">👹</span>
+        <div>
+          <h3>O Monstro do Próximo Passo</h3>
+          <p class="exp-tema">Coragem de começar · <span>os medos caem, os recursos derrubam (procrastinação→plano, comparação→foco, autocobrança→coragem, paralisia→apoio)</span></p>
+        </div>
+      </div>
+      <div class="exp-meta"><span class="forn">Tiro na Lua · no ar</span></div>
+    </div>
+    <div class="exp-body">
+      <div class="comp-col bncc">
+        <h4>BNCC <span>· Competências Gerais</span></h4>
+        <div class="comp-row"><span class="num">CG6</span><div class="cv"><b>Trabalho e projeto de vida</b><i>planejar e agir sobre o próprio percurso</i></div></div>
+        <div class="comp-row"><span class="num">CG8</span><div class="cv"><b>Autoconhecimento e autocuidado</b><i>lidar com a frustração diante do outro e persistir</i></div></div>
+        <div class="comp-row"><span class="num">CG9</span><div class="cv"><b>Empatia e cooperação</b><i>pedir e oferecer ajuda, atuar com o coletivo</i></div></div>
+        <div class="comp-row"><span class="num">CG10</span><div class="cv"><b>Responsabilidade e cidadania</b><i>assumir a ação sobre o próprio futuro</i></div></div>
+      </div>
+      <div class="comp-col entre">
+        <h4>EntreComp <span>· Competências Empreendedoras (UE)</span></h4>
+        <div class="comp-row"><span class="num">3.1+3.2</span><div class="cv"><b>Iniciativa · Planejamento e gestão</b><i>cortar o passo grande em passo viável e executar</i></div></div>
+        <div class="comp-row"><span class="num">2.1+1.3</span><div class="cv"><b>Autoeficácia · Visão</b><i>voltar o olhar pra dentro e sustentar a direção própria</i></div></div>
+        <div class="comp-row"><span class="num">3.3+3.5</span><div class="cv"><b>Lidar com incerteza · Aprender fazendo</b><i>tratar o erro como dado, não como identidade</i></div></div>
+        <div class="comp-row"><span class="num">2.3+3.4</span><div class="cv"><b>Mobilizar recursos · Trabalhar com os outros</b><i>pedir ajuda como atalho, não como fraqueza</i></div></div>
+      </div>
+    </div>
+    <div class="exp-foot">
+      <div class="roteiro-row"><span class="lbl">ROTEIRO</span>Rito de entrada: ativa em 2 minutos competências que a trilha Escalada aprofunda em semanas. Cada partida deixa quatro ganchos vivos pra continuar fora do totem. Planta a semente da coragem de dar o primeiro passo.</div>
+      <div class="ds-row"><span class="lbl">ATACA</span><span class="d-pill">❓ "eu sirvo pra isso?"</span><span class="d-pill">🩹 medo de errar</span></div>
+    </div>
+  </article>
+
+  <!-- FORJA -->
+  <article class="exp" id="forja" style="--ac:#16a34a">
+    <div class="exp-head">
+      <div class="exp-id">
+        <span class="exp-emoji">⚒️</span>
+        <div>
+          <h3>Forja de Ideias</h3>
+          <p class="exp-tema">Ideação a partir do local · <span>combina um recurso de Alagoas com um problema real pra forjar um negócio (em design, red team)</span></p>
+        </div>
+      </div>
+      <div class="exp-meta"><span class="forn">Tiro na Lua · em design</span></div>
+    </div>
+    <div class="exp-body">
+      <div class="comp-col bncc">
+        <h4>BNCC <span>· Competências Gerais</span></h4>
+        <div class="comp-row"><span class="num">CG2</span><div class="cv"><b>Pensamento científico, crítico e criativo</b><i>combinar elementos de formas novas e inesperadas</i></div></div>
+        <div class="comp-row"><span class="num">CG1+CG3</span><div class="cv"><b>Conhecimento e repertório cultural</b><i>valorizar os saberes e recursos de Alagoas</i></div></div>
+        <div class="comp-row"><span class="num">CG6</span><div class="cv"><b>Trabalho e projeto de vida</b><i>enxergar empreender como caminho possível</i></div></div>
+      </div>
+      <div class="comp-col entre">
+        <h4>EntreComp <span>· Competências Empreendedoras (UE)</span></h4>
+        <div class="comp-row"><span class="num">1.1</span><div class="cv"><b>Identificar oportunidades</b><i>achar o negócio escondido no que já existe em volta</i></div></div>
+        <div class="comp-row"><span class="num">1.2</span><div class="cv"><b>Criatividade</b><i>recombinar recurso e problema de jeito original</i></div></div>
+        <div class="comp-row"><span class="num">2.3</span><div class="cv"><b>Mobilizar recursos</b><i>reconhecer o entorno como matéria-prima</i></div></div>
+      </div>
+    </div>
+    <div class="exp-foot">
+      <div class="roteiro-row"><span class="lbl">ROTEIRO</span>Mata a dúvida "preciso de uma ideia genial e muito dinheiro": a matéria-prima já está aqui. Fecha com a Patente Maluca, um card da ideia forjada que vira print compartilhável.</div>
+      <div class="ds-row"><span class="lbl">ATACA</span><span class="d-pill">❓ como tirar a ideia da cabeça</span><span class="d-pill">❓ preciso de muito dinheiro?</span><span class="d-pill">🩹 falta de referências locais</span></div>
+    </div>
+  </article>
+
+  <!-- REFERÊNCIA ALAGOANA -->
+  <article class="exp" id="referencia" style="--ac:#c81e9b">
+    <div class="exp-head">
+      <div class="exp-id">
+        <span class="exp-emoji">⭐</span>
+        <div>
+          <h3>Referência Alagoana</h3>
+          <p class="exp-tema">Autoconhecimento e pertencimento · <span>selfie + perfil revelam um fazedor real de Alagoas com a vibe do jovem (em design, red team)</span></p>
+        </div>
+      </div>
+      <div class="exp-meta"><span class="forn">Tiro na Lua · em design</span></div>
+    </div>
+    <div class="exp-body">
+      <div class="comp-col bncc">
+        <h4>BNCC <span>· Competências Gerais</span></h4>
+        <div class="comp-row"><span class="num">CG8</span><div class="cv"><b>Autoconhecimento e autocuidado</b><i>reconhecer forças e acreditar que serve pra isso</i></div></div>
+        <div class="comp-row"><span class="num">CG3</span><div class="cv"><b>Repertório cultural</b><i>valorizar quem faz em Alagoas como referência</i></div></div>
+        <div class="comp-row"><span class="num">CG6</span><div class="cv"><b>Trabalho e projeto de vida</b><i>projetar um futuro a partir de quem inspira</i></div></div>
+      </div>
+      <div class="comp-col entre">
+        <h4>EntreComp <span>· Competências Empreendedoras (UE)</span></h4>
+        <div class="comp-row"><span class="num">2.1</span><div class="cv"><b>Autoconsciência e autoeficácia</b><i>reconhecer o próprio valor e a própria capacidade</i></div></div>
+        <div class="comp-row"><span class="num">1.3</span><div class="cv"><b>Visão</b><i>imaginar um futuro a partir de uma referência real e próxima</i></div></div>
+      </div>
+    </div>
+    <div class="exp-foot">
+      <div class="roteiro-row"><span class="lbl">ROTEIRO</span>Responde de frente a "eu sirvo pra isso?" e à falta de referência local. O jovem se vê espelhado em alguém que começou pertinho de casa; o card vira orgulho que se posta, não zoeira.</div>
+      <div class="ds-row"><span class="lbl">ATACA</span><span class="d-pill">❓ "eu sirvo pra isso?"</span><span class="d-pill">🩹 falta de referências locais</span><span class="d-pill">🌅 ser referência</span></div>
+    </div>
+  </article>
+
+  <!-- ===== ESTAÇÕES DA JORNADA ===== -->
+  <div class="grp-title">
+    <span class="gt">✦ ESTAÇÕES DA JORNADA</span>
+    <span class="gsub">Palco, sala e parede · costura Tiro na Lua, entrega de parceiros</span>
+    <span class="gline"></span>
+  </div>
+
+  <!-- PALESTRAS -->
+  <article class="exp" id="palestras" style="--ac:#c08a00">
+    <div class="exp-head">
+      <div class="exp-id">
+        <span class="exp-emoji">🎤</span>
+        <div>
+          <h3>Palestras</h3>
+          <p class="exp-tema">Visão e repertório · <span>exposição curta que sensibiliza e abre repertório, no palco e na Areninha (palestra muda, no fone)</span></p>
+        </div>
+      </div>
+      <div class="exp-meta"><span class="forn">JA Alagoas · Maxwell Melo · UNCME-UNDIME</span></div>
+    </div>
+    <div class="exp-body">
+      <div class="comp-col bncc">
+        <h4>BNCC <span>· Competências Gerais</span></h4>
+        <div class="comp-row"><span class="num">CG6</span><div class="cv"><b>Trabalho e projeto de vida</b><i>enxergar onde se quer chegar e projetar futuro</i></div></div>
+        <div class="comp-row"><span class="num">CG10</span><div class="cv"><b>Responsabilidade e cidadania</b><i>protagonismo estudantil e gestão democrática</i></div></div>
+        <div class="comp-row"><span class="num">CG4+CG5</span><div class="cv"><b>Comunicação e cultura digital</b><i>marketing pessoal e o papel da IA na escola</i></div></div>
+      </div>
+      <div class="comp-col entre">
+        <h4>EntreComp <span>· Competências Empreendedoras (UE)</span></h4>
+        <div class="comp-row"><span class="num">1.3</span><div class="cv"><b>Visão</b><i>enxergar onde se quer chegar e mirar lá</i></div></div>
+        <div class="comp-row"><span class="num">1.1</span><div class="cv"><b>Identificar oportunidades</b><i>ler o contexto e achar as brechas</i></div></div>
+        <div class="comp-row"><span class="num">2.1</span><div class="cv"><b>Autoconsciência e autoeficácia</b><i>marketing pessoal, reconhecer o próprio valor</i></div></div>
+      </div>
+    </div>
+    <div class="exp-foot">
+      <div class="roteiro-row"><span class="lbl">ROTEIRO</span>Plantam a semente: dão a referência e o repertório que as outras estações transformam em prática. É o tom inspiracional que abre e fecha a jornada de cada caravana.</div>
+      <div class="ds-row"><span class="lbl">ATACA</span><span class="d-pill">🌅 ser referência</span><span class="d-pill">❓ o que é empreender</span></div>
+    </div>
+  </article>
+
+  <!-- OFICINAS -->
+  <article class="exp" id="oficinas" style="--ac:#a23bd0">
+    <div class="exp-head">
+      <div class="exp-id">
+        <span class="exp-emoji">🧪</span>
+        <div>
+          <h3>Oficinas da Sala Mangaba</h3>
+          <p class="exp-tema">Ideação e finanças na prática · <span>Supernova (Ideias de Futuro) e Game VUCA (Junior Achievement), mão na massa em mesa com facilitador</span></p>
+        </div>
+      </div>
+      <div class="exp-meta"><span class="forn">Ideias de Futuro · Junior Achievement</span></div>
+    </div>
+    <div class="exp-body">
+      <div class="comp-col bncc">
+        <h4>BNCC <span>· Competências Gerais</span></h4>
+        <div class="comp-row"><span class="num">CG2</span><div class="cv"><b>Pensamento científico, crítico e criativo</b><i>gerar, lapidar e testar ideias</i></div></div>
+        <div class="comp-row"><span class="num">CG6</span><div class="cv"><b>Trabalho e projeto de vida</b><i>transformar ideia em primeiro passo de projeto</i></div></div>
+        <div class="comp-row"><span class="num">CG10</span><div class="cv"><b>Autogestão e responsabilidade</b><i>conduzir a própria parte no trabalho em grupo</i></div></div>
+      </div>
+      <div class="comp-col entre">
+        <h4>EntreComp <span>· Competências Empreendedoras (UE)</span></h4>
+        <div class="comp-row"><span class="num">1.1+1.2</span><div class="cv"><b>Oportunidades · Criatividade</b><i>gerar e lapidar ideias com o grupo</i></div></div>
+        <div class="comp-row"><span class="num">1.4</span><div class="cv"><b>Valorizar ideias</b><i>avaliar o que a ideia de fato entrega</i></div></div>
+        <div class="comp-row"><span class="num">2.4+3.2</span><div class="cv"><b>Educação financeira · Planejamento</b><i>sustentar a ideia com número e plano</i></div></div>
+      </div>
+    </div>
+    <div class="exp-foot">
+      <div class="roteiro-row"><span class="lbl">ROTEIRO</span>É o laboratório da jornada: o que foi sentido nos jogos e nas palestras vira protótipo de ideia e de plano. Sai da plateia, entra no exercício.</div>
+      <div class="ds-row"><span class="lbl">ATACA</span><span class="d-pill">❓ como saber se a ideia presta</span><span class="d-pill">⚖️ paixão ou o que paga</span></div>
+    </div>
+  </article>
+
+  <!-- ESCALADA FINANCEIRA -->
+  <article class="exp" id="escalada" style="--ac:#0f9d58">
+    <div class="exp-head">
+      <div class="exp-id">
+        <span class="exp-emoji">🧗</span>
+        <div>
+          <h3>Parede de Escalada Financeira</h3>
+          <p class="exp-tema">Educação financeira no corpo · <span>parede de 6m vira metáfora viva: rota, agarras (necessidade x desejo), corda (reserva), voltar a subir</span></p>
+        </div>
+      </div>
+      <div class="exp-meta"><span class="forn">Lucas Muniz · Santana de Ipanema/AL</span></div>
+    </div>
+    <div class="exp-body">
+      <div class="comp-col bncc">
+        <h4>BNCC <span>· Competências Gerais</span></h4>
+        <div class="comp-row"><span class="num">CG6</span><div class="cv"><b>Trabalho e projeto de vida</b><i>decidir com lastro sobre o próprio dinheiro e futuro</i></div></div>
+        <div class="comp-row"><span class="num">CG2</span><div class="cv"><b>Pensamento crítico e criativo</b><i>pesar necessidade contra desejo a cada agarra</i></div></div>
+        <div class="comp-row"><span class="num">CG8</span><div class="cv"><b>Autoconhecimento e autocuidado</b><i>lidar com o medo do fracasso e seguir</i></div></div>
+        <div class="comp-row"><span class="num">CG10</span><div class="cv"><b>Responsabilidade e cidadania</b><i>agir com consciência sobre as próprias escolhas</i></div></div>
+      </div>
+      <div class="comp-col entre">
+        <h4>EntreComp <span>· Competências Empreendedoras (UE)</span></h4>
+        <div class="comp-row"><span class="num">2.4</span><div class="cv"><b>Educação financeira e econômica</b><i>necessidade x desejo, reserva, custo de cada escolha</i></div></div>
+        <div class="comp-row"><span class="num">3.2</span><div class="cv"><b>Planejamento e gestão</b><i>traçar a rota e reservar energia pra cada etapa</i></div></div>
+        <div class="comp-row"><span class="num">3.3</span><div class="cv"><b>Lidar com incerteza e risco</b><i>cair com segurança, lidar com o tombo</i></div></div>
+        <div class="comp-row"><span class="num">2.2</span><div class="cv"><b>Motivação e perseverança</b><i>voltar a subir depois da queda</i></div></div>
+      </div>
+    </div>
+    <div class="exp-foot">
+      <div class="roteiro-row"><span class="lbl">ROTEIRO</span>A educação financeira sai da planilha e entra no corpo: o jovem desce a parede sabendo, pela emoção, o que é reserva de emergência e por que ela existe. Clímax da jornada.</div>
+      <div class="ds-row"><span class="lbl">ATACA</span><span class="d-pill">🩹 não saber por onde começar</span><span class="d-pill">🌅 renda própria e autonomia</span></div>
+    </div>
+  </article>
+
+  <!-- REALIDADE VIRTUAL -->
+  <article class="exp" id="vr" style="--ac:#2f54d8">
+    <div class="exp-head">
+      <div class="exp-id">
+        <span class="exp-emoji">🥽</span>
+        <div>
+          <h3>Realidade Virtual · Empatize</h3>
+          <p class="exp-tema">Empreendedorismo inclusivo · <span>entra numa reunião como empresário e descobre que vive a barreira de uma pessoa com deficiência</span></p>
+        </div>
+      </div>
+      <div class="exp-meta"><span class="forn">Inspira Não Pira · costura TNL</span></div>
+    </div>
+    <div class="exp-body">
+      <div class="comp-col bncc">
+        <h4>BNCC <span>· Competências Gerais</span></h4>
+        <div class="comp-row"><span class="num">CG9</span><div class="cv"><b>Empatia e cooperação</b><i>acolher a diversidade e agir com base no respeito</i></div></div>
+        <div class="comp-row"><span class="num">CG10</span><div class="cv"><b>Responsabilidade e cidadania</b><i>decisões inclusivas, princípios éticos e democráticos</i></div></div>
+        <div class="comp-row"><span class="num">CG8</span><div class="cv"><b>Autoconhecimento e autocuidado</b><i>lidar com a própria emoção diante da experiência do outro</i></div></div>
+      </div>
+      <div class="comp-col entre">
+        <h4>EntreComp <span>· Competências Empreendedoras (UE)</span></h4>
+        <div class="comp-row"><span class="num">3.4</span><div class="cv"><b>Trabalhar com os outros</b><i>ler o outro e considerar quem não está sendo incluído</i></div></div>
+        <div class="comp-row"><span class="num">1.5</span><div class="cv"><b>Pensamento ético e sustentável</b><i>avaliar a consequência de um ambiente que exclui</i></div></div>
+        <div class="comp-row"><span class="num">2.1</span><div class="cv"><b>Autoconsciência e autoeficácia</b><i>reconhecer o próprio papel diante da barreira do outro</i></div></div>
+      </div>
+    </div>
+    <div class="exp-foot">
+      <div class="roteiro-row"><span class="lbl">ROTEIRO</span>A inclusão deixa de ser conceito e vira memória corporal: o jovem sai sabendo, pela própria pele, que um negócio só decide bem quando todo mundo consegue participar. Fecha com mensagem no mural físico.</div>
+      <div class="ds-row"><span class="lbl">ATACA</span><span class="d-pill">⚖️ individual ou coletivo</span><span class="d-pill">🌅 fazer algo que importa</span></div>
+    </div>
+  </article>
+
+  <!-- CAÇA AO TESOURO -->
+  <article class="exp" id="caca" style="--ac:#e0671f">
+    <div class="exp-head">
+      <div class="exp-id">
+        <span class="exp-emoji">📱</span>
+        <div>
+          <h3>Caça ao Tesouro · Realidade Aumentada</h3>
+          <p class="exp-tema">Cultura digital e exploração · <span>caça 5 pontos em AR pelo espaço com o próprio celular; cada ponto abre um QR que consolida um aprendizado</span></p>
+        </div>
+      </div>
+      <div class="exp-meta"><span class="forn">Tiro na Lua · Sebrae AL</span></div>
+    </div>
+    <div class="exp-body">
+      <div class="comp-col bncc">
+        <h4>BNCC <span>· Competências Gerais</span></h4>
+        <div class="comp-row"><span class="num">CG5</span><div class="cv"><b>Cultura digital</b><i>usar AR e QR com intenção, não por enfeite</i></div></div>
+        <div class="comp-row"><span class="num">CG4</span><div class="cv"><b>Comunicação</b><i>ler e interpretar a informação de cada ponto</i></div></div>
+        <div class="comp-row"><span class="num">CG6</span><div class="cv"><b>Trabalho e projeto de vida</b><i>fechar o ciclo do que viveu nas outras estações</i></div></div>
+      </div>
+      <div class="comp-col entre">
+        <h4>EntreComp <span>· Competências Empreendedoras (UE)</span></h4>
+        <div class="comp-row"><span class="num">1.1</span><div class="cv"><b>Identificar oportunidades</b><i>perceber o que está escondido no ambiente</i></div></div>
+        <div class="comp-row"><span class="num">3.5</span><div class="cv"><b>Aprender pela experiência</b><i>aprender fazendo, errando e tentando de novo</i></div></div>
+      </div>
+    </div>
+    <div class="exp-foot">
+      <div class="roteiro-row"><span class="lbl">ROTEIRO</span>Transforma o espaço inteiro em tabuleiro: o jovem sai tendo explorado cada canto e consolidado o que viveu nas outras estações. É a fase de partilha, descobrir explorando.</div>
+      <div class="ds-row"><span class="lbl">ATACA</span><span class="d-pill">🌅 explorar e descobrir</span><span class="d-pill">🩹 escola desconectada da vida</span></div>
+    </div>
+  </article>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="foot">
+  <div>neon-sebrae-al.netlify.app / fichas</div>
+  <div class="stamp">TIRO NA LUA · SEBRAE ALAGOAS · ESCALADA</div>
+  <div style="margin-top:6px"><a href="https://github.com/lucastnl/neon-sebrae-al" target="_blank">github.com/lucastnl/neon-sebrae-al</a></div>
+</footer>
+
+</body>
+</html>
