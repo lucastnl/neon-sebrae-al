@@ -219,17 +219,46 @@ table.matriz tbody tr:hover { background: #fafbff; }
 .comp-row .cv i { font-style: normal; font-size: 12.5px; color: var(--ink-soft); line-height: 1.45; }
 .comp-row .cv i::before { content: '→ '; color: var(--ac); font-weight: 700; }
 
-.exp-foot { padding-top: 15px; border-top: 1px solid var(--line-soft); display: grid; gap: 12px; }
+.exp-foot { padding-top: 15px; border-top: 1px solid var(--line-soft); display: grid; gap: 11px; }
 .roteiro-row { font-size: 13.5px; color: var(--ink); line-height: 1.55; }
-.roteiro-row .lbl, .ds-row .lbl {
+.roteiro-row .lbl, .roteiro-row .lbl-n, .ds-row .lbl {
   font-family: 'Press Start 2P', monospace; font-size: 8px; letter-spacing: 0.6px;
-  color: var(--ac); display: inline-block; margin-right: 8px; vertical-align: 1px;
+  display: inline-block; margin-right: 8px; vertical-align: 1px;
 }
+.roteiro-row .lbl, .ds-row .lbl { color: var(--ac); }
+.roteiro-row .lbl-n { color: var(--ink-faint); }
 .ds-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .d-pill {
   font-size: 11.5px; color: var(--ink-soft); background: var(--line-soft);
   border: 1px solid var(--line); padding: 4px 10px; border-radius: 999px;
 }
+
+/* STATUS (confirmada / em análise / no ar) */
+.status {
+  font-family: 'Press Start 2P', monospace; font-size: 7px; letter-spacing: 0.5px;
+  padding: 5px 9px; border-radius: 6px; white-space: nowrap;
+}
+.s-ok { background: rgba(15,157,88,0.14); color: #0c7d45; }
+.s-analise { background: rgba(224,103,31,0.15); color: #c25510; }
+.skim-status { display: inline-block; margin-top: 4px; }
+
+/* COMO FUNCIONA A VISITA */
+.flow-card { margin-bottom: 40px; }
+.flow-steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 4px; }
+.flow-step { border: 1px solid var(--line); border-radius: 12px; padding: 13px 14px; background: var(--line-soft); }
+.flow-step .fn {
+  font-family: 'Press Start 2P', monospace; font-size: 13px; color: #d11fb0;
+  display: block; margin-bottom: 7px;
+}
+.flow-step .ft { font-weight: 700; font-size: 12.5px; margin-bottom: 5px; }
+.flow-step .fd { font-size: 11.5px; color: var(--ink-soft); line-height: 1.45; }
+.flow-card .totem-note {
+  margin-top: 14px; padding: 13px 15px; border-radius: 11px;
+  background: rgba(0,249,255,0.06); border: 1px solid rgba(13,154,168,0.3);
+  font-size: 13px; color: var(--ink); line-height: 1.55;
+}
+.flow-card .totem-note b { color: #0a7b88; }
+@media (max-width: 860px) { .flow-steps { grid-template-columns: 1fr 1fr; } }
 
 /* ===== FOOTER ===== */
 .foot {
@@ -353,6 +382,22 @@ table.matriz tbody tr:hover { background: #fafbff; }
     </div>
   </section>
 
+  <!-- COMO FUNCIONA A VISITA -->
+  <section class="card-base flow-card">
+    <div class="blk-tag">▸ COMO FUNCIONA · A PASSAGEM DO JOVEM PELO ESPAÇO</div>
+    <p style="font-size:13.5px;color:var(--ink-soft);line-height:1.55;margin-bottom:14px;">As escolas chegam em <b style="color:var(--ink)">caravanas agendadas por horário</b> (turmas a partir do 8º ano até o ensino superior). Cada caravana percorre o Espaço Educação Empreendedora numa jornada de cinco fases, vivendo uma experiência em cada estação.</p>
+    <div class="flow-steps">
+      <div class="flow-step"><span class="fn">1</span><div class="ft">Entrada</div><div class="fd">Pré-cadastro no Escalada e crachá. A caravana é registrada e a jornada começa.</div></div>
+      <div class="flow-step"><span class="fn">2</span><div class="ft">Descoberta</div><div class="fd">Os totens e a parede Bobbie Goods. Primeiro contato, rápido e lúdico.</div></div>
+      <div class="flow-step"><span class="fn">3</span><div class="ft">Clímax</div><div class="fd">Parede de Escalada, Realidade Virtual, oficinas e palestras. O miolo da experiência.</div></div>
+      <div class="flow-step"><span class="fn">4</span><div class="ft">Partilha</div><div class="fd">Caça ao Tesouro em AR e grêmio: o aprendizado vira história pra contar.</div></div>
+      <div class="flow-step"><span class="fn">5</span><div class="ft">Pós</div><div class="fd">Brindes gamificados e o convite pra continuar a trilha no Escalada.</div></div>
+    </div>
+    <div class="totem-note">
+      <b>Nos totens, na prática:</b> são quatro telas verticais enfileiradas (três jogos da Tiro na Lua e um do Sebrae). O jovem chega, escolhe um jogo e joga uma partida rápida de cerca de 2 minutos. A pontuação entra na hora no <b>placar ao vivo, que rankeia as caravanas</b>, e a tela final amarra o que ele jogou a uma trilha do Escalada pra continuar depois.
+    </div>
+  </section>
+
   <!-- MATRIZ COMPILADA (SKIM) -->
   <section id="matriz">
     <div class="skim-h">
@@ -374,21 +419,21 @@ table.matriz tbody tr:hover { background: #fafbff; }
           <tr class="grp-row"><td colspan="5">🎮 JOGOS DO TOTEM <span class="gd">arcade rápido, placar ao vivo por caravana</span></td></tr>
 
           <tr>
-            <td class="m-exp"><a href="#monstro"><span class="e">👹</span>Monstro do Próximo Passo</a></td>
+            <td class="m-exp"><a href="#monstro"><span class="e">👹</span>Monstro do Próximo Passo</a><div class="skim-status status s-ok">NO AR</div></td>
             <td><span class="fase-pill f-desc">DESCOBERTA</span></td>
             <td><b>Coragem de começar.</b> Os medos caem, os recursos derrubam.</td>
             <td class="m-codes">CG6 · CG8<br>CG9 · CG10</td>
             <td class="m-codes">3.1 · 3.2<br>2.1 · 3.3</td>
           </tr>
           <tr>
-            <td class="m-exp"><a href="#forja"><span class="e">⚒️</span>Forja de Ideias</a></td>
+            <td class="m-exp"><a href="#forja"><span class="e">⚒️</span>Forja de Ideias</a><div class="skim-status status s-analise">EM ANÁLISE</div></td>
             <td><span class="fase-pill f-desc">DESCOBERTA</span></td>
             <td><b>Ideação a partir do local.</b> Recurso de Alagoas + problema real.</td>
             <td class="m-codes">CG1 · CG2<br>CG3 · CG6</td>
             <td class="m-codes">1.1 · 1.2<br>2.3</td>
           </tr>
           <tr>
-            <td class="m-exp"><a href="#referencia"><span class="e">⭐</span>Referência Alagoana</a></td>
+            <td class="m-exp"><a href="#referencia"><span class="e">⭐</span>Referência Alagoana</a><div class="skim-status status s-analise">EM ANÁLISE</div></td>
             <td><span class="fase-pill f-desc">DESCOBERTA</span></td>
             <td><b>Autoconhecimento e pertencimento.</b> Qual fazedor de AL tem a tua vibe.</td>
             <td class="m-codes">CG3 · CG6<br>CG8</td>
@@ -398,35 +443,35 @@ table.matriz tbody tr:hover { background: #fafbff; }
           <tr class="grp-row"><td colspan="5">✦ ESTAÇÕES DA JORNADA <span class="gd">palco, sala e parede</span></td></tr>
 
           <tr>
-            <td class="m-exp"><a href="#palestras"><span class="e">🎤</span>Palestras</a></td>
+            <td class="m-exp"><a href="#palestras"><span class="e">🎤</span>Palestras</a><div class="skim-status status s-ok">CONFIRMADA</div></td>
             <td><span class="fase-pill f-clim">CLÍMAX</span></td>
             <td><b>Visão e repertório.</b> Marketing pessoal, IA na escola, protagonismo.</td>
             <td class="m-codes">CG4 · CG5<br>CG6 · CG10</td>
             <td class="m-codes">1.1 · 1.3<br>2.1</td>
           </tr>
           <tr>
-            <td class="m-exp"><a href="#oficinas"><span class="e">🧪</span>Oficinas da Sala Mangaba</a></td>
+            <td class="m-exp"><a href="#oficinas"><span class="e">🧪</span>Oficinas da Sala Mangaba</a><div class="skim-status status s-ok">CONFIRMADA</div></td>
             <td><span class="fase-pill f-clim">CLÍMAX</span></td>
             <td><b>Ideação e finanças na prática.</b> Da ideia ao plano, mão na massa.</td>
             <td class="m-codes">CG2 · CG6<br>CG10</td>
             <td class="m-codes">1.1 · 1.2<br>1.4 · 2.4 · 3.2</td>
           </tr>
           <tr>
-            <td class="m-exp"><a href="#escalada"><span class="e">🧗</span>Escalada Financeira</a></td>
+            <td class="m-exp"><a href="#escalada"><span class="e">🧗</span>Escalada Financeira</a><div class="skim-status status s-ok">CONFIRMADA</div></td>
             <td><span class="fase-pill f-clim">CLÍMAX</span></td>
             <td><b>Educação financeira no corpo.</b> Rota, reserva, queda segura, resiliência.</td>
             <td class="m-codes">CG2 · CG6<br>CG8 · CG10</td>
             <td class="m-codes">2.2 · 2.4<br>3.2 · 3.3</td>
           </tr>
           <tr>
-            <td class="m-exp"><a href="#vr"><span class="e">🥽</span>Realidade Virtual · Empatize</a></td>
+            <td class="m-exp"><a href="#vr"><span class="e">🥽</span>Realidade Virtual · Empatize</a><div class="skim-status status s-ok">CONFIRMADA</div></td>
             <td><span class="fase-pill f-clim">CLÍMAX</span></td>
             <td><b>Empreendedorismo inclusivo.</b> Sentir na pele a barreira do outro.</td>
             <td class="m-codes">CG8 · CG9<br>CG10</td>
             <td class="m-codes">1.5 · 2.1<br>3.4</td>
           </tr>
           <tr>
-            <td class="m-exp"><a href="#caca"><span class="e">📱</span>Caça ao Tesouro · AR</a></td>
+            <td class="m-exp"><a href="#caca"><span class="e">📱</span>Caça ao Tesouro · AR</a><div class="skim-status status s-analise">EM ANÁLISE</div></td>
             <td><span class="fase-pill f-part">PARTILHA</span></td>
             <td><b>Cultura digital e exploração.</b> 5 pontos em AR consolidam o aprendizado.</td>
             <td class="m-codes">CG4 · CG5<br>CG6</td>
@@ -454,7 +499,7 @@ table.matriz tbody tr:hover { background: #fafbff; }
           <p class="exp-tema">Coragem de começar · <span>os medos caem, os recursos derrubam (procrastinação→plano, comparação→foco, autocobrança→coragem, paralisia→apoio)</span></p>
         </div>
       </div>
-      <div class="exp-meta"><span class="forn">Tiro na Lua · no ar</span></div>
+      <div class="exp-meta"><span class="status s-ok">NO AR</span><span class="forn">Tiro na Lua</span></div>
     </div>
     <div class="exp-body">
       <div class="comp-col bncc">
@@ -473,7 +518,8 @@ table.matriz tbody tr:hover { background: #fafbff; }
       </div>
     </div>
     <div class="exp-foot">
-      <div class="roteiro-row"><span class="lbl">ROTEIRO</span>Rito de entrada: ativa em 2 minutos competências que a trilha Escalada aprofunda em semanas. Cada partida deixa quatro ganchos vivos pra continuar fora do totem. Planta a semente da coragem de dar o primeiro passo.</div>
+      <div class="roteiro-row"><span class="lbl-n">COMO FUNCIONA</span>Um bloco de medo cai do topo da tela. O jovem toca no recurso-antídoto certo antes de o bloco cruzar a zona de perigo: acerto vira pontos e dano no boss, erro zera o combo. São três fases de dificuldade crescente, partida de cerca de 2 minutos, e a tela final liga cada medo enfrentado à trilha correspondente do Escalada.</div>
+      <div class="roteiro-row"><span class="lbl">ROTEIRO DE IMPACTO</span>É o rito de entrada da jornada: ativa em dois minutos competências que a trilha do Escalada aprofunda em semanas. Cada partida deixa quatro ganchos vivos (plano, foco, coragem e apoio) pra continuar fora do totem. Planta a semente da coragem de dar o primeiro passo.</div>
       <div class="ds-row"><span class="lbl">ATACA</span><span class="d-pill">❓ "eu sirvo pra isso?"</span><span class="d-pill">🩹 medo de errar</span></div>
     </div>
   </article>
@@ -485,10 +531,10 @@ table.matriz tbody tr:hover { background: #fafbff; }
         <span class="exp-emoji">⚒️</span>
         <div>
           <h3>Forja de Ideias</h3>
-          <p class="exp-tema">Ideação a partir do local · <span>combina um recurso de Alagoas com um problema real pra forjar um negócio (em design, red team)</span></p>
+          <p class="exp-tema">Ideação a partir do local · <span>combina um recurso de Alagoas com um problema real pra forjar um negócio</span></p>
         </div>
       </div>
-      <div class="exp-meta"><span class="forn">Tiro na Lua · em design</span></div>
+      <div class="exp-meta"><span class="status s-analise">EM ANÁLISE</span><span class="forn">Tiro na Lua</span></div>
     </div>
     <div class="exp-body">
       <div class="comp-col bncc">
@@ -505,7 +551,8 @@ table.matriz tbody tr:hover { background: #fafbff; }
       </div>
     </div>
     <div class="exp-foot">
-      <div class="roteiro-row"><span class="lbl">ROTEIRO</span>Mata a dúvida "preciso de uma ideia genial e muito dinheiro": a matéria-prima já está aqui. Fecha com a Patente Maluca, um card da ideia forjada que vira print compartilhável.</div>
+      <div class="roteiro-row"><span class="lbl-n">COMO FUNCIONA</span>Duas roletas de cartas giram rápido, uma de recursos de Alagoas e uma de problemas reais. O jovem trava as duas no tempo certo e dá toques rápidos pra forjar o negócio antes do tempo acabar. Pontua por velocidade e por viabilidade da combinação, e fecha com a Patente Maluca, um card da ideia que vira print.</div>
+      <div class="roteiro-row"><span class="lbl">ROTEIRO DE IMPACTO</span>Mata a dúvida "preciso de uma ideia genial e de muito dinheiro pra começar": a matéria-prima já está em volta. Mostra que empreender é recombinar o que o território oferece, e o card compartilhável carrega esse orgulho pra fora do evento.</div>
       <div class="ds-row"><span class="lbl">ATACA</span><span class="d-pill">❓ como tirar a ideia da cabeça</span><span class="d-pill">❓ preciso de muito dinheiro?</span><span class="d-pill">🩹 falta de referências locais</span></div>
     </div>
   </article>
@@ -517,10 +564,10 @@ table.matriz tbody tr:hover { background: #fafbff; }
         <span class="exp-emoji">⭐</span>
         <div>
           <h3>Referência Alagoana</h3>
-          <p class="exp-tema">Autoconhecimento e pertencimento · <span>selfie + perfil revelam um fazedor real de Alagoas com a vibe do jovem (em design, red team)</span></p>
+          <p class="exp-tema">Autoconhecimento e pertencimento · <span>selfie + perfil revelam um fazedor real de Alagoas com a vibe do jovem</span></p>
         </div>
       </div>
-      <div class="exp-meta"><span class="forn">Tiro na Lua · em design</span></div>
+      <div class="exp-meta"><span class="status s-analise">EM ANÁLISE</span><span class="forn">Tiro na Lua</span></div>
     </div>
     <div class="exp-body">
       <div class="comp-col bncc">
@@ -536,7 +583,8 @@ table.matriz tbody tr:hover { background: #fafbff; }
       </div>
     </div>
     <div class="exp-foot">
-      <div class="roteiro-row"><span class="lbl">ROTEIRO</span>Responde de frente a "eu sirvo pra isso?" e à falta de referência local. O jovem se vê espelhado em alguém que começou pertinho de casa; o card vira orgulho que se posta, não zoeira.</div>
+      <div class="roteiro-row"><span class="lbl-n">COMO FUNCIONA</span>Selfie com moldura na câmera do totem, três perguntas rápidas e um mini-desafio de mira ou ritmo, pra não ser só quiz. O totem cruza as respostas e revela uma referência empreendedora alagoana real que combina com o jovem, mais o módulo do Escalada por onde a trilha dele começa. Fecha com um card de orgulho local.</div>
+      <div class="roteiro-row"><span class="lbl">ROTEIRO DE IMPACTO</span>Responde de frente a "eu sirvo pra isso?" e à falta de referência local, a dor número um do diagnóstico. O jovem se vê espelhado em alguém que começou pertinho de casa, e o card vira orgulho que se posta, não zoeira.</div>
       <div class="ds-row"><span class="lbl">ATACA</span><span class="d-pill">❓ "eu sirvo pra isso?"</span><span class="d-pill">🩹 falta de referências locais</span><span class="d-pill">🌅 ser referência</span></div>
     </div>
   </article>
@@ -558,7 +606,7 @@ table.matriz tbody tr:hover { background: #fafbff; }
           <p class="exp-tema">Visão e repertório · <span>exposição curta que sensibiliza e abre repertório, no palco e na Areninha (palestra muda, no fone)</span></p>
         </div>
       </div>
-      <div class="exp-meta"><span class="forn">JA Alagoas · Maxwell Melo · UNCME-UNDIME</span></div>
+      <div class="exp-meta"><span class="status s-ok">CONFIRMADA</span><span class="forn">Junior Achievement AL · Maxwell Melo · UNCME</span></div>
     </div>
     <div class="exp-body">
       <div class="comp-col bncc">
@@ -575,7 +623,8 @@ table.matriz tbody tr:hover { background: #fafbff; }
       </div>
     </div>
     <div class="exp-foot">
-      <div class="roteiro-row"><span class="lbl">ROTEIRO</span>Plantam a semente: dão a referência e o repertório que as outras estações transformam em prática. É o tom inspiracional que abre e fecha a jornada de cada caravana.</div>
+      <div class="roteiro-row"><span class="lbl-n">COMO FUNCIONA</span>Exposição curta no Palco Sebrae, modelo "palestra muda", com fone individual pra não cruzar o som com as outras estações. Três confirmadas: "O Melhor Produto é Você" (Hermann Fernandes, Junior Achievement AL, 11/06), "IA na Escola: ferramenta, não substituta" (Maxwell Melo, Prêmio Educador Transformador, 12/06) e o Grêmio Estudantil (UNCME, 13/06).</div>
+      <div class="roteiro-row"><span class="lbl">ROTEIRO DE IMPACTO</span>Plantam a semente: dão a referência e o repertório que as outras estações transformam em prática. É o tom inspiracional que abre e fecha a jornada de cada caravana.</div>
       <div class="ds-row"><span class="lbl">ATACA</span><span class="d-pill">🌅 ser referência</span><span class="d-pill">❓ o que é empreender</span></div>
     </div>
   </article>
@@ -587,10 +636,10 @@ table.matriz tbody tr:hover { background: #fafbff; }
         <span class="exp-emoji">🧪</span>
         <div>
           <h3>Oficinas da Sala Mangaba</h3>
-          <p class="exp-tema">Ideação e finanças na prática · <span>Supernova (Ideias de Futuro) e Game VUCA (Junior Achievement), mão na massa em mesa com facilitador</span></p>
+          <p class="exp-tema">Ideação e finanças na prática · <span>mão na massa em mesa com facilitador, na Sala Mangaba</span></p>
         </div>
       </div>
-      <div class="exp-meta"><span class="forn">Ideias de Futuro · Junior Achievement</span></div>
+      <div class="exp-meta"><span class="status s-ok">CONFIRMADA</span><span class="forn">Instituto Ideias do Futuro</span><span class="forn">Junior Achievement AL</span></div>
     </div>
     <div class="exp-body">
       <div class="comp-col bncc">
@@ -607,7 +656,8 @@ table.matriz tbody tr:hover { background: #fafbff; }
       </div>
     </div>
     <div class="exp-foot">
-      <div class="roteiro-row"><span class="lbl">ROTEIRO</span>É o laboratório da jornada: o que foi sentido nos jogos e nas palestras vira protótipo de ideia e de plano. Sai da plateia, entra no exercício.</div>
+      <div class="roteiro-row"><span class="lbl-n">COMO FUNCIONA</span>Trabalho em grupo na mesa, com facilitador, cerca de 45 a 50 minutos cada, lançadas por produto instantâneo mais lista de presença. São dois fornecedores diferentes: as oficinas Supernova, do Instituto Ideias do Futuro (Introdução à Ideação, Introdução a Finanças e Mercado de Trabalho), e o Game VUCA, da Junior Achievement Alagoas.</div>
+      <div class="roteiro-row"><span class="lbl">ROTEIRO DE IMPACTO</span>É o laboratório da jornada: o que foi sentido nos jogos e nas palestras vira protótipo de ideia e de plano. Aqui o jovem sai da plateia e entra no exercício.</div>
       <div class="ds-row"><span class="lbl">ATACA</span><span class="d-pill">❓ como saber se a ideia presta</span><span class="d-pill">⚖️ paixão ou o que paga</span></div>
     </div>
   </article>
@@ -622,7 +672,7 @@ table.matriz tbody tr:hover { background: #fafbff; }
           <p class="exp-tema">Educação financeira no corpo · <span>parede de 6m vira metáfora viva: rota, agarras (necessidade x desejo), corda (reserva), voltar a subir</span></p>
         </div>
       </div>
-      <div class="exp-meta"><span class="forn">Lucas Muniz · Santana de Ipanema/AL</span></div>
+      <div class="exp-meta"><span class="status s-ok">CONFIRMADA</span><span class="forn">Escalada Edu Inova Simples</span></div>
     </div>
     <div class="exp-body">
       <div class="comp-col bncc">
@@ -641,7 +691,8 @@ table.matriz tbody tr:hover { background: #fafbff; }
       </div>
     </div>
     <div class="exp-foot">
-      <div class="roteiro-row"><span class="lbl">ROTEIRO</span>A educação financeira sai da planilha e entra no corpo: o jovem desce a parede sabendo, pela emoção, o que é reserva de emergência e por que ela existe. Clímax da jornada.</div>
+      <div class="roteiro-row"><span class="lbl-n">COMO FUNCIONA</span>Cerca de 20 minutos de metodologia (psicologia e conceitos financeiros) e o resto na parede de 6 metros. Cada um traça a rota na prancheta, sobe escolhendo as agarras (necessidade x desejo), cai e a corda segura (a reserva de emergência ganha corpo) e desce de rapel com uma conversa no fim. São 12 oficinas nos três dias, 3 a 4 minutos por pessoa na parede; quem não sobe aprende olhando.</div>
+      <div class="roteiro-row"><span class="lbl">ROTEIRO DE IMPACTO</span>A educação financeira sai da planilha e entra no corpo: o jovem desce a parede sabendo, pela emoção, o que é reserva de emergência e por que ela existe. É o clímax da jornada.</div>
       <div class="ds-row"><span class="lbl">ATACA</span><span class="d-pill">🩹 não saber por onde começar</span><span class="d-pill">🌅 renda própria e autonomia</span></div>
     </div>
   </article>
@@ -656,7 +707,7 @@ table.matriz tbody tr:hover { background: #fafbff; }
           <p class="exp-tema">Empreendedorismo inclusivo · <span>entra numa reunião como empresário e descobre que vive a barreira de uma pessoa com deficiência</span></p>
         </div>
       </div>
-      <div class="exp-meta"><span class="forn">Inspira Não Pira · costura TNL</span></div>
+      <div class="exp-meta"><span class="status s-ok">CONFIRMADA</span><span class="forn">Inspira Não Pira</span></div>
     </div>
     <div class="exp-body">
       <div class="comp-col bncc">
@@ -673,7 +724,8 @@ table.matriz tbody tr:hover { background: #fafbff; }
       </div>
     </div>
     <div class="exp-foot">
-      <div class="roteiro-row"><span class="lbl">ROTEIRO</span>A inclusão deixa de ser conceito e vira memória corporal: o jovem sai sabendo, pela própria pele, que um negócio só decide bem quando todo mundo consegue participar. Fecha com mensagem no mural físico.</div>
+      <div class="roteiro-row"><span class="lbl-n">COMO FUNCIONA</span>Card-manual impresso e uma fala rápida, sem spoiler. O jovem coloca o óculos, escolhe o personagem e entra numa reunião onde os parceiros pedem a opinião dele, mas ele tem dificuldade de responder por causa da barreira simulada (visão, audição ou fala). No fim, o quiz que ele penou pra responder, uma mensagem no mural físico e um debriefing rápido. São 3 óculos, 3 a 5 minutos por pessoa.</div>
+      <div class="roteiro-row"><span class="lbl">ROTEIRO DE IMPACTO</span>A inclusão deixa de ser conceito e vira memória corporal: o jovem sai sabendo, pela própria pele, que um negócio só decide bem quando todo mundo consegue participar. Fecha com a mensagem no mural físico.</div>
       <div class="ds-row"><span class="lbl">ATACA</span><span class="d-pill">⚖️ individual ou coletivo</span><span class="d-pill">🌅 fazer algo que importa</span></div>
     </div>
   </article>
@@ -688,7 +740,7 @@ table.matriz tbody tr:hover { background: #fafbff; }
           <p class="exp-tema">Cultura digital e exploração · <span>caça 5 pontos em AR pelo espaço com o próprio celular; cada ponto abre um QR que consolida um aprendizado</span></p>
         </div>
       </div>
-      <div class="exp-meta"><span class="forn">Tiro na Lua · Sebrae AL</span></div>
+      <div class="exp-meta"><span class="status s-analise">EM ANÁLISE</span><span class="forn">Tiro na Lua</span></div>
     </div>
     <div class="exp-body">
       <div class="comp-col bncc">
@@ -704,7 +756,8 @@ table.matriz tbody tr:hover { background: #fafbff; }
       </div>
     </div>
     <div class="exp-foot">
-      <div class="roteiro-row"><span class="lbl">ROTEIRO</span>Transforma o espaço inteiro em tabuleiro: o jovem sai tendo explorado cada canto e consolidado o que viveu nas outras estações. É a fase de partilha, descobrir explorando.</div>
+      <div class="roteiro-row"><span class="lbl-n">COMO FUNCIONA</span>O jovem abre a câmera do próprio celular e caça cinco pontos escondidos em Realidade Aumentada pela Sala Mangaba e pelo Estande do Sebrae. Cada ponto encontrado revela um QR que abre um quiz pedagógico ou material didático, fechando o ciclo. O formato final (quiz, material didático ou orientação via API) ainda está em análise com o Sebrae Nacional.</div>
+      <div class="roteiro-row"><span class="lbl">ROTEIRO DE IMPACTO</span>Transforma o espaço inteiro em tabuleiro: o jovem sai tendo explorado cada canto e consolidado o que viveu nas outras estações. É a fase de partilha, descobrir explorando.</div>
       <div class="ds-row"><span class="lbl">ATACA</span><span class="d-pill">🌅 explorar e descobrir</span><span class="d-pill">🩹 escola desconectada da vida</span></div>
     </div>
   </article>
