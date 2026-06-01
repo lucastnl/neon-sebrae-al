@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --verde:#00D95C; --verde-claro:#00FF85; --magenta:#FF00FF; --magenta-claro:#FF76FF;
+  --ciano:#00F9FF; --azul:#2A4FDA; --navy:#0A0F36; --navy-deep:#050822; --navy-mid:#1A1F4E;
+  --amarelo:#FFD93D; --branco:#FFFFFF;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1200px; height:630px; overflow:hidden; }
+#og {
+  width:1200px; height:630px; position:relative; overflow:hidden;
+  font-family:'Press Start 2P', monospace; color:var(--branco);
+  background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy) 52%, var(--navy-mid) 100%);
+}
+.grid-bg { position:absolute; inset:0; z-index:1;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 47px, rgba(0,249,255,0.07) 48px),
+    repeating-linear-gradient(90deg, transparent, transparent 47px, rgba(0,249,255,0.07) 48px);
+}
+.stars { position:absolute; inset:0; z-index:1; opacity:0.75;
+  background-image:
+    radial-gradient(3px 3px at 12% 16%, var(--branco) 50%, transparent 50%),
+    radial-gradient(2px 2px at 26% 72%, var(--ciano) 50%, transparent 50%),
+    radial-gradient(2px 2px at 44% 10%, var(--branco) 50%, transparent 50%),
+    radial-gradient(2px 2px at 62% 84%, var(--magenta-claro) 50%, transparent 50%),
+    radial-gradient(3px 3px at 82% 20%, var(--branco) 50%, transparent 50%),
+    radial-gradient(2px 2px at 93% 58%, var(--ciano) 50%, transparent 50%),
+    radial-gradient(2px 2px at 7% 54%, var(--branco) 50%, transparent 50%),
+    radial-gradient(2px 2px at 73% 40%, var(--amarelo) 50%, transparent 50%);
+}
+.glow-mg { position:absolute; width:680px; height:680px; right:-160px; top:-200px; z-index:1;
+  background: radial-gradient(circle, rgba(255,0,255,0.30) 0%, transparent 60%); }
+.glow-cy { position:absolute; width:640px; height:640px; left:-180px; bottom:-220px; z-index:1;
+  background: radial-gradient(circle, rgba(0,249,255,0.20) 0%, transparent 60%); }
+
+.top { position:absolute; top:0; left:0; right:0; z-index:6;
+  display:flex; justify-content:space-between; align-items:center; padding:34px 64px 0; }
+.top .logos { display:flex; align-items:center; gap:18px; }
+.top .logos img { height:34px; filter:drop-shadow(0 0 10px rgba(255,255,255,0.35)); }
+.top .logos .sep { width:1px; height:26px; background:rgba(255,255,255,0.3); }
+.top .eyebrow { font-size:12px; color:var(--ciano); letter-spacing:2.5px; text-shadow:0 0 12px var(--ciano); }
+
+.content { position:relative; z-index:5; height:100%;
+  display:flex; flex-direction:column; justify-content:center; gap:26px; padding:0 64px; }
+.kicker { font-size:13px; color:var(--amarelo); letter-spacing:3px; text-shadow:0 0 10px var(--amarelo); }
+.title { font-size:62px; line-height:1.18; letter-spacing:1px;
+  text-shadow:0 0 22px rgba(255,0,255,0.5), 5px 5px 0 var(--navy-deep); }
+.title .mg { color:var(--magenta-claro); }
+.subtitle { font-family:'Space Grotesk', sans-serif; font-size:23px; font-weight:600;
+  color:rgba(255,255,255,0.9); line-height:1.45; max-width:980px; letter-spacing:0.3px;
+  text-shadow:2px 2px 0 var(--navy-deep); }
+
+.chips { display:flex; gap:12px; margin-top:6px; flex-wrap:wrap; }
+.chip { display:flex; align-items:center; gap:9px;
+  background:rgba(10,15,54,0.6); border:2px solid; border-radius:999px;
+  padding:10px 16px 10px 13px; font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:15px; letter-spacing:0.3px; }
+.chip .e { font-size:21px; line-height:1; }
+.c1 { border-color:var(--ciano); color:var(--ciano); box-shadow:0 0 16px rgba(0,249,255,0.3); }
+.c2 { border-color:var(--verde-claro); color:var(--verde-claro); box-shadow:0 0 16px rgba(0,217,92,0.3); }
+.c3 { border-color:var(--magenta-claro); color:var(--magenta-claro); box-shadow:0 0 16px rgba(255,0,255,0.3); }
+.c4 { border-color:var(--amarelo); color:var(--amarelo); box-shadow:0 0 16px rgba(255,217,61,0.3); }
+.c5 { border-color:#5680FF; color:#5680FF; box-shadow:0 0 16px rgba(86,128,255,0.3); }
+.c6 { border-color:#FF8C42; color:#FF8C42; box-shadow:0 0 16px rgba(255,140,66,0.3); }
+
+.footer { position:absolute; bottom:0; left:0; right:0; z-index:6;
+  display:flex; justify-content:space-between; align-items:center; padding:20px 64px;
+  background:linear-gradient(180deg, transparent, rgba(5,8,34,0.95)); }
+.footer .brand { font-size:12px; color:var(--verde-claro); letter-spacing:2px; text-shadow:0 0 8px var(--verde-claro); }
+.footer .url { font-family:'Space Grotesk', sans-serif; font-size:17px; font-weight:700; color:var(--ciano); letter-spacing:1px; text-shadow:0 0 8px var(--ciano); }
+
+#og::after { content:''; position:absolute; inset:0; z-index:10; pointer-events:none;
+  background:repeating-linear-gradient(0deg, rgba(0,0,0,0.16) 0, rgba(0,0,0,0.16) 1px, transparent 1px, transparent 3px);
+  mix-blend-mode:multiply; opacity:0.4; }
+</style>
+</head>
+<body>
+<div id="og">
+  <div class="grid-bg"></div>
+  <div class="stars"></div>
+  <div class="glow-mg"></div>
+  <div class="glow-cy"></div>
+
+  <div class="top">
+    <div class="logos">
+      <img src="/assets/logo-sebrae-branca.webp" alt="Sebrae" />
+      <span class="sep"></span>
+      <img src="/assets/logo-tnl-h.png" alt="Tiro na Lua" />
+    </div>
+    <span class="eyebrow">▶ NEON SEBRAE AL · 2026</span>
+  </div>
+
+  <div class="content">
+    <div class="kicker">FICHAS TÉCNICAS · ESPAÇO EDUCAÇÃO EMPREENDEDORA</div>
+    <h1 class="title">A MATRIZ DAS<br/><span class="mg">EXPERIÊNCIAS</span></h1>
+    <p class="subtitle">Oito experiências numa página só: tema, microtema e onde cada uma encosta no currículo (BNCC + EntreComp).</p>
+    <div class="chips">
+      <span class="chip c3"><span class="e">👹</span>Monstro</span>
+      <span class="chip c2"><span class="e">⚒️</span>Forja</span>
+      <span class="chip c3"><span class="e">⭐</span>Referência AL</span>
+      <span class="chip c4"><span class="e">🎤</span>Palestras</span>
+      <span class="chip c3"><span class="e">🧪</span>Oficinas</span>
+      <span class="chip c2"><span class="e">🧗</span>Escalada</span>
+      <span class="chip c5"><span class="e">🥽</span>Realidade Virtual</span>
+      <span class="chip c6"><span class="e">📱</span>Caça ao Tesouro</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="brand">★ TIRO NA LUA · SEBRAE ALAGOAS · ESCALADA</span>
+    <span class="url">neon-sebrae-al.netlify.app/fichas</span>
+  </div>
+</div>
+</body>
+</html>
