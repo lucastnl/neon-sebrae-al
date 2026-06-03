@@ -36,19 +36,19 @@ body{
 }
 #stage{ position:fixed; inset:0; display:flex; flex-direction:column; max-width:560px; margin:0 auto; overflow:hidden; }
 
-/* escuridão da sala (clareia com progresso) */
+/* escuridão da sala: vinheta ATRÁS do conteúdo (centro sempre nítido), clareia com progresso */
 #stage::after{
-  content:''; position:fixed; inset:0; pointer-events:none; z-index:70;
-  background:radial-gradient(ellipse at 50% 46%, rgba(5,8,34,calc(var(--dark)*0.5)) 0%, rgba(5,8,34,calc(var(--dark)*0.98)) 80%);
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:4;
+  background:radial-gradient(ellipse at 50% 46%, transparent 36%, rgba(5,8,34,calc(0.2 + var(--dark)*0.72)) 96%);
   transition:background .55s ease;
 }
 /* flash branco do escape */
 #flood{ position:fixed; inset:0; z-index:90; pointer-events:none; background:#fff; opacity:var(--flood); transition:opacity .5s ease; }
-/* scanlines */
+/* scanlines, bem sutis, por cima */
 #stage::before{
-  content:''; position:fixed; inset:0; pointer-events:none; z-index:71;
-  background:repeating-linear-gradient(0deg, rgba(0,0,0,.16) 0, rgba(0,0,0,.16) 1px, transparent 1px, transparent 3px);
-  mix-blend-mode:multiply; opacity:.4;
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:72;
+  background:repeating-linear-gradient(0deg, rgba(0,0,0,.14) 0, rgba(0,0,0,.14) 1px, transparent 1px, transparent 3px);
+  mix-blend-mode:multiply; opacity:.18;
 }
 .shake{ animation:shake .3s; }
 @keyframes shake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 50%{transform:translateX(8px)} 75%{transform:translateX(-5px)} }
@@ -508,7 +508,7 @@ window.addEventListener('error', function(e){
   (function(){
     var m=location.search.match(/dev=(\w+)/); if(!m) return;
     ac=function(){return null;}; // sem audio em dev
-    S.running=true; S.nome='DEV'; document.documentElement.style.setProperty('--dark','.4');
+    S.running=true; S.nome='DEV'; setDark();
     $('#screenIntro').classList.add('hidden');
     var v=m[1];
     if(v==='cofre'||v==='1') goCofre();
