@@ -40,10 +40,12 @@ body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hi
 #hud{ position:relative; z-index:50; padding:10px 14px 6px; background:linear-gradient(180deg,#05081f,transparent); }
 #pavbar{ display:flex; align-items:center; gap:8px; }
 .pl{ font-family:var(--mono); font-size:8px; color:var(--amarelo); letter-spacing:1px; }
-#fuse{ flex:1; height:12px; border-radius:6px; background:#1a1f3e; border:1px solid rgba(255,255,255,.14); position:relative; overflow:hidden; }
-#fuse > .burn{ position:absolute; top:0; bottom:0; left:0; right:0; background:repeating-linear-gradient(90deg,#6b3a10 0 6px,#8a4d12 6px 12px); transform-origin:left; transition:transform .2s linear; }
-#fuse > .spark{ position:absolute; top:-4px; width:18px; height:20px; background:radial-gradient(circle,#fff,#FFD93D 40%,#FF8C42 70%,transparent 75%); transform:translateX(-50%); transition:left .2s linear; }
-#tnum{ font-family:var(--mono); font-size:10px; color:var(--amarelo); min-width:40px; text-align:right; }
+#fuse{ flex:1; height:18px; border-radius:9px; background:#1a1f3e; border:1px solid rgba(255,255,255,.16); position:relative; overflow:visible; }
+#fuse > .burn{ position:absolute; top:0; bottom:0; left:0; right:0; border-radius:9px; background:repeating-linear-gradient(90deg,#6b3a10 0 6px,#8a4d12 6px 12px); transform-origin:left; transition:transform .2s linear; }
+#fuse > .spark{ position:absolute; top:-7px; width:28px; height:32px; background:radial-gradient(circle,#fff,#FFD93D 38%,#FF8C42 66%,transparent 74%); transform:translateX(-50%); transition:left .2s linear; }
+.low #fuse > .spark{ animation:sparkpulse .3s infinite; }
+@keyframes sparkpulse{ 50%{ transform:translateX(-50%) scale(1.3) } }
+#tnum{ font-family:var(--mono); font-size:14px; color:var(--amarelo); min-width:46px; text-align:right; text-shadow:0 0 8px var(--amarelo); }
 .low #tnum{ color:var(--vermelho); }
 #hud2{ display:flex; justify-content:space-between; align-items:center; margin-top:7px; }
 #score{ font-family:var(--mono); font-size:9px; color:var(--verde-claro); text-shadow:0 0 8px var(--verde-claro); }
@@ -52,7 +54,7 @@ body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hi
 #objective{ font-family:var(--mono); font-size:8px; line-height:1.5; color:var(--ciano); text-align:center; margin-top:6px; min-height:11px; text-shadow:0 0 6px var(--ciano); }
 
 /* perigo: tela avermelha quando o pavio tá no fim */
-#danger{ position:fixed; inset:0; z-index:60; pointer-events:none; box-shadow:inset 0 0 120px rgba(255,48,96,0); transition:box-shadow .3s; }
+#danger{ position:fixed; inset:0; z-index:60; pointer-events:none; box-shadow:inset 0 0 calc(50px + var(--heat,0)*110px) rgba(255,48,96,calc(var(--heat,0)*0.5)); transition:box-shadow .5s; }
 .low #danger{ box-shadow:inset 0 0 120px rgba(255,48,96,.55); animation:dpulse .6s infinite; }
 @keyframes dpulse{ 50%{box-shadow:inset 0 0 90px rgba(255,48,96,.3)} }
 
@@ -185,6 +187,22 @@ body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hi
 #travarBtn{ font-family:var(--mono); font-size:14px; padding:18px; border:none; border-radius:12px; background:var(--amarelo); color:var(--navy-deep); cursor:pointer; box-shadow:0 6px 24px rgba(255,217,61,.45); width:100%; }
 #travarBtn:active{ transform:scale(.97); }
 
+/* caixa de fusíveis (lights-out) */
+.fusebox{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; max-width:280px; margin:6px auto 0; }
+.fuse{ aspect-ratio:1; border-radius:10px; border:3px solid #3a4690; background:#10163a; display:flex; align-items:center; justify-content:center; font-size:24px; cursor:pointer; transition:background .15s,border-color .15s,box-shadow .2s,transform .1s; color:#2a335f; }
+.fuse:active{ transform:scale(.92); }
+.fuse.on{ background:rgba(255,217,61,.18); border-color:var(--amarelo); color:var(--amarelo); box-shadow:0 0 16px rgba(255,217,61,.55); }
+
+/* aparição do fazedor (a conexão) */
+#aparicao{ position:absolute; inset:0; z-index:78; display:flex; align-items:center; justify-content:center; pointer-events:none; opacity:0; transition:opacity .25s; }
+#aparicao.show{ opacity:1; }
+#aparicao .card{ background:linear-gradient(160deg,#0a0f36,#1a1f4e); border:2px solid var(--amarelo); border-radius:18px; padding:18px 22px; max-width:300px; text-align:center; box-shadow:0 0 44px rgba(255,217,61,.45); transform:translateY(14px) scale(.96); transition:transform .3s; }
+#aparicao.show .card{ transform:translateY(0) scale(1); }
+#aparicao .ret{ width:92px; height:92px; margin:0 auto 10px; image-rendering:pixelated; display:flex; align-items:center; justify-content:center; font-size:64px; }
+#aparicao .nm{ font-family:var(--mono); font-size:12px; color:var(--amarelo); text-shadow:0 0 10px var(--amarelo); margin-bottom:8px; }
+#aparicao .ln{ font-size:13.5px; color:#fff; line-height:1.45; }
+#aparicao .ln b{ color:var(--ciano); }
+
 /* ---------- TELAS ---------- */
 .screen{ position:absolute; inset:0; z-index:80; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:28px 24px; background:rgba(5,8,34,.95); }
 .screen.hidden{ display:none; }
@@ -257,6 +275,7 @@ h1.title{ font-family:var(--mono); font-size:clamp(19px,7vw,28px); line-height:1
   </div>
 
   <div id="ov"></div>
+  <div id="aparicao"></div>
 
   <!-- INTRO -->
   <div class="screen win" id="screenIntro">
@@ -322,10 +341,18 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
   function flashIt(el){el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');}
   function toast(t){var e=$('#toast');e.textContent=t;e.classList.remove('show');void e.offsetWidth;e.classList.add('show');}
   function obj(name){return $('#'+name+'');}
+  function figByKey(k){ for(var i=0;i<FIGS.length;i++){ if(FIGS[i].key===k) return FIGS[i]; } return FIGS[0]; }
+  function aparicao(key, line, cb){
+    var f=figByKey(key), el=$('#aparicao');
+    el.innerHTML='<div class="card"><div class="ret">'+retrato(f,92)+'</div><div class="nm">'+f.nm+'</div><div class="ln">'+line+'</div></div>';
+    el.classList.add('show'); sStation();
+    setTimeout(function(){ el.classList.remove('show'); if(cb) setTimeout(cb,280); }, 1500);
+  }
 
   function fmt(s){s=Math.max(0,Math.ceil(s));var m=Math.floor(s/60),r=s%60;return m+':'+(r<10?'0':'')+r;}
   function renderHUD(){
     var frac=Math.max(0,S.restante/S.dur);
+    document.documentElement.style.setProperty('--heat', String(Math.min(1,Math.max(0,1-frac))));
     $('#fuse .burn').style.transform='scaleX('+frac+')';
     $('#fuse .spark').style.left=(frac*100)+'%';
     $('#tnum').textContent=fmt(S.restante);
@@ -368,36 +395,34 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
   function openDisjuntor(){
     if(S.done[0]){ toast('LUZ JÁ TÁ ON'); return; }
     S.state='fios';
-    var n=3, cores=shuffle(CORES).slice(0,n), left=cores.slice(), right=shuffle(cores), sel=null, feitos=0;
-    var html='<div class="ovd">A energia caiu. <b>Liga cada fio na cor igual</b> do outro lado pra religar a luz da sala.</div>'+
-      '<div id="fiospanel"><svg id="wires"></svg><div class="tcol" id="colL"></div><div class="tcol" id="colR"></div></div>';
-    openOv('DISJUNTOR · RELIGAR A LUZ', html);
-    var colL=$('#colL'),colR=$('#colR'),svg=$('#wires');
-    function mk(c){var e=document.createElement('div');e.className='node';e.style.color=c.c;e.style.borderColor=c.c;e.innerHTML='<div class="dot" style="background:'+c.c+'"></div>';return e;}
-    function ctr(el){var pr=$('#fiospanel').getBoundingClientRect(),r=el.getBoundingClientRect();return {x:r.left-pr.left+r.width/2,y:r.top-pr.top+r.height/2};}
-    function wire(a,b,col){var p1=ctr(a),p2=ctr(b);var l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('x1',p1.x);l.setAttribute('y1',p1.y);l.setAttribute('x2',p2.x);l.setAttribute('y2',p2.y);l.setAttribute('stroke',col);l.setAttribute('stroke-width','5');l.setAttribute('stroke-linecap','round');l.setAttribute('filter','drop-shadow(0 0 6px '+col+')');svg.appendChild(l);}
-    function clr(){if(sel)sel.el.classList.remove('sel');sel=null;}
-    function pick(el,c,side){
-      if(el.classList.contains('done'))return;
-      if(!sel){sel={el:el,c:c,side:side};el.classList.add('sel');sC();return;}
-      if(sel.el===el){clr();return;}
-      if(sel.side===side){clr();sel={el:el,c:c,side:side};el.classList.add('sel');sC();return;}
-      if(sel.c===c){var col=CORES.filter(function(x){return x.n===c;})[0].c;wire(sel.el,el,col);sel.el.classList.add('done');el.classList.add('done');sZap();ok();boost(1);feitos++;clr();
-        if(feitos>=n){ setTimeout(powerOn,300); }
-      } else {var a=sel.el;el.classList.add('bad');a.classList.add('bad');setTimeout(function(){el.classList.remove('bad');a.classList.remove('bad');},300);clr();fail(3);}
+    var N=9, st=[]; for(var k=0;k<N;k++) st.push(true);
+    function nb(i){ var r=Math.floor(i/3),c=i%3,a=[i]; if(r>0)a.push(i-3); if(r<2)a.push(i+3); if(c>0)a.push(i-1); if(c<2)a.push(i+1); return a; }
+    function toggle(i){ nb(i).forEach(function(j){ st[j]=!st[j]; }); }
+    var K=4+rint(3); for(var s=0;s<K;s++) toggle(rint(N));
+    if(st.every(function(x){return x;})) toggle(rint(N));
+    openOv('CAIXA DE FUSÍVEIS · RELIGA A LUZ', '<div class="ovd">Acende <b>todos</b> os fusíveis. Pegadinha: cada um que você mexe vira os <b>vizinhos</b> junto. Tem que sacar o truque.</div><div class="fusebox" id="fusebox"></div>');
+    var box=$('#fusebox');
+    function done(){ return st.every(function(x){return x;}); }
+    function render(){
+      box.innerHTML='';
+      st.forEach(function(on,i){
+        var f=document.createElement('div'); f.className='fuse'+(on?' on':''); f.textContent=on?'⚡':'○';
+        f.onclick=function(){ toggle(i); sC(); render(); if(done()){ sZap(); ok(); boost(1); setTimeout(powerOn,380); } };
+        box.appendChild(f);
+      });
     }
-    left.forEach(function(c){var e=mk(c);e.onclick=function(){pick(e,c.n,'L');};colL.appendChild(e);});
-    right.forEach(function(c){var e=mk(c);e.onclick=function(){pick(e,c.n,'R');};colR.appendChild(e);});
-    S._dica=function(){var f=colL.querySelector('.node:not(.done)');if(f){f.classList.add('sel');}toast('LIGA AS CORES IGUAIS');};
+    render();
+    S._dica=function(){ toast('MEXE NUM CANTO E VÊ O QUE ACENDE'); };
   }
   function powerOn(){
-    S.done[0]=true; S.powered=true; chipDone(0); sStation(); sPow();
+    S.done[0]=true; S.powered=true; chipDone(0); sPow();
     closeOv(); $('#room').classList.add('lit'); flashIt($('#scene')); addScore(400); ok();
-    toast('LUZ! 💡'); S.state='room';
+    S.state='room';
     setObjective('A luz acendeu! Toca nos objetos que piscam pra achar os 3 números.');
-    // libera senha
-    S.senha=FIGS.map(function(f){var d=rint(10);return {fig:f,dg:d};});
+    // senha sorteada (ordem e dígitos mudam a cada partida)
+    S.senha=shuffle(FIGS).map(function(f){var d=rint(10);return {fig:f,dg:d};});
     ['radio','estante','retrato'].forEach(function(o){ obj(o).classList.add('glowme'); });
+    aparicao('hermeto', 'A <b>criatividade</b> do Hermeto religou a luz da sala.');
   }
 
   // =========================================================
@@ -429,7 +454,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     if(S.done[1]){ toast('COFRE JÁ ABERTO'); return; }
     S.state='cofre'; $('#cofre').classList.remove('glowme');
     var got=S.achados.filter(function(x){return x!==null;}).length;
-    var hint=S.senha.map(function(s,i){ return '<div class="sh">'+s.fig.ic+'<small>'+(S.achados[i]!==null?S.achados[i]:'?')+'</small></div>'; }).join('');
+    var hint=S.senha.map(function(s,i){ return '<div class="sh">'+s.fig.ic+'<small>'+(S.achados[i]!==null?'✓':'?')+'</small></div>'; }).join('');
     var entered=[];
     var html='<div class="ovd">Digita os 3 números <b>na ordem dos ícones abaixo</b>. Tá vendo "?" em algum? Fecha e toca no rádio, na estante e no retrato pra achar.</div>'+
       '<div class="senha-hint">'+hint+'</div>'+
@@ -447,10 +472,10 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
       if(entered.length<3) return;
       var alvo=S.senha.map(function(s){return s.dg;});
       if(entered.join('')===alvo.join('')){
-        S.done[1]=true; S.safeOpen=true; S.hasGazua=true; chipDone(1); $('#cofre').classList.add('open'); sStation(); addScore(500); ok(); boost(2);
+        S.done[1]=true; S.safeOpen=true; S.hasGazua=true; chipDone(1); $('#cofre').classList.add('open'); addScore(500); ok(); boost(2);
+        aparicao('graciliano', 'O <b>método</b> do Graciliano abriu o cofre.');
         openOv('COFRE ABERTO 🔓', '<div class="clue"><div class="fig" style="border-color:var(--verde-claro);background:rgba(0,255,133,.08)"><span class="ic">🗝️</span><div><div class="nm" style="color:var(--verde-claro)">A GAZUA</div><div class="ft">Dentro do cofre tinha a gazua pra abrir a porta. Agora vai na porta.</div></div></div></div><div class="ovd" style="margin-top:14px"><b>Toca na PORTA</b> pra arrombar a fechadura.</div>');
         setObjective('Pegou a gazua! Vai na porta e arromba a fechadura.');
-        setTimeout(function(){ if($('#ov').classList.contains('up')&&S.state!=='fechadura') {} }, 10);
       } else { entered=[]; refresh(); fail(4); toast('SENHA ERRADA'); }
     }
   }
@@ -479,7 +504,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     if(S.marker>=z.zp && S.marker<=z.zp+z.zw){
       cur.classList.remove('active'); cur.classList.add('locked'); sLock(); ok();
       S.fechIdx++; S.marker=0; S.mdir=1; S.mspeed+=0.45;
-      if(S.fechIdx>=3){ S.done[2]=true; chipDone(2); $('#porta').classList.add('unlocked'); addScore(700); ok(); closeOv(); setTimeout(escape,350); }
+      if(S.fechIdx>=3){ S.done[2]=true; chipDone(2); $('#porta').classList.add('unlocked'); addScore(700); ok(); closeOv(); aparicao('marta', 'A <b>perseverança</b> da Marta arrombou a porta.', escape); }
       else { t[S.fechIdx].classList.add('active'); }
     } else { fail(3); }
   }
@@ -544,7 +569,8 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     S.running=true; S.nome='DEV'; reset(); S.running=true; S.nome='DEV';
     var v=m[1];
     if(v==='dark'){ $('#screenIntro').classList.add('hidden'); setObjective('Acha o que brilha e religa.'); }
-    else if(v==='fios'){ $('#screenIntro').classList.add('hidden'); openDisjuntor(); }
+    else if(v==='fios'||v==='fuse'){ $('#screenIntro').classList.add('hidden'); openDisjuntor(); }
+    else if(v==='aparic'){ $('#screenIntro').classList.add('hidden'); $('#room').classList.add('lit'); aparicao('marta','A <b>perseverança</b> da Marta arrombou a porta.'); }
     else if(v==='lit'){ $('#screenIntro').classList.add('hidden'); S.powered=true; S.done[0]=true; chipDone(0); $('#room').classList.add('lit'); S.senha=FIGS.map(function(f){return {fig:f,dg:rint(10)};}); setObjective('Vasculha e abre o cofre.'); }
     else if(v==='cofre'){ $('#screenIntro').classList.add('hidden'); S.powered=true; $('#room').classList.add('lit'); S.senha=FIGS.map(function(f){return {fig:f,dg:rint(10)};}); S.achados=S.senha.map(function(s){return s.dg;}); $('#cofre').classList.add('show'); openCofre(); }
     else if(v==='fech'){ $('#screenIntro').classList.add('hidden'); S.powered=true; S.hasGazua=true; $('#room').classList.add('lit'); openPorta(); }

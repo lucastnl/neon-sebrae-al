@@ -39,6 +39,14 @@ Atributos-âncora: magro, sério, óculos redondos, bigode fino, terno e gravata
 
 Atributos-âncora: atleta jovem, cabelo preso, camisa amarela, expressão confiante. (Evitar número/escudo de marca registrada pra não ter problema de direitos.)
 
+## Pose de ação (a "aparição" no jogo)
+Cada fazedor agora MOVE uma estação e aparece em 16-bit quando você resolve ela, ligando o talento dele à competência. Então a pose pede a ação característica:
+- **hermeto.png** (move a energia / fusíveis): tocando flauta. Frase no jogo: "A criatividade do Hermeto religou a luz."
+- **graciliano.png** (move o cofre): escrevendo ou segurando um livro. Frase: "O método do Graciliano abriu o cofre."
+- **marta.png** (move a fechadura): com a bola, chutando ou dominando. Frase: "A perseverança da Marta arrombou a porta."
+
+Se der pra entregar um sprite com 2-3 quadros de animação (ex: Marta dominando a bola), melhor ainda; mando o loop no jogo. Se for PNG único, também funciona (entra com um leve movimento de respiro). Mesma spec técnica acima pros 3.
+
 ## Depois de gerar
 1. Joga os 3 PNGs em `boss-fight/assets/centelha/` com os nomes exatos.
 2. Avisa que estão lá. Eu confirmo que aparecem no "vasculhar" (substituem os emojis 📻 📖 ⚽ automaticamente) e ajusto tamanho/posição se precisar.
