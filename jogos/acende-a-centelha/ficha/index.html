@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#050822" />
+<title>Ficha · Acende a Centelha (design)</title>
+
+<meta property="og:title" content="Ficha de Design · Acende a Centelha" />
+<meta property="og:description" content="Jogo 3 do totem do Neon Sebrae AL: micro escape room. No escuro, cada pista de Alagoas acende um circuito neon. Speedrun contra o relógio. Proposta de design (red team)." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://neon-sebrae-al.netlify.app/jogos/acende-a-centelha/ficha/" />
+<meta property="og:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../../../assets/ficha.css" />
+<style>
+:root { --accent: #FFD93D; }
+
+/* Matriz de Cobertura, prova de que o jogo ocupa célula vazia */
+.matriz-wrap { overflow-x: auto; }
+.matriz {
+  display: grid;
+  grid-template-columns: 0.85fr repeat(4, 1fr);
+  gap: 6px;
+  min-width: 600px;
+  font-size: 11px;
+}
+.matriz .mh {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: var(--ciano);
+  text-shadow: 0 0 6px var(--ciano);
+  padding: 6px 4px;
+  text-align: center;
+  align-self: end;
+}
+.matriz .mh.hl { color: var(--amarelo); text-shadow: 0 0 8px var(--amarelo); }
+.matriz .me {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  letter-spacing: 0.5px;
+  color: var(--magenta-claro);
+  padding: 8px 4px;
+  align-self: center;
+}
+.matriz .mc {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 7px;
+  line-height: 1.35;
+  color: var(--branco);
+}
+.matriz .mc.hl { background: rgba(255,217,61,0.12); border-color: var(--amarelo); }
+.matriz .mc strong { color: var(--amarelo); }
+
+/* Motor de diversão, 4 ingredientes */
+.motor { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.motor .ing {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.motor .ing h4 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: var(--accent);
+  text-shadow: 0 0 6px var(--accent);
+  margin-bottom: 6px;
+}
+.motor .ing p { font-size: 12px; line-height: 1.4; margin: 0; }
+
+/* Três enigmas de exemplo */
+.exemplos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.exemplos .ex { background: rgba(0,0,0,0.25); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; }
+.exemplos .ex .ec { font-family: 'Press Start 2P', monospace; font-size: 8px; letter-spacing: 1px; color: var(--ciano); text-shadow: 0 0 6px var(--ciano); display: block; margin-bottom: 6px; }
+.exemplos .ex h4 { font-family: 'Press Start 2P', monospace; font-size: 10px; color: var(--accent); text-shadow: 0 0 6px var(--accent); margin-bottom: 8px; line-height: 1.4; }
+.exemplos .ex p { font-size: 12px; line-height: 1.45; margin: 0 0 8px; }
+.exemplos .ex p:last-child { margin-bottom: 0; }
+.exemplos .ex .tip { color: var(--muted); font-size: 11px; }
+.exemplos .ex .tip strong { color: var(--verde-claro); }
+
+@media (max-width: 880px) {
+  .motor { grid-template-columns: 1fr; }
+  .exemplos { grid-template-columns: 1fr; }
+}
+@media print {
+  .exemplos .ex { background: #f4f4f4; border-color: #ccc; }
+  .exemplos .ex .ec { color: var(--navy); text-shadow: none; }
+  .exemplos .ex h4 { color: var(--navy); text-shadow: none; }
+  .exemplos .ex p { color: #222; }
+  .exemplos .ex .tip { color: #555; }
+  .exemplos .ex .tip strong { color: #006633; }
+  .matriz .mc { background: #f4f4f4; border-color: #ccc; color: #222; }
+  .matriz .mc.hl { background: #fff8db; border-color: #b8860b; }
+  .matriz .mc strong { color: #b8860b; }
+  .matriz .mh { color: var(--navy); text-shadow: none; }
+  .matriz .mh.hl { color: #b8860b; text-shadow: none; }
+  .matriz .me { color: #8b008b; }
+  .motor .ing { background: #f4f4f4; border-color: #ccc; }
+  .motor .ing h4 { color: var(--navy); text-shadow: none; }
+  .motor .ing p { color: #222; }
+}
+</style>
+</head>
+<body>
+
+<div class="float-btns">
+  <a class="hub-btn" href="/hub/">◂ HUB</a>
+  <button class="print-btn" onclick="window.print()">⬇ PDF</button>
+</div>
+
+<div class="sheet">
+
+  <header>
+    <div class="logo"><img src="../../../assets/logo-tnl-h.png" alt="Tiro na Lua" /></div>
+    <div class="title">
+      <h1>ACENDE A CENTELHA</h1>
+      <div class="sub">Jogo 3 do totem (em design) · Espaço Educação Empreendedora · Neon Sebrae AL 2026</div>
+    </div>
+    <div class="badge">DESIGN · <span>v1</span><br>red team 03/06</div>
+  </header>
+
+  <div class="grid">
+
+    <!-- 00 DECISÃO DE DESIGN -->
+    <div class="block full" style="background:rgba(255,0,255,0.05);border-color:rgba(255,118,255,0.4)">
+      <div class="tag" style="color:var(--magenta-claro);text-shadow:0 0 8px var(--magenta)">⚠ DECISÃO DE DESIGN · RED TEAM</div>
+      <p>Substitui a "Referência Alagoana" no slot do jogo 3. Motivo: ela dependia da câmera do totem, e não dá pra garantir que o totem vai ter câmera, aposta arriscada perto do evento. A troca não é só técnica. O escape room ocupa a raia <strong style="color:var(--verde-claro)">lógica/dedução</strong>, que estava vazia entre os quatro jogos, e <strong style="color:var(--verde-claro)">absorve a dor da falta de referência local</strong> (a dor nº1 do Lunoscópio) construindo os enigmas em cima de saberes e fazedores reais de Alagoas. O orgulho local migra de jogo em vez de morrer. O que a gente abre mão é só do gimmick da câmera.</p>
+    </div>
+
+    <!-- 01 CONCEITO -->
+    <div class="block">
+      <div class="tag">01 · CONCEITO</div>
+      <h2>No escuro,<br>toda saída é uma pista.</h2>
+      <p>O totem começa apagado. O jovem resolve enigmas rápidos pra acender a sala. Cada acerto liga um circuito neon. Acendeu tudo antes do relógio zerar, a centelha acende e ele "escapa" pra dentro da jornada.</p>
+      <p class="muted">Encena o mote cocriado no Lunoscópio: planta a semente e acende a centelha. Empreender é destravar com método, não no escuro.</p>
+    </div>
+
+    <!-- 02 OS 3 CADEADOS -->
+    <div class="block">
+      <div class="tag">02 · OS 3 CADEADOS</div>
+      <h2>Decifrar, associar, encaixar</h2>
+      <div class="pair"><div class="a">🔢 A SENHA</div><div class="arr">▶</div><div class="b">DECIFRAR</div></div>
+      <div class="pair"><div class="a">🔗 AS CONEXÕES</div><div class="arr">▶</div><div class="b">ASSOCIAR</div></div>
+      <div class="pair"><div class="a">⚡ O CURTO</div><div class="arr">▶</div><div class="b">ENCAIXAR</div></div>
+      <p class="muted">Três tipos de raciocínio, nenhum de memória ou reflexo (essas raias já são do Sebrae e do Monstro). As pistas são de Alagoas: fazedores, lugares, saberes do estado.</p>
+    </div>
+
+    <!-- 03 ENIGMAS DE EXEMPLO -->
+    <div class="block full">
+      <div class="tag">03 · TRÊS ENIGMAS DE EXEMPLO</div>
+      <h2>Um por cadeado, todos sobre Alagoas</h2>
+      <div class="exemplos">
+        <div class="ex">
+          <span class="ec">🔢 A SENHA · DECIFRAR</span>
+          <h4>Quem veio antes?</h4>
+          <p>Três fazedores alagoanos acendem na cena, cada um com o ano em que começou. A pista pede a senha "do mais antigo pro mais novo". O jovem ordena por ano e digita os 3 dígitos no cadeado.</p>
+          <p class="tip"><strong>Raciocínio:</strong> cronologia + decodificação. <strong>Local:</strong> história de quem empreende em AL.</p>
+        </div>
+        <div class="ex">
+          <span class="ec">🔗 AS CONEXÕES · ASSOCIAR</span>
+          <h4>Quem faz o quê?</h4>
+          <p>De um lado, quatro fazedores (rendeira de Marechal, produtor de coco do litoral, ceramista do sertão, dev de Maceió). Do outro, o que cada um resolve, embaralhado. O jovem liga os pares no toque. Errou, o circuito não acende.</p>
+          <p class="tip"><strong>Raciocínio:</strong> associação por eliminação. <strong>Local:</strong> setores produtivos de Alagoas.</p>
+        </div>
+        <div class="ex">
+          <span class="ec">⚡ O CURTO · ENCAIXAR</span>
+          <h4>A ordem que destrava</h4>
+          <p>Os passos de tirar um negócio do papel chegam fora de ordem (a ideia, o primeiro cliente, ouvir e ajustar, vender de novo). O jovem encaixa na sequência certa pra fechar o circuito. Twist: um cartão é pegadinha e não entra.</p>
+          <p class="tip"><strong>Raciocínio:</strong> ordenação causal. <strong>Local:</strong> liga direto à jornada do Escalada.</p>
+        </div>
+      </div>
+      <p class="muted" style="margin-top:12px;">Exemplos pra dar liga. O acervo final (quais fazedores, quais setores, quais fatos) fecha na curadoria com o Sebrae AL, garantindo diversidade de território, gênero e setor.</p>
+    </div>
+
+    <!-- 04 MECÂNICA -->
+    <div class="block">
+      <div class="tag">04 · COMO DESTRAVA</div>
+      <h2>Toque, acende, escapa</h2>
+      <div class="flow">
+        <div class="step"><div><strong>Lê a cena.</strong> Pistas visuais aparecem na tela escura. Texto mínimo.</div></div>
+        <div class="step"><div><strong>Resolve no toque.</strong> Monta o código, liga os pares, encaixa a sequência.</div></div>
+        <div class="step"><div><strong>Acende.</strong> Cadeado certo abre, um circuito neon explode de luz e som, a sala clareia.</div></div>
+      </div>
+      <p class="muted">Só toque, totem retrato, sem câmera. Raia motora: lógica e dedução sob pressão.</p>
+    </div>
+
+    <!-- 05 PROGRESSÃO -->
+    <div class="block">
+      <div class="tag">05 · PROGRESSÃO</div>
+      <h2>3 fases, o escuro fecha</h2>
+      <div class="phases">
+        <div class="phase"><span class="n">1</span><span class="pn">A FAGULHA</span><div class="pd">cadeado simples<br>relógio folgado</div></div>
+        <div class="phase p2"><span class="n">2</span><span class="pn">A CORRENTE</span><div class="pd">cadeado médio<br>relógio aperta</div></div>
+        <div class="phase p3"><span class="n">3</span><span class="pn">O CURTO</span><div class="pd">enigma com twist<br>sala quase no escuro</div></div>
+      </div>
+      <p class="muted" style="margin-top:10px;">Dificuldade crescente igual ao Monstro. Quanto mais demora, mais a sala escurece e o relógio pulsa. Pontos por velocidade, combo por sequência de acertos sem dica.</p>
+    </div>
+
+    <!-- 05 MOTOR DE DIVERSÃO -->
+    <div class="block full" style="background:rgba(255,217,61,0.05);border-color:rgba(255,217,61,0.35)">
+      <div class="tag">06 · MOTOR DE DIVERSÃO · A MESMA REAÇÃO DO MONSTRO</div>
+      <h2 style="color:var(--accent);text-shadow:0 0 10px var(--accent)">Sentimento diferente, reação igual: "caramba, foi divertido!"</h2>
+      <p class="muted" style="margin-bottom:14px;">O Monstro acertou a diversão por 4 ingredientes que não dependem da raia. A gente repete os 4 aqui, trocando a adrenalina do desvio pelo suspense do "aha!".</p>
+      <div class="motor">
+        <div class="ing"><h4>TENSÃO CRESCENTE</h4><p>Relógio correndo + a sala escurecendo + fases mais duras. O mesmo aperto das fases do Monstro, sem bloco caindo.</p></div>
+        <div class="ing"><h4>FEEDBACK SUCULENTO</h4><p>Cada cadeado abre com explosão de luz e som. Progresso visível: a sala vai do breu ao neon pleno.</p></div>
+        <div class="ing"><h4>RECOMPENSA DE DOMÍNIO</h4><p>Velocidade vale ponto, sequência sem dica vira combo. Resolver rápido dá o mesmo barato do PERFECT.</p></div>
+        <div class="ing"><h4>LOOP CURTO + REPLAY</h4><p>~90s por partida. Zerou faltando um cadeado, "faltou só uma! de novo?". O gancho do "quase consegui".</p></div>
+      </div>
+    </div>
+
+    <!-- 06 SAÍDA -->
+    <div class="block">
+      <div class="tag">07 · SAÍDA COMPARTILHÁVEL</div>
+      <h2>"Acendi a centelha em 47s"</h2>
+      <p>A partida fecha com um card de speedrun: o tempo, o nome do jovem, a caravana e a sala toda acesa em neon. Print de orgulho, não de zoeira.</p>
+      <p class="muted">Mantém o critério de pelo menos 2 artefatos instagramáveis no estande (Patente Maluca da Forja + este).</p>
+    </div>
+
+    <!-- 07 STACK -->
+    <div class="block">
+      <div class="tag">08 · STACK</div>
+      <h2>Reaproveita o Monstro, zero câmera</h2>
+      <div class="kv">
+        <p><strong>FRONT</strong> HTML/CSS/JS puro, sem build</p>
+        <p><strong>BACK</strong> Supabase, mesma tabela partidas (jogo='centelha'), 11 camadas de hardening</p>
+        <p><strong>REUSO</strong> neon-store.js do Monstro, placar por caravana já pronto</p>
+        <p><strong>UX</strong> Touch-first, totem retrato, sem dependência de hardware extra</p>
+      </div>
+    </div>
+
+    <!-- 08 MATRIZ DE COBERTURA -->
+    <div class="block full">
+      <div class="tag">09 · MATRIZ DE COBERTURA · POR QUE ESTE JOGO E NÃO OUTRO</div>
+      <h2>Cada jogo ocupa uma célula distinta</h2>
+      <p class="muted" style="margin-bottom:14px;">Regra de Game Design TNL: num evento com vários jogos, o conjunto cobre o referencial vivo sem repetir o estímulo. O escape entra exatamente onde havia buraco.</p>
+      <div class="matriz-wrap">
+        <div class="matriz">
+          <div class="mh"></div>
+          <div class="mh">MONSTRO</div>
+          <div class="mh">FORJA</div>
+          <div class="mh hl">CENTELHA</div>
+          <div class="mh">SEBRAE</div>
+
+          <div class="me">ESTÍMULO</div>
+          <div class="mc">Reflexo / timing</div>
+          <div class="mc">Combinação / decisão</div>
+          <div class="mc hl"><strong>Lógica / dedução</strong></div>
+          <div class="mc">Memória / sequência</div>
+
+          <div class="me">ENTRECOMP</div>
+          <div class="mc">Autoconsciência 2.1</div>
+          <div class="mc">Oportunidade 1.1 · criar 1.2</div>
+          <div class="mc hl"><strong>Perseverança 2.2</strong></div>
+          <div class="mc">a cargo do Sebrae</div>
+
+          <div class="me">DOR DO JOVEM</div>
+          <div class="mc">"tenho medo do próximo passo"</div>
+          <div class="mc">"como tiro a ideia da cabeça?"</div>
+          <div class="mc hl"><strong>"travei, parece impossível" + falta de referência local</strong></div>
+          <div class="mc">jogo do parceiro</div>
+
+          <div class="me">ARTEFATO</div>
+          <div class="mc">placar da caravana</div>
+          <div class="mc">Patente Maluca</div>
+          <div class="mc hl"><strong>card "Acendi em Xs"</strong></div>
+          <div class="mc">do Sebrae</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 09 EDU -->
+    <div class="block edu">
+      <div class="tag">10 · MAPEAMENTO EDUCACIONAL</div>
+      <h2>Slot "destravar" · módulo do Escalada</h2>
+      <div class="edu-grid">
+        <div class="edu-col">
+          <h3>ENTRECOMP <span class="src">· Competências Empreendedoras</span></h3>
+          <div class="edu-row">
+            <div class="k">PERSEVERAR</div>
+            <div class="v">Motivation & perseverance <em>2.2</em>. Travado não é parado: cada pista é um próximo passo.</div>
+          </div>
+          <div class="edu-row">
+            <div class="k">DEDUZIR</div>
+            <div class="v">Learning through experience <em>3.5</em>. Testar hipótese, ler o retorno, ajustar.</div>
+          </div>
+        </div>
+        <div class="edu-col">
+          <h3>BNCC <span class="src">· Competências Gerais</span></h3>
+          <div class="edu-row">
+            <div class="k">RESOLVER</div>
+            <div class="v">Pensamento científico, crítico e criativo <em>CG 2</em>. Ênfase em decifrar e deduzir.</div>
+          </div>
+          <div class="edu-row">
+            <div class="k">LOCAL</div>
+            <div class="v">Conhecimento e repertório cultural <em>CG 1 / CG 3</em>. As pistas são saberes de Alagoas.</div>
+          </div>
+          <div class="edu-row">
+            <div class="k">PERCURSO</div>
+            <div class="v">Trabalho e projeto de vida <em>CG 6</em>. Destravar como hábito, não como sorte.</div>
+          </div>
+        </div>
+      </div>
+      <p class="edu-note">Dor/dúvida atacada: "travei, não sei por onde começar, parece impossível", somada à falta de referência local (herdada da Referência Alagoana e embutida nos enigmas). Estímulo motor distinto dos outros três: lógica e dedução, nem reflexo, nem combinação, nem memória.</p>
+    </div>
+
+  </div>
+
+  <footer>
+    <div>neon-sebrae-al.netlify.app / jogos / acende-a-centelha</div>
+    <div class="stamp">TIRO NA LUA · SEBRAE AL · ESCALADA</div>
+  </footer>
+
+</div>
+
+</body>
+</html>
