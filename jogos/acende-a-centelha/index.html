@@ -193,6 +193,17 @@ body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hi
 .fuse:active{ transform:scale(.92); }
 .fuse.on{ background:rgba(255,217,61,.18); border-color:var(--amarelo); color:var(--amarelo); box-shadow:0 0 16px rgba(255,217,61,.55); }
 
+/* circuito (ligar os fios) */
+.circ-wrap{ display:flex; align-items:center; justify-content:center; gap:6px; margin-top:6px; }
+.src,.dst{ font-size:26px; flex:0 0 auto; }
+.dst{ filter:grayscale(1) brightness(.6); transition:.3s; }
+.dst.on{ filter:none; text-shadow:0 0 16px var(--amarelo); transform:scale(1.18); }
+.circuit{ display:grid; grid-template-columns:repeat(3,62px); grid-template-rows:repeat(3,62px); gap:5px; }
+.tile{ background:#0c1130; border:2px solid #232a55; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform .08s; }
+.tile:active{ transform:scale(.92); }
+.tile svg{ width:90%; height:90%; }
+@media (max-width:880px){ .circuit{ grid-template-columns:repeat(3,56px); grid-template-rows:repeat(3,56px); } }
+
 /* aparição do fazedor (a conexão) */
 #aparicao{ position:absolute; inset:0; z-index:78; display:flex; align-items:center; justify-content:center; pointer-events:none; opacity:0; transition:opacity .25s; }
 #aparicao.show{ opacity:1; }
@@ -395,25 +406,38 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
   function openDisjuntor(){
     if(S.done[0]){ toast('LUZ JÁ TÁ ON'); return; }
     S.state='fios';
-    var N=9, st=[]; for(var k=0;k<N;k++) st.push(true);
-    function nb(i){ var r=Math.floor(i/3),c=i%3,a=[i]; if(r>0)a.push(i-3); if(r<2)a.push(i+3); if(c>0)a.push(i-1); if(c<2)a.push(i+1); return a; }
-    function toggle(i){ nb(i).forEach(function(j){ st[j]=!st[j]; }); }
-    // embaralha com 3 células distintas. solveSet = jogadas que faltam pra voltar ao "tudo aceso".
-    var solveSet={}; shuffle([0,1,2,3,4,5,6,7,8]).slice(0,4).forEach(function(i){ toggle(i); solveSet[i]=true; });
-    openOv('CAIXA DE FUSÍVEIS · RELIGA A LUZ', '<div class="ovd">Acende <b>todos</b> os fusíveis. Cada um que você mexe vira os <b>vizinhos</b> junto. <span id="faltam" style="color:var(--amarelo);font-weight:700"></span></div><div class="fusebox" id="fusebox"></div>');
-    var box=$('#fusebox');
-    function nfalta(){ return Object.keys(solveSet).length; }
-    function upd(){ var el=$('#faltam'); if(el) el.textContent='Faltam '+nfalta()+'.'; }
-    function render(){
-      box.innerHTML='';
-      st.forEach(function(on,i){
-        var f=document.createElement('div'); f.className='fuse'+(on?' on':''); f.textContent=on?'⚡':'○';
-        f.onclick=function(){ toggle(i); if(solveSet[i])delete solveSet[i]; else solveSet[i]=true; sC(); render(); upd(); if(nfalta()===0){ sZap(); ok(); boost(1); setTimeout(powerOn,380); } };
-        box.appendChild(f);
-      });
+    var sr=1, solved=false;
+    var masks=[6,12,6, 9,3,10, 6,10,12];   // config base solúvel (fonte esq-meio -> lâmpada dir-meio)
+    function rot(m){ return ((m<<1)|(m>>3))&15; }
+    for(var i=0;i<9;i++){ var t=rint(4); for(var z=0;z<t;z++) masks[i]=rot(masks[i]); }
+    var DIRS=[[1,-1,0,4],[2,0,1,8],[4,1,0,1],[8,0,-1,2]]; // [bit,dr,dc,opp]
+    function powered(){
+      var pw=[false,false,false,false,false,false,false,false,false], q=[], src=sr*3+0;
+      if(masks[src]&8){ pw[src]=true; q.push(src); }
+      while(q.length){ var cur=q.shift(), r=Math.floor(cur/3), c=cur%3, m=masks[cur];
+        DIRS.forEach(function(d){ if(m&d[0]){ var nr=r+d[1], nc=c+d[2]; if(nr>=0&&nr<3&&nc>=0&&nc<3){ var ni=nr*3+nc; if(!pw[ni]&&(masks[ni]&d[3])){ pw[ni]=true; q.push(ni); } } } });
+      }
+      return pw;
     }
-    render(); upd();
-    S._dica=function(){ var ks=Object.keys(solveSet); if(ks.length){ var i=parseInt(ks[0],10); if(box.children[i]) box.children[i].style.boxShadow='0 0 0 4px #fff, 0 0 18px var(--amarelo)'; toast('TOCA NO FUSÍVEL MARCADO'); } };
+    function won(pw){ var dst=sr*3+2; return pw[dst] && (masks[dst]&2); }
+    function pipe(m,on){
+      var col=on?'#FFD93D':'#3a4690', p='';
+      function ln(a,b,c,d){ return '<line x1="'+a+'" y1="'+b+'" x2="'+c+'" y2="'+d+'" stroke="'+col+'" stroke-width="6" stroke-linecap="round"/>'; }
+      if(m&1)p+=ln(12,12,12,0); if(m&2)p+=ln(12,12,24,12); if(m&4)p+=ln(12,12,12,24); if(m&8)p+=ln(12,12,0,12);
+      p+='<circle cx="12" cy="12" r="3.5" fill="'+col+'"/>';
+      return '<svg viewBox="0 0 24 24" style="filter:'+(on?'drop-shadow(0 0 4px #FFD93D)':'none')+'">'+p+'</svg>';
+    }
+    openOv('CIRCUITO · RELIGA A LUZ', '<div class="ovd">Toca nas peças pra <b>girar</b> e ligar o caminho da energia (⚡) até a lâmpada (💡). A luz acende conforme você conecta.</div><div class="circ-wrap"><div class="src">⚡</div><div class="circuit" id="circuit"></div><div class="dst" id="dst">💡</div></div>');
+    if(won(powered())) masks[4]=rot(masks[4]);
+    var grid=$('#circuit');
+    function render(){
+      var pw=powered(); grid.innerHTML='';
+      for(var i=0;i<9;i++){ (function(i){ var t=document.createElement('div'); t.className='tile'; t.innerHTML=pipe(masks[i],pw[i]); t.onclick=function(){ if(solved)return; masks[i]=rot(masks[i]); sC(); render(); }; grid.appendChild(t); })(i); }
+      var w=won(pw); $('#dst').classList.toggle('on', w);
+      if(w && !solved){ solved=true; sZap(); ok(); boost(1); S.state='room'; setTimeout(powerOn,500); }
+    }
+    render();
+    S._dica=function(){ toast('GIRA AS PEÇAS PRA FECHAR O CAMINHO'); };
   }
   function powerOn(){
     S.done[0]=true; S.powered=true; chipDone(0); sPow();
