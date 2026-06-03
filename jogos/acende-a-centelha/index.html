@@ -288,10 +288,12 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
   var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));};
 
   var FIGS=[
-    {ic:'📻', nm:'HERMETO',    ft:'o bruxo dos sons, de Lagoa da Canoa', obj:'radio'},
-    {ic:'📖', nm:'GRACILIANO', ft:'de Quebrângulo, escreveu Vidas Secas', obj:'estante'},
-    {ic:'⚽', nm:'MARTA',      ft:'de Dois Riachos, a melhor do mundo', obj:'retrato'}
+    {ic:'📻', key:'hermeto',    nm:'HERMETO',    ft:'o bruxo dos sons, de Lagoa da Canoa', obj:'radio'},
+    {ic:'📖', key:'graciliano', nm:'GRACILIANO', ft:'de Quebrângulo, escreveu Vidas Secas', obj:'estante'},
+    {ic:'⚽', key:'marta',      nm:'MARTA',      ft:'de Dois Riachos, a melhor do mundo', obj:'retrato'}
   ];
+  // retrato 16-bit com fallback pro emoji enquanto o PNG não existe
+  function retrato(f, px){ px=px||54; return '<img src="../../assets/centelha/'+f.key+'.png" alt="'+f.nm+'" style="width:'+px+'px;height:'+px+'px;image-rendering:pixelated;border-radius:4px" onerror="this.outerHTML=\'<span style=&quot;font-size:'+Math.round(px*0.74)+'px&quot;>'+f.ic+'</span>\'">'; }
   var CORES=[{n:'ciano',c:'#00F9FF'},{n:'magenta',c:'#FF00FF'},{n:'amarelo',c:'#FFD93D'},{n:'verde',c:'#00FF85'}];
 
   var S={};
@@ -406,7 +408,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     if(idx<0) return;
     S.achados[idx]=S.senha[idx].dg; obj(figName).classList.add('found'); sRev();
     var s=S.senha[idx];
-    openOv('VASCULHANDO', '<div class="clue"><div class="fig"><span class="ic">'+s.fig.ic+'</span><div><div class="nm">'+s.fig.nm+'</div><div class="ft">'+s.fig.ft+'</div></div><span class="dg">'+s.dg+'</span></div></div><div class="ovd" style="margin-top:14px">Anota: esse número entra na senha do cofre. <b>Acha os 3.</b></div>');
+    openOv('VASCULHANDO', '<div class="clue"><div class="fig"><span class="ic">'+retrato(s.fig)+'</span><div><div class="nm">'+s.fig.nm+'</div><div class="ft">'+s.fig.ft+'</div></div><span class="dg">'+s.dg+'</span></div></div><div class="ovd" style="margin-top:14px">Anota: esse número entra na senha do cofre. <b>Acha os 3.</b></div>');
   }
 
   // =========================================================
