@@ -64,7 +64,7 @@ body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hi
 .rug{ position:absolute; bottom:4%; left:50%; transform:translateX(-50%); width:62%; height:16%; background:repeating-linear-gradient(45deg,#3a1d5e 0 10px,#4a2570 10px 20px); border:3px solid #2a1247; border-radius:4px; opacity:.9; }
 
 /* darkness: only disjuntor visible until powered */
-#dark{ position:absolute; inset:0; z-index:20; background:rgba(2,4,18,.93); transition:opacity .8s ease; }
+#dark{ position:absolute; inset:0; z-index:20; background:rgba(2,4,18,.93); transition:opacity .8s ease; pointer-events:none; }
 #room.lit #dark{ opacity:0; }
 
 /* objetos clicáveis (silhuetas 8-bit em blocos) */
@@ -394,9 +394,10 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     S.done[0]=true; S.powered=true; chipDone(0); sStation(); sPow();
     closeOv(); $('#room').classList.add('lit'); flashIt($('#scene')); addScore(400); ok();
     toast('LUZ! 💡'); S.state='room';
-    setObjective('A luz acendeu. Vasculha a sala e ache a senha do cofre.');
+    setObjective('A luz acendeu! Toca nos objetos que piscam pra achar os 3 números.');
     // libera senha
     S.senha=FIGS.map(function(f){var d=rint(10);return {fig:f,dg:d};});
+    ['radio','estante','retrato'].forEach(function(o){ obj(o).classList.add('glowme'); });
   }
 
   // =========================================================
@@ -406,7 +407,8 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     if(!S.powered){ toast('TÁ ESCURO...'); return; }
     var idx=-1; for(var i=0;i<S.senha.length;i++){ if(S.senha[i].fig.obj===figName) idx=i; }
     if(idx<0) return;
-    S.achados[idx]=S.senha[idx].dg; obj(figName).classList.add('found'); sRev();
+    S.achados[idx]=S.senha[idx].dg; obj(figName).classList.add('found'); obj(figName).classList.remove('glowme'); sRev();
+    if(S.achados.filter(function(x){return x!==null;}).length===3){ obj('quadro').classList.add('glowme'); setObjective('Achou os 3 números! Toca no QUADRO grande pra achar o cofre.'); }
     var s=S.senha[idx];
     openOv('VASCULHANDO', '<div class="clue"><div class="fig"><span class="ic">'+retrato(s.fig)+'</span><div><div class="nm">'+s.fig.nm+'</div><div class="ft">'+s.fig.ft+'</div></div><span class="dg">'+s.dg+'</span></div></div><div class="ovd" style="margin-top:14px">Anota: esse número entra na senha do cofre. <b>Acha os 3.</b></div>');
   }
@@ -418,18 +420,18 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     if(!S.powered){ toast('TÁ ESCURO...'); return; }
     if(!$('#cofre').classList.contains('show')){
       $('#quadro').style.transition='transform .4s'; $('#quadro').style.transform='translateX(calc(-50% - 120px))';
-      $('#cofre').classList.add('show'); sC(); toast('UM COFRE!'); setObjective('Atrás do quadro: um cofre. Acha a senha vasculhando.');
+      $('#quadro').classList.remove('glowme'); $('#cofre').classList.add('show','glowme'); sC(); toast('UM COFRE!'); setObjective('Um cofre! Toca nele e digita os 3 números.');
       return;
     }
     openCofre();
   }
   function openCofre(){
     if(S.done[1]){ toast('COFRE JÁ ABERTO'); return; }
-    S.state='cofre';
+    S.state='cofre'; $('#cofre').classList.remove('glowme');
     var got=S.achados.filter(function(x){return x!==null;}).length;
     var hint=S.senha.map(function(s,i){ return '<div class="sh">'+s.fig.ic+'<small>'+(S.achados[i]!==null?S.achados[i]:'?')+'</small></div>'; }).join('');
     var entered=[];
-    var html='<div class="ovd">A senha é o número de cada um, <b>na ordem do rádio à direita</b>. Vasculhe se ainda falta algum.</div>'+
+    var html='<div class="ovd">Digita os 3 números <b>na ordem dos ícones abaixo</b>. Tá vendo "?" em algum? Fecha e toca no rádio, na estante e no retrato pra achar.</div>'+
       '<div class="senha-hint">'+hint+'</div>'+
       '<div class="disp" id="disp"><div class="dcell"></div><div class="dcell"></div><div class="dcell"></div></div>'+
       '<div class="keypad" id="keypad">'+[1,2,3,4,5,6,7,8,9].map(function(k){return '<button class="key">'+k+'</button>';}).join('')+'<button class="key wide" id="clr">C</button><button class="key">0</button><button class="key" id="okk">OK</button></div>';
