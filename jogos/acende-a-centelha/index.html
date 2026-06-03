@@ -398,21 +398,22 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     var N=9, st=[]; for(var k=0;k<N;k++) st.push(true);
     function nb(i){ var r=Math.floor(i/3),c=i%3,a=[i]; if(r>0)a.push(i-3); if(r<2)a.push(i+3); if(c>0)a.push(i-1); if(c<2)a.push(i+1); return a; }
     function toggle(i){ nb(i).forEach(function(j){ st[j]=!st[j]; }); }
-    var K=4+rint(3); for(var s=0;s<K;s++) toggle(rint(N));
-    if(st.every(function(x){return x;})) toggle(rint(N));
-    openOv('CAIXA DE FUSÍVEIS · RELIGA A LUZ', '<div class="ovd">Acende <b>todos</b> os fusíveis. Pegadinha: cada um que você mexe vira os <b>vizinhos</b> junto. Tem que sacar o truque.</div><div class="fusebox" id="fusebox"></div>');
+    // embaralha com 3 células distintas. solveSet = jogadas que faltam pra voltar ao "tudo aceso".
+    var solveSet={}; shuffle([0,1,2,3,4,5,6,7,8]).slice(0,4).forEach(function(i){ toggle(i); solveSet[i]=true; });
+    openOv('CAIXA DE FUSÍVEIS · RELIGA A LUZ', '<div class="ovd">Acende <b>todos</b> os fusíveis. Cada um que você mexe vira os <b>vizinhos</b> junto. <span id="faltam" style="color:var(--amarelo);font-weight:700"></span></div><div class="fusebox" id="fusebox"></div>');
     var box=$('#fusebox');
-    function done(){ return st.every(function(x){return x;}); }
+    function nfalta(){ return Object.keys(solveSet).length; }
+    function upd(){ var el=$('#faltam'); if(el) el.textContent='Faltam '+nfalta()+'.'; }
     function render(){
       box.innerHTML='';
       st.forEach(function(on,i){
         var f=document.createElement('div'); f.className='fuse'+(on?' on':''); f.textContent=on?'⚡':'○';
-        f.onclick=function(){ toggle(i); sC(); render(); if(done()){ sZap(); ok(); boost(1); setTimeout(powerOn,380); } };
+        f.onclick=function(){ toggle(i); if(solveSet[i])delete solveSet[i]; else solveSet[i]=true; sC(); render(); upd(); if(nfalta()===0){ sZap(); ok(); boost(1); setTimeout(powerOn,380); } };
         box.appendChild(f);
       });
     }
-    render();
-    S._dica=function(){ toast('MEXE NUM CANTO E VÊ O QUE ACENDE'); };
+    render(); upd();
+    S._dica=function(){ var ks=Object.keys(solveSet); if(ks.length){ var i=parseInt(ks[0],10); if(box.children[i]) box.children[i].style.boxShadow='0 0 0 4px #fff, 0 0 18px var(--amarelo)'; toast('TOCA NO FUSÍVEL MARCADO'); } };
   }
   function powerOn(){
     S.done[0]=true; S.powered=true; chipDone(0); sPow();
