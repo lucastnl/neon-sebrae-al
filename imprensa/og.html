@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body { width:1200px; height:630px; overflow:hidden; font-family:'Space Grotesk',sans-serif; }
+.card {
+  width:1200px; height:630px; position:relative; color:#fff;
+  background:
+    radial-gradient(1100px 520px at 78% -10%, rgba(0,217,92,0.16), transparent 60%),
+    linear-gradient(165deg, #050822 0%, #0A0F36 58%, #1A1F4E 100%);
+  padding:64px 72px; display:flex; flex-direction:column; justify-content:space-between;
+}
+.card::after {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,249,255,0.05) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,249,255,0.05) 40px),
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 3px);
+  mix-blend-mode:screen; opacity:0.5;
+}
+.top { display:flex; align-items:center; justify-content:space-between; position:relative; z-index:2; }
+.top img { height:42px; filter:drop-shadow(0 0 10px rgba(0,249,255,0.4)); }
+.kicker {
+  font-family:'Press Start 2P',monospace; font-size:15px; letter-spacing:2px;
+  color:#FFD93D; text-shadow:0 0 12px rgba(255,217,61,0.5);
+}
+.mid { position:relative; z-index:2; }
+.mid .lead {
+  font-size:24px; color:rgba(255,255,255,0.7); font-weight:600; margin-bottom:18px; letter-spacing:0.3px;
+}
+.mid h1 {
+  font-size:62px; line-height:1.08; font-weight:700; letter-spacing:-1.2px; max-width:1000px;
+}
+.mid h1 .hl { color:#00FF85; text-shadow:0 0 26px rgba(0,255,133,0.5); }
+.bottom { display:flex; align-items:center; gap:26px; position:relative; z-index:2; }
+.bottom .pill {
+  font-family:'Press Start 2P',monospace; font-size:16px; letter-spacing:1.5px;
+  color:#050822; background:#00D95C; padding:14px 22px; border-radius:999px;
+  box-shadow:0 8px 30px rgba(0,217,92,0.45);
+}
+.bottom .meta { font-size:19px; color:rgba(255,255,255,0.82); font-weight:500; }
+.bottom .meta b { color:#00F9FF; }
+.logos { margin-left:auto; display:flex; align-items:center; gap:22px; }
+.logos img { height:30px; opacity:0.92; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top">
+    <span class="kicker">KIT DE IMPRENSA</span>
+    <img src="logo-tnl-h.png" alt="Tiro na Lua" />
+  </div>
+  <div class="mid">
+    <div class="lead">Educação empreendedora além de nota fiscal e CNPJ</div>
+    <h1>Empreender como <span class="hl">projeto de vida</span>, com estudante de escola pública no NEON Sebrae AL</h1>
+  </div>
+  <div class="bottom">
+    <span class="pill">11 A 13 JUN · MACEIÓ</span>
+    <span class="meta">Realização <b>Sebrae Alagoas</b> · Criação <b>Tiro na Lua</b></span>
+    <span class="logos"><img src="logo-sebrae-branca.webp" alt="Sebrae Alagoas" /></span>
+  </div>
+</div>
+</body>
+</html>
