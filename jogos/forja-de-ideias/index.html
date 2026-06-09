@@ -76,19 +76,19 @@ body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hi
 @keyframes spark{ 0%{opacity:1;transform:translate(-50%,-50%) scale(.6)} 100%{opacity:0;transform:translate(-50%,-130%) scale(1.4)} }
 
 /* DIAGRAMA IKIGAI (reveal) */
-.ikigai{ position:relative; width:300px; height:300px; margin:0 auto 6px; }
+.ikigai{ position:relative; width:300px; height:300px; margin:28px auto 36px; }
 .ik-c{ position:absolute; width:170px; height:170px; border-radius:50%; mix-blend-mode:screen; opacity:.55; border:2px solid; }
 .ik-ama{ top:8px; left:65px; background:var(--c-ama); border-color:var(--c-ama); }
 .ik-bom{ left:8px; top:65px; background:var(--c-bom); border-color:var(--c-bom); }
 .ik-precisa{ right:8px; top:65px; background:var(--c-precisa); border-color:var(--c-precisa); }
 .ik-corre{ bottom:8px; left:65px; background:var(--c-corre); border-color:var(--c-corre); }
-.ik-lab{ position:absolute; text-align:center; width:120px; z-index:3; }
-.ik-lab .lk{ font-family:var(--mono); font-size:6.5px; letter-spacing:.5px; }
-.ik-lab .lw{ font-family:var(--mono); font-size:8px; color:#fff; line-height:1.3; margin-top:2px; }
-.ik-lab.la-ama{ top:-6px; left:90px; } .ik-lab.la-ama .lk{ color:var(--c-ama); }
-.ik-lab.la-bom{ top:130px; left:-30px; } .ik-lab.la-bom .lk{ color:var(--c-bom); }
-.ik-lab.la-precisa{ top:130px; left:210px; } .ik-lab.la-precisa .lk{ color:var(--c-precisa); }
-.ik-lab.la-corre{ bottom:-6px; left:90px; } .ik-lab.la-corre .lk{ color:var(--c-corre); }
+.ik-lab{ position:absolute; text-align:center; width:128px; z-index:3; }
+.ik-lab .lk{ font-family:var(--mono); font-size:6.5px; letter-spacing:.5px; white-space:nowrap; }
+.ik-lab .lw{ font-family:var(--mono); font-size:7.5px; color:#fff; line-height:1.25; margin-top:3px; }
+.ik-lab.la-ama{ top:-12px; left:86px; } .ik-lab.la-ama .lk{ color:var(--c-ama); }
+.ik-lab.la-bom{ top:128px; left:-22px; } .ik-lab.la-bom .lk{ color:var(--c-bom); }
+.ik-lab.la-precisa{ top:128px; right:-22px; } .ik-lab.la-precisa .lk{ color:var(--c-precisa); }
+.ik-lab.la-corre{ bottom:-12px; left:86px; } .ik-lab.la-corre .lk{ color:var(--c-corre); }
 .ik-core{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:64px; height:64px; border-radius:50%; z-index:4; display:flex; flex-direction:column; align-items:center; justify-content:center; background:radial-gradient(circle,#fff,var(--amarelo) 55%,transparent 78%); box-shadow:0 0 30px var(--amarelo); animation:corepulse 1.6s ease-in-out infinite; }
 .ik-core span{ font-family:var(--mono); font-size:7px; color:var(--navy-deep); }
 @keyframes corepulse{ 50%{ transform:translate(-50%,-50%) scale(1.12); box-shadow:0 0 44px var(--amarelo) } }
@@ -113,7 +113,7 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
 .namepick .na:active{ transform:scale(.92); }
 
 /* card do ikigai (reveal) */
-.ikcard{ background:linear-gradient(160deg,#0a0f36,#241433); border:2px solid var(--amarelo); border-radius:20px; padding:20px 18px; max-width:390px; width:100%; box-shadow:0 0 40px rgba(255,217,61,.3); }
+.ikcard{ background:linear-gradient(160deg,#0a0f36,#241433); border:2px solid var(--amarelo); border-radius:20px; padding:20px 14px; max-width:414px; width:100%; box-shadow:0 0 40px rgba(255,217,61,.3); }
 .ikcard .selo-top{ font-family:var(--mono); font-size:8px; letter-spacing:2px; color:var(--laranja); margin-bottom:8px; }
 .ikcard .who{ font-family:var(--mono); font-size:11px; color:var(--amarelo); margin-bottom:10px; }
 .ikcard .synth{ font-size:14px; line-height:1.6; color:#fff; margin:10px 4px 12px; }
@@ -207,7 +207,7 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
     { key:'corre', em:'🔥', cor:'var(--c-corre)', q:'O QUE PODE VIRAR UM CORRE?', sub:'o que disso pode te dar uma grana ou um nome',
       opts:['UM SERVIÇO','CONTEÚDO NA NET','UM PRODUTO PRA VENDER','UM PROJETO OU COLETIVO','DAR AULA OU OFICINA','UM EVENTO OU ROLÊ'] }
   ];
-  var DLAB={ ama:'O QUE VOCÊ AMA', bom:'O QUE FAZ BEM', precisa:'O QUE O MUNDO PRECISA', corre:'O QUE DÁ RETORNO' };
+  var DLAB={ ama:'VOCÊ AMA', bom:'VOCÊ FAZ BEM', precisa:'O MUNDO PRECISA', corre:'DÁ RETORNO' };
   // cruzamento: o que a sua quebrada PRECISA vira um campo emergente de impacto/novo mundo
   var CAMPO={
     'CULTURA E LAZER':{n:'ECONOMIA CRIATIVA', t:'um setor que move bilhões: festival, coletivo, audiovisual, plataforma de cultura, games.'},
