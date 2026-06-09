@@ -124,6 +124,10 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
 .namehint{ font-size:11px; color:rgba(255,255,255,.62); margin-bottom:10px; max-width:300px; line-height:1.4; }
 .ikcard .ik-logos{ display:flex; align-items:center; justify-content:center; gap:12px; margin-top:14px; opacity:.9; }
 .ikcard .ik-logos .lg-sebrae{ height:22px; } .ikcard .ik-logos .lg-tnl{ height:16px; } .ikcard .ik-logos .sep{ width:1px; height:15px; background:rgba(255,255,255,.3); }
+.ikdef{ font-size:11px; color:rgba(255,255,255,.6); line-height:1.45; margin:8px auto 0; max-width:320px; }
+.morecard{ background:rgba(0,249,255,.05); border:2px solid rgba(0,249,255,.35); border-radius:18px; padding:18px 16px 8px; max-width:400px; width:100%; }
+.morecard .mk{ font-family:var(--mono); font-size:10px; color:var(--ciano); text-shadow:0 0 8px var(--ciano); margin-bottom:12px; }
+.morecard .caminho{ margin-top:0; }
 .caminho{ max-width:390px; width:100%; margin-top:16px; background:rgba(0,249,255,.06); border:1px solid rgba(0,249,255,.3); border-radius:14px; padding:14px 16px; }
 .caminho .ck{ font-family:var(--mono); font-size:7px; letter-spacing:1px; color:var(--ciano); margin-bottom:7px; }
 .caminho .ct{ font-size:13px; line-height:1.5; color:#fff; }
@@ -176,8 +180,10 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
     <button class="btn" id="startBtn">ACENDER A FORJA</button>
   </div>
 
-  <!-- FIM -->
+  <!-- FIM: tela 1 (o ikigai) -->
   <div class="screen hidden" id="screenEnd"><div id="endBody"></div></div>
+  <!-- FIM: tela 2 (e agora?) -->
+  <div class="screen hidden" id="screenMore"><div id="moreBody"></div></div>
 
 </div>
 
@@ -202,16 +208,16 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
       opts:['UM SERVIÇO','CONTEÚDO NA NET','UM PRODUTO PRA VENDER','UM PROJETO OU COLETIVO','DAR AULA OU OFICINA','UM EVENTO OU ROLÊ'] }
   ];
   var DLAB={ ama:'O QUE VOCÊ AMA', bom:'O QUE FAZ BEM', precisa:'O QUE O MUNDO PRECISA', corre:'O QUE DÁ RETORNO' };
-  // biblioteca curada de caminhos possíveis (offline, sem IA), keyed na paixão (o coração do ikigai)
-  var CAMINHO={
-    'CRIAR E ARTE':'Sabia que dá pra viver de arte e design? Um traço seu pode virar estampa, marca, mural, capa, identidade visual, tatuagem, animação.',
-    'GAMES':'Sabia que dá pra trabalhar COM games sem ser pro player? Criar conteúdo, testar jogos, level design, organizar campeonato, narrar partida.',
-    'ESPORTE':'Sabia que esporte é carreira muito além de atleta? Preparador, gestor de evento, criador de conteúdo esportivo, treinar a molecada da sua quebrada.',
-    'MÚSICA':'Sabia que música é uma indústria inteira? Produzir, mixar, agenciar artista, fazer trilha de vídeo, dar aula, montar rolê e evento.',
-    'AJUDAR GENTE':'Sabia que "ajudar gente" move profissões inteiras? Saúde, educação, projeto social, e existe edital com grana pra quem resolve problema da comunidade.',
-    'TECNOLOGIA':'Sabia que Alagoas tá contratando tech? Programar, dados, automação, suporte. E dá pra começar com curso gratuito online, do seu próprio celular.',
-    'COZINHAR':'Sabia que da cozinha sai negócio de verdade? Marmita, doce, food bike, conteúdo de receita. E o sabor de Alagoas (coco, sururu) o mundo inteiro quer.',
-    'A RUA E A NATUREZA':'Sabia que natureza vira trabalho? Turismo, guia, projeto ambiental, agroecologia. Alagoas é o Caribe brasileiro, cheio de oportunidade verde.'
+  // cruzamento: o que a sua quebrada PRECISA vira um campo emergente de impacto/novo mundo
+  var CAMPO={
+    'CULTURA E LAZER':{n:'ECONOMIA CRIATIVA', t:'um setor que move bilhões: festival, coletivo, audiovisual, plataforma de cultura, games.'},
+    'RENDA E TRABALHO':{n:'NEGÓCIOS DE IMPACTO', t:'empreender resolvendo um problema social de verdade. Tem aceleradora, edital e investimento só pra isso.'},
+    'CUIDAR DO MEIO AMBIENTE':{n:'ECONOMIA VERDE', t:'uma das áreas que mais cresce no mundo: energia solar, reciclagem, crédito de carbono, agro sustentável.'},
+    'EDUCAÇÃO':{n:'EDTECH', t:'tecnologia e criação pra educação: app de ensino, conteúdo, monitoria, reforço. O Brasil precisa demais disso.'},
+    'SAÚDE':{n:'HEALTHTECH E BEM-ESTAR', t:'do app de saúde mental ao cuidado na comunidade. Um setor gigante e muito humano.'},
+    'SEGURANÇA':{n:'INOVAÇÃO CÍVICA', t:'tecnologia e projeto pra cidade mais segura e justa. Tem grana pública e privada pra quem cria solução de paz.'},
+    'INCLUSÃO':{n:'TECNOLOGIA ASSISTIVA', t:'criar acesso pra quem tem deficiência. É lei, é oportunidade e ainda tem pouca gente fazendo.'},
+    'VALORIZAR A NOSSA CARA':{n:'ECONOMIA DA IDENTIDADE', t:'turismo de raiz, marca regional, indicação geográfica (a renda filé alagoana já tem a dela!).'}
   };
 
   // ---------- estado ----------
@@ -276,23 +282,35 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
   function reveal(){
     var p=S.picks, num='AL-'+(1000+rint(9000));
     var synth='Você ama <b>'+lower(p.ama)+'</b>, manda bem em <b>'+lower(p.bom)+'</b>, a sua quebrada precisa de <b>'+lower(p.precisa)+'</b>, e isso pode virar <b>'+lower(p.corre)+'</b>.';
-    $('#endBody').innerHTML='<div class="ikcard">'+
-      '<div class="selo-top">★ O SEU IKIGAI · FORJADO EM ALAGOAS ★</div>'+
+    // TELA 1: o ikigai grandão (mostra mais, explica menos), pronto pra foto
+    $('#endBody').innerHTML='<div class="ikcard hero">'+
+      '<div class="selo-top">★ O SEU IKIGAI ★</div>'+
       '<div class="who">'+S.nome+' · Nº '+num+'</div>'+
       diagram()+
       '<div class="synth">'+synth+'</div>'+
-      '<div class="what"><b>Ikigai</b> é uma palavra japonesa pro encontro de tudo isso: o que você ama, o que faz bem, o que o mundo precisa e o que dá retorno. É o seu lugar no mundo, o seu motivo de acordar com gás. E o primeiro passo cabe em 48h.</div>'+
-      '<div class="foto">📸 TIRA UMA FOTO E LEVA O SEU IKIGAI CONTIGO</div>'+
+      '<div class="ikdef">Ikigai: onde o que você ama, faz bem, o mundo precisa e te dá retorno se encontram. O seu lugar no mundo.</div>'+
       '<div class="ik-logos"><img class="lg-sebrae" src="../../assets/logo-sebrae-branca.webp" alt="Sebrae Alagoas" onerror="this.style.display=\'none\'"/><span class="sep"></span><img class="lg-tnl" src="../../assets/logo-tnl-h.png" alt="Tiro na Lua" onerror="this.style.display=\'none\'"/></div>'+
+      '<div class="foto">📸 TIRA UMA FOTO E LEVA O SEU IKIGAI</div>'+
       '</div>'+
-      '<div class="caminho"><div class="ck">⚡ UM CAMINHO QUE TALVEZ VOCÊ NÃO IMAGINAVA</div><div class="ct">'+(CAMINHO[p.ama]||'O que você ama pode virar profissão. Tem mais caminho do que parece, e o mundo precisa do seu.')+'</div></div>'+
-      '<div class="aprofundar">Ikigai é trabalho pra vida toda, isso aqui é só o começo. <b>Pra ir além:</b> tira a foto e mostra pra alguém que te inspira, ou joga a imagem numa IA (tipo ChatGPT ou Gemini) e pede "me ajuda a explorar esse meu ikigai". Vai te surpreender.</div>'+
-      '<div class="gancho">Não existe ikigai certo ou errado, existe o <b>seu</b>. A trilha segue no Escalada.</div>'+
-      '<button class="btn" id="replayBtn" style="margin-top:16px">FORJAR DE NOVO</button>'+
-      '<button class="btn sec" onclick="location.href=\'/hub/\'">◂ VOLTAR AO HUB</button>';
+      '<button class="btn" id="moreBtn" style="margin-top:14px">E AGORA? ▸</button>';
     persist();
-    $('#replayBtn').onclick=start;
+    $('#moreBtn').onclick=showMore;
     $('#screenEnd').classList.remove('hidden'); sWin();
+  }
+  function showMore(){
+    var p=S.picks, campo=CAMPO[p.precisa]||{n:'NOVOS CAMINHOS', t:'tem mais possibilidade do que parece, e o mundo precisa do seu jeito.'};
+    var cross='Junta o que você <b>ama</b> ('+lower(p.ama)+') com o que a sua quebrada <b>precisa</b> ('+lower(p.precisa)+'): isso te joga num campo que tá explodindo, a <b>'+campo.n+'</b>, '+campo.t+' Pouca gente da sua idade sabe que isso existe.';
+    $('#moreBody').innerHTML='<div class="morecard">'+
+      '<div class="mk">E AGORA? UM CAMINHO PRA SEGUIR</div>'+
+      '<div class="caminho"><div class="ck">⚡ UM CRUZAMENTO QUE TALVEZ VOCÊ NÃO IMAGINAVA</div><div class="ct">'+cross+'</div></div>'+
+      '<div class="aprofundar"><b>Pra ir além:</b> tira a foto do seu ikigai e mostra pra alguém que te inspira, ou joga a imagem numa IA (tipo ChatGPT ou Gemini) e pede "me ajuda a explorar esse meu ikigai e achar carreiras e projetos de impacto". Ikigai é trabalho pra vida toda.</div>'+
+      '</div>'+
+      '<button class="btn" id="replayBtn" style="margin-top:14px">FORJAR DE NOVO</button>'+
+      '<button class="btn sec" id="backIk">◂ VER MEU IKIGAI DE NOVO</button>'+
+      '<button class="btn sec" onclick="location.href=\'/hub/\'" style="margin-top:8px">VOLTAR AO HUB</button>';
+    $('#replayBtn').onclick=start;
+    $('#backIk').onclick=function(){ $('#screenMore').classList.add('hidden'); $('#screenEnd').classList.remove('hidden'); };
+    $('#screenEnd').classList.add('hidden'); $('#screenMore').classList.remove('hidden');
   }
   function persist(){ try{var k='neon-forja-ikigai';var a=JSON.parse(localStorage.getItem(k)||'[]');a.push({nome:S.nome,picks:S.picks,ts:new Date().toISOString()});localStorage.setItem(k,JSON.stringify(a.slice(-500)));}catch(e){} }
 
@@ -313,7 +331,7 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
   // ---------- start ----------
   function start(){
     ac(); var nome=lerNome(); reset(); S.nome=nome; S.running=true;
-    $('#screenIntro').classList.add('hidden'); $('#screenEnd').classList.add('hidden');
+    $('#screenIntro').classList.add('hidden'); $('#screenEnd').classList.add('hidden'); $('#screenMore').classList.add('hidden');
     showQ();
   }
   $('#startBtn').onclick=start;
@@ -321,9 +339,9 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
 
   ['pointerdown','touchstart','keydown'].forEach(function(e){ window.addEventListener(e,function(){ S._idle=performance.now(); },{passive:true}); });
   setInterval(function(){
-    if(performance.now()-S._idle>60000 && $('#screenIntro').classList.contains('hidden') && $('#screenEnd').classList.contains('hidden')){
+    if(performance.now()-S._idle>60000 && $('#screenIntro').classList.contains('hidden') && $('#screenEnd').classList.contains('hidden') && $('#screenMore').classList.contains('hidden')){
       S._idle=performance.now();
-      $('#screenEnd').classList.add('hidden'); $('#screenIntro').classList.remove('hidden');
+      $('#screenIntro').classList.remove('hidden');
     }
   }, 5000);
 
