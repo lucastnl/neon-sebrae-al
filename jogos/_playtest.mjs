@@ -65,18 +65,15 @@ async function main() {
   if (game === 'forja') {
     await shot('01_intro');
     log.push('START: ' + await jsClick('#startBtn')); await sleep(700);
-    log.push('DIAG pos-click: ' + await ev(`JSON.stringify({introHidden:document.querySelector('#screenIntro').classList.contains('hidden'),act:(document.querySelector('#act')||{}).innerHTML||'(sem #act)',travarRect:(function(){var e=document.querySelector('#travarA');if(!e)return null;var r=e.getBoundingClientRect();return [Math.round(r.width),Math.round(r.height)]})()})`));
-    log.push('entrou no jogo (travarA visivel): ' + await waitSel('#travarA'));
+    log.push('entrou no jogo (opcoes visiveis): ' + await waitSel('#opts .opt'));
     let rounds = 0;
-    for (let r = 0; r < 6; r++) {
-      if (!await waitSel('#travarA', 3000)) break;
-      await jsClick('#travarA'); await sleep(300);
-      if (!await waitSel('#travarB', 2000)) break;
-      await jsClick('#travarB'); await sleep(300);
-      if (await waitSel('#forjarBtn', 2000)) { for (let k = 0; k < 10; k++) { await jsClick('#forjarBtn'); await sleep(45); } }
+    for (let r = 0; r < 8; r++) {
+      if (!await waitSel('#opts .opt', 3000)) break;
+      // escolhe uma opcao (a primeira disponivel)
+      await ev(`(()=>{var b=document.querySelector('#opts .opt:not(.dim)');if(b)b.click();})()`);
       rounds++;
       if (r === 1) await shot('02_round');
-      await sleep(1000);
+      await sleep(1400);
     }
     log.push('rodadas jogadas: ' + rounds);
     const sc = await ev(`(()=>{var e=document.querySelector('#score');return e?e.textContent.trim():''})()`);
