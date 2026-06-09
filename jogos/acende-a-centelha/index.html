@@ -378,7 +378,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     {ic:'📖', key:'graciliano', nm:'GRACILIANO', comp:'MÉTODO', obj:'estante',
      ft:'de Quebrângulo. Escreveu Vidas Secas com paciência de relojoeiro.',
      intro:'punha cada palavra no lugar certo. Método é a ordem que abre o que tá trancado.',
-     cur:'Antes de ser um dos maiores escritores do Brasil, foi prefeito de Palmeira dos Índios. Seus relatórios de prestação de contas eram tão diretos e bem escritos que viraram fama no país inteiro, e abriram a porta pro seu primeiro livro.'},
+     cur:'Nasceu em Quebrângulo, uma cidadezinha do agreste de Alagoas, e de lá virou um dos maiores escritores que o Brasil já teve. Antes dos livros foi prefeito de Palmeira dos Índios, e seus relatórios de prestação de contas eram tão diretos e bem escritos que viraram fama no país inteiro. Do interiorzinho alagoano pra leitura do Brasil todo.'},
     {ic:'⚽', key:'marta', nm:'MARTA', comp:'PERSEVERANÇA', obj:'retrato',
      ft:'de Dois Riachos. A Rainha, a melhor jogadora do mundo.',
      intro:'caiu, levantou e não parou até ser a melhor do mundo. Perseverança é insistir no tempo certo até travar.',
@@ -458,6 +458,8 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     var x=$('#ovx'); if(x) x.onclick=closeOv;
   }
   function closeOv(){ $('#ov').classList.remove('up'); S.paused=false; if(S.state==='fechadura')S.state='room'; }
+  // trava re-entrância: não abre uma estação enquanto outra (intro/puzzle) está aberta
+  function busy(){ return S.paused || $('#ov').classList.contains('up') || $('#aparicao').classList.contains('show'); }
 
   // ---------- intro do fazedor (a conexao: competencia -> mecanica) ----------
   function makerIntro(key, onGo){
@@ -478,6 +480,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
   //  ESTAÇÃO 1 · DISJUNTOR (fios) -> acende a sala
   // =========================================================
   function openDisjuntor(){
+    if(busy())return;
     if(S.done[0]){ toast('LUZ JÁ TÁ ON'); return; }
     makerIntro('hermeto', runDisjuntor);
   }
@@ -487,6 +490,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     var masks=[6,12,6, 9,3,10, 6,10,12];   // config base solúvel (fonte esq-meio -> lâmpada dir-meio)
     function rot(m){ return ((m<<1)|(m>>3))&15; }
     for(var i=0;i<9;i++){ var t=rint(4); for(var z=0;z<t;z++) masks[i]=rot(masks[i]); }
+    masks[sr*3] |= 8;   // a peça da entrada sempre recebe o ⚡: acende de cara e dá o norte
     var DIRS=[[1,-1,0,4],[2,0,1,8],[4,1,0,1],[8,0,-1,2]]; // [bit,dr,dc,opp]
     function powered(){
       var pw=[false,false,false,false,false,false,false,false,false], q=[], src=sr*3+0;
@@ -504,7 +508,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
       p+='<circle cx="12" cy="12" r="3.5" fill="'+col+'"/>';
       return '<svg viewBox="0 0 24 24" style="filter:'+(on?'drop-shadow(0 0 4px #FFD93D)':'none')+'">'+p+'</svg>';
     }
-    openOv('CIRCUITO · RELIGA A LUZ', '<div class="ovd">Toca nas peças pra <b>girar</b> e ligar o caminho da energia (⚡) até a lâmpada (💡). A luz acende conforme você conecta.</div><div class="circ-wrap"><div class="src">⚡</div><div class="circuit" id="circuit"></div><div class="dst" id="dst">💡</div></div>');
+    openOv('CIRCUITO · RELIGA A LUZ', '<div class="ovd">Cada peça é um cano. <b>Toca pra girar.</b> Liga o caminho dourado do ⚡ (já aceso, do lado esquerdo) até a 💡. A luz sobe pelo cano conforme você conecta.</div><div class="circ-wrap"><div class="src">⚡</div><div class="circuit" id="circuit"></div><div class="dst" id="dst">💡</div></div>');
     if(won(powered())) masks[4]=rot(masks[4]);
     var grid=$('#circuit');
     function render(){
@@ -533,6 +537,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
   // =========================================================
   var ANOS={ hermeto:1936, graciliano:1892, marta:1986 };
   function openCofre(){
+    if(busy())return;
     if(!S.powered){ toast('TÁ ESCURO...'); return; }
     if(S.done[1]){ toast('COFRE JÁ ABERTO'); return; }
     makerIntro('graciliano', runCofre);
@@ -575,18 +580,27 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
   //  ESTAÇÃO 3 · PORTA (fechadura timing)
   // =========================================================
   function openPorta(){
+    if(busy())return;
     if(!S.powered){ toast('TÁ ESCURO...'); return; }
     if(!S.done[1]){ toast('ABRE O COFRE PRIMEIRO'); $('#cofre').classList.add('glowme'); return; }
     if(S.done[2]) return;
     makerIntro('marta', runPorta);
   }
   function runPorta(){
-    S.state='fechadura'; $('#porta').classList.remove('glowme'); S.fechIdx=0; S.marker=0; S.mdir=1; S.mspeed=0.85; S.zones=[];
+    S.state='fechadura'; $('#porta').classList.remove('glowme'); S.fechIdx=0;
+    // motor de aleatoriedade: cada partida sorteia zona, largura, velocidade, aceleração e direção
+    S.mdir = rint(2)?1:-1; S.marker = rint(35); S.mspeed = 0.74 + Math.random()*0.34; S.zones=[];
     var rows='';
-    for(var i=0;i<3;i++){ var zw=22-i*4, zp=10+rint(100-zw-20); S.zones.push({zw:zw,zp:zp});
-      rows+='<div class="tumb'+(i===0?' active':'')+'"><div class="zone" style="left:'+zp+'%;width:'+zw+'%"></div><div class="mark" style="left:0%"></div></div>'; }
+    for(var i=0;i<3;i++){
+      var zw = Math.max(12, 25 - i*5 + (rint(7)-3));     // diminui por pino + jitter
+      var zp = 8 + rint(Math.max(1, 100 - zw - 16));     // posição sorteada
+      var inc = 0.30 + Math.random()*0.24;               // aceleração variável por pino
+      S.zones.push({zw:zw, zp:zp, inc:inc});
+      rows+='<div class="tumb'+(i===0?' active':'')+'"><div class="zone" style="left:'+zp+'%;width:'+zw+'%"></div><div class="mark" style="left:0%"></div></div>';
+    }
     openOv('FECHADURA · ARROMBA A PORTA', '<div class="ovd">Toca <b>TRAVAR</b> quando o pino bater na zona verde. Três pinos, e acelera.</div><div class="tumblers" id="tumblers">'+rows+'</div><button id="travarBtn">TRAVAR</button>');
     $('#travarBtn').onclick=travar;
+    S._dica=function(){ toast('TRAVA QUANDO O PINO ESTIVER NO VERDE'); };
   }
   function marker(dt){
     var t=$$('#tumblers .tumb'); if(!t.length)return;
@@ -598,9 +612,9 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     var z=S.zones[S.fechIdx], t=$$('#tumblers .tumb'), cur=t[S.fechIdx];
     if(S.marker>=z.zp && S.marker<=z.zp+z.zw){
       cur.classList.remove('active'); cur.classList.add('locked'); sLock(); ok();
-      S.fechIdx++; S.marker=0; S.mdir=1; S.mspeed+=0.45;
-      if(S.fechIdx>=3){ S.done[2]=true; chipDone(2); $('#porta').classList.add('unlocked'); addScore(700); ok(); closeOv(); aparicao('marta', 'A <b>perseverança</b> da Marta arrombou a porta.', escape); }
-      else { t[S.fechIdx].classList.add('active'); }
+      S.fechIdx++; S.marker=rint(30); S.mdir=rint(2)?1:-1;
+      if(S.fechIdx>=3){ S.done[2]=true; S.running=false; chipDone(2); $('#porta').classList.add('unlocked'); addScore(700); ok(); closeOv(); aparicao('marta', 'A <b>perseverança</b> da Marta arrombou a porta.', escape); }
+      else { S.mspeed+=S.zones[S.fechIdx].inc; t[S.fechIdx].classList.add('active'); }
     } else { fail(3); }
   }
 
@@ -662,7 +676,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     $('#janela').onclick=function(){ toast(S.powered?'só a lua lá fora':'tá escuro...'); };
   }
 
-  $('#dicaBtn').onclick=function(){ if(!S.running||!S._dica)return; S.dicas++; S.combo=0; S.restante=Math.max(1,S.restante-6); renderHUD(); try{S._dica();}catch(e){} };
+  $('#dicaBtn').onclick=function(){ if(!S.running||S.paused||!S._dica)return; S.dicas++; S.combo=0; S.restante=Math.max(1,S.restante-6); renderHUD(); try{S._dica();}catch(e){} };
 
   function lerNome(){var n='';['#n0','#n1','#n2'].forEach(function(s){var v=($(s).value||'').toUpperCase().replace(/[^A-Z]/g,'');n+=v||'?';});return n.slice(0,3)||'???';}
   function start(){
@@ -688,6 +702,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     var v=m[1];
     if(v==='dark'){ $('#screenIntro').classList.add('hidden'); setObjective('Acha o que brilha e religa.'); }
     else if(v==='fios'||v==='fuse'){ $('#screenIntro').classList.add('hidden'); openDisjuntor(); }
+    else if(v==='cano'){ $('#screenIntro').classList.add('hidden'); runDisjuntor(); }
     else if(v==='aparic'){ $('#screenIntro').classList.add('hidden'); $('#room').classList.add('lit'); aparicao('marta','A <b>perseverança</b> da Marta arrombou a porta.'); }
     else if(v==='lit'){ $('#screenIntro').classList.add('hidden'); S.powered=true; S.done[0]=true; chipDone(0); $('#room').classList.add('lit'); $('#quadro').style.display='none'; $('#cofre').classList.add('show','glowme'); setObjective('Toca no cofre.'); }
     else if(v==='cofre'){ $('#screenIntro').classList.add('hidden'); S.powered=true; S.done[0]=true; $('#room').classList.add('lit'); $('#quadro').style.display='none'; $('#cofre').classList.add('show'); openCofre(); }
