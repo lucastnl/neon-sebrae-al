@@ -373,7 +373,7 @@ h1.title{ font-family:var(--mono); font-size:clamp(19px,7vw,28px); line-height:1
 <div class="curadoria">PROTÓTIPO v4 · fazedores de Alagoas · curiosidades a validar com o Sebrae AL</div>
 
 <script>
-window.addEventListener('error', function(e){ var el=document.getElementById('err'); if(!el)return; el.style.display='block'; el.textContent+='⚠ '+(e.message||e)+' ('+((e.filename||'').split('/').pop())+':'+e.lineno+')\n'; });
+window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))return; var el=document.getElementById('err'); if(!el)return; el.style.display='block'; el.textContent+='⚠ '+(e.message||e)+' ('+((e.filename||'').split('/').pop())+':'+e.lineno+')\n'; });
 
 (function(){
   'use strict';
@@ -520,7 +520,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
       return '<svg viewBox="0 0 24 24" style="filter:'+(on?'drop-shadow(0 0 4px #FFD93D)':'none')+'">'+p+'</svg>';
     }
     openOv('CIRCUITO · RELIGA A LUZ', '<div class="ovd">Cada peça é um cano. <b>Toca pra girar.</b> Liga o caminho dourado do ⚡ (já aceso, do lado esquerdo) até a 💡. A luz sobe pelo cano conforme você conecta.</div><div class="circ-wrap"><div class="src">⚡</div><div class="circuit" id="circuit"></div><div class="dst" id="dst">💡</div></div>');
-    if(won(powered())) masks[4]=rot(masks[4]);
+    var unguard=0; while(won(powered()) && unguard++<12){ masks[rint(9)]=rot(masks[rint(9)]); }
     var grid=$('#circuit');
     function render(){
       var pw=powered(); grid.innerHTML='';
@@ -532,6 +532,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     S._dica=function(){ toast('GIRA AS PEÇAS PRA FECHAR O CAMINHO'); };
   }
   function powerOn(){
+    if(!S.running) return;   // partida já terminou (pavio zerou no delay): não mexe na sala
     S.done[0]=true; S.powered=true; chipDone(0); sPow();
     closeOv(); $('#room').classList.add('lit'); flashIt($('#scene')); addScore(400); ok();
     S.state='room';
@@ -692,6 +693,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
 
   function lerNome(){var n='';['#n0','#n1','#n2'].forEach(function(s){var v=($(s).value||'').toUpperCase().replace(/[^A-Z]/g,'');n+=v||'?';});return n.slice(0,3)||'???';}
   function start(){
+    if(S.raf) cancelAnimationFrame(S.raf);   // mata qualquer loop anterior (anti duplo-toque no START/REPLAY)
     ac(); var nome=lerNome(); reset(); S.nome=nome; S.running=true; S.state='room';
     $('#room').classList.remove('lit'); $('#stage').classList.remove('escape','low');
     $('#quadro').style.transform=''; $('#quadro').style.opacity=''; $('#quadro').style.display='';

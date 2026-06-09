@@ -20,9 +20,16 @@
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:image" content="https://neon-sebrae-al.netlify.app/assets/og-monstro.jpg" />
 
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+<!-- fontes locais (offline, mesmas dos outros jogos do totem) -->
+<link rel="stylesheet" href="../../assets/fonts/fonts.css" />
+<script>
+/* scale-to-fit do totem: preenche a tela mantendo a proporcao (resolucao de design 540x960) */
+(function(){
+  function fit(){ var f=Math.min(window.innerWidth/540, window.innerHeight/960); document.documentElement.style.setProperty('--fit', f); }
+  window.__gscale=function(){ var f=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--fit')); return f>0?f:1; };
+  window.addEventListener('resize', fit); window.addEventListener('DOMContentLoaded', fit); fit();
+})();
+</script>
 
 <script>
 // captura QUALQUER erro JS antes mesmo dos scripts externos rodarem
@@ -45,7 +52,7 @@ window.addEventListener('unhandledrejection', e => {
 window.addEventListener('load', () => {
   const errs = window._neonErrors || [];
   const ok = !!window.NeonStore;
-  if (!ok || errs.length) {
+  if ((!ok || errs.length) && /dev=/.test(location.search)) {
     const lines = [];
     if (!ok) lines.push('⚠ window.NeonStore indisponível');
     if (typeof window.supabase === 'undefined') lines.push('⚠ supabase-js (CDN) indisponível');
@@ -94,19 +101,16 @@ html, body {
 }
 
 #game {
-  position: relative;
-  height: 100vh;
-  height: 100dvh;
-  max-height: 100vh;
-  max-height: 100dvh;
-  max-width: 540px;
-  margin: 0 auto;
+  /* resolucao de design 540x960 escalada pra preencher o totem mantendo a proporcao */
+  position: fixed;
+  top: 50%; left: 50%;
+  width: 540px; height: 960px;
+  transform: translate(-50%, -50%) scale(var(--fit, 1));
+  transform-origin: center center;
   background: var(--navy-deep);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-top: env(safe-area-inset-top);
 }
 
 /* CRT effect */
@@ -1039,7 +1043,7 @@ html, body {
 .op-menu-card .menu-icon { display: inline-block; margin-right: 8px; font-family: sans-serif; }
 
 .op-history-list {
-  max-height: 50vh;
+  max-height: 460px;
   overflow-y: auto;
   width: 100%;
   max-width: 380px;
@@ -2138,7 +2142,7 @@ function gameLoop(t) {
   const arenaRect = arena.getBoundingClientRect();
   const dangerEl = $('danger-zone');
   const dangerRect = dangerEl.getBoundingClientRect();
-  const dangerY = dangerRect.top - arenaRect.top;
+  const dangerY = (dangerRect.top - arenaRect.top) / window.__gscale();
   const phase = PHASES[state.phaseIndex];
   const fallSpeed = phase.fallSpeed * (phase.infinite ? (1 + state.infinitWave * 0.12) : 1);
 
@@ -2207,14 +2211,14 @@ function spawnBlock(forcedFearKey, isTutorial) {
     arrow.hidden = false;
     const rect = tgt.getBoundingClientRect();
     const gameRect = $('game').getBoundingClientRect();
-    arrow.style.left = (rect.left - gameRect.left + rect.width / 2 - 22) + 'px';
-    arrow.style.bottom = (gameRect.bottom - rect.top + 8) + 'px';
+    arrow.style.left = ((rect.left - gameRect.left + rect.width / 2) / window.__gscale() - 22) + 'px';
+    arrow.style.bottom = ((gameRect.bottom - rect.top) / window.__gscale() + 8) + 'px';
 
     // mover bloco manualmente (lento) durante tutorial
     let tutY = 0;
     const arenaRect = arena.getBoundingClientRect();
     const dangerRect = $('danger-zone').getBoundingClientRect();
-    const dangerY = dangerRect.top - arenaRect.top;
+    const dangerY = (dangerRect.top - arenaRect.top) / window.__gscale();
     function tutorialFall() {
       if (block.destroyed) return;
       tutY += 0.5;
@@ -2305,7 +2309,7 @@ function handleAction(action) {
   const arena = $('arena');
   const dangerRect = $('danger-zone').getBoundingClientRect();
   const arenaRect = arena.getBoundingClientRect();
-  const dangerY = dangerRect.top - arenaRect.top;
+  const dangerY = (dangerRect.top - arenaRect.top) / window.__gscale();
   const ratio = block.y / dangerY;
   let label, pts, klass;
   if (ratio < 0.4) { label = 'PERFECT!'; pts = 250; klass = 'perfect'; }
@@ -2376,8 +2380,8 @@ function showPointsPopup(pts, anchorEl) {
   const p = document.createElement('div');
   p.className = 'points-popup';
   p.textContent = '+' + pts;
-  p.style.left = (rect.left - gameRect.left + rect.width / 2) + 'px';
-  p.style.top = (rect.top - gameRect.top - 12) + 'px';
+  p.style.left = ((rect.left - gameRect.left + rect.width / 2) / window.__gscale()) + 'px';
+  p.style.top = ((rect.top - gameRect.top) / window.__gscale() - 12) + 'px';
   $('game').appendChild(p);
   setTimeout(() => p.remove(), 900);
 }
@@ -2399,8 +2403,8 @@ function showFlash(text, type) {
 function showParticles(anchorEl) {
   const rect = anchorEl.getBoundingClientRect();
   const gameRect = $('game').getBoundingClientRect();
-  const cx = rect.left - gameRect.left + rect.width / 2;
-  const cy = rect.top - gameRect.top + rect.height / 2;
+  const cx = (rect.left - gameRect.left + rect.width / 2) / window.__gscale();
+  const cy = (rect.top - gameRect.top + rect.height / 2) / window.__gscale();
   const colors = ['#FFD93D', '#00FF85', '#FF76FF', '#00F9FF'];
   for (let i = 0; i < 14; i++) {
     const p = document.createElement('div');
