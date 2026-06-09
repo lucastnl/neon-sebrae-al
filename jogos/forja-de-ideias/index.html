@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#050822" />
 <title>Forja de Ideias · Neon Sebrae AL</title>
 
-<meta property="og:title" content="Forja de Ideias" />
-<meta property="og:description" content="Um problema real de Alagoas aparece. Você escolhe qual recurso do estado forja a melhor solução. Sai com a sua Patente Maluca. Arcade Neon do Neon Sebrae AL 2026." />
+<meta property="og:title" content="Forja de Ideias · Que fazedor você é?" />
+<meta property="og:description" content="Empreender não tem resposta certa. Tome as decisões do seu jeito e descubra que tipo de fazedor você é e em que área de Alagoas você brilha. Sai com a sua Patente do Fazedor. Neon Sebrae AL 2026." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://neon-sebrae-al.netlify.app/jogos/forja-de-ideias/" />
 <meta property="og:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
@@ -18,7 +18,6 @@
 
 <link rel="stylesheet" href="../../assets/fonts/fonts.css" />
 <script>
-/* scale-to-fit do totem: preenche a tela mantendo a proporcao (resolucao de design 540x960) */
 (function(){
   function fit(){ var f=Math.min(window.innerWidth/540, window.innerHeight/960); document.documentElement.style.setProperty('--fit', f); }
   window.addEventListener('resize', fit); window.addEventListener('DOMContentLoaded', fit); fit();
@@ -42,57 +41,33 @@ body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hi
   repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(0,249,255,.045) 40px),
   repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(0,249,255,.045) 40px); }
 .bg::after{ content:''; position:absolute; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0,rgba(0,0,0,.14) 1px,transparent 1px,transparent 3px); mix-blend-mode:multiply; opacity:.45; }
-.embers{ position:absolute; left:0; right:0; bottom:0; height:38%; z-index:0; pointer-events:none; background:radial-gradient(120% 80% at 50% 120%, rgba(255,140,66,.2), transparent 60%); }
+.embers{ position:absolute; left:0; right:0; bottom:0; height:42%; z-index:0; pointer-events:none; background:radial-gradient(120% 80% at 50% 120%, rgba(255,140,66,.22), transparent 60%); }
 
-.shake{ animation:shake .3s; } @keyframes shake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 50%{transform:translateX(6px)} 75%{transform:translateX(-3px)} }
-.flash{ animation:flash .25s; } @keyframes flash{ 0%,100%{filter:none} 50%{filter:brightness(1.9)} }
+.flash{ animation:flash .25s; } @keyframes flash{ 0%,100%{filter:none} 50%{filter:brightness(1.8)} }
 
-/* HUD */
-#hud{ position:relative; z-index:30; padding:12px 16px 6px; background:linear-gradient(180deg,#05081f,transparent); }
+/* HUD: progresso da forja */
+#hud{ position:relative; z-index:30; padding:14px 18px 6px; }
 #hudtop{ display:flex; align-items:center; gap:10px; }
-.hl{ font-family:var(--mono); font-size:8px; color:var(--laranja); letter-spacing:1px; }
-#timer{ flex:1; height:14px; border-radius:8px; background:#1a1f3e; border:1px solid rgba(255,255,255,.16); overflow:hidden; }
-#timer>i{ display:block; height:100%; width:100%; background:linear-gradient(90deg,var(--vermelho),var(--laranja) 50%,var(--amarelo)); transform-origin:left; transition:transform .2s linear; }
-#tnum{ font-family:var(--mono); font-size:13px; color:var(--amarelo); min-width:30px; text-align:right; text-shadow:0 0 8px var(--amarelo); }
-.low #tnum{ color:var(--vermelho); }
-#hud2{ display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
-#score{ font-family:var(--mono); font-size:9px; color:var(--verde-claro); text-shadow:0 0 8px var(--verde-claro); }
-#score b{ color:var(--magenta-claro); }
-#fase{ font-family:var(--mono); font-size:9px; color:var(--magenta-claro); }
-#objective{ font-family:var(--mono); font-size:8px; line-height:1.5; color:var(--ciano); text-align:center; margin-top:8px; min-height:11px; text-shadow:0 0 6px var(--ciano); }
+.hl{ font-family:var(--mono); font-size:8px; color:var(--laranja); letter-spacing:1px; white-space:nowrap; }
+#forge{ flex:1; height:14px; border-radius:8px; background:#1a1f3e; border:1px solid rgba(255,255,255,.16); overflow:hidden; }
+#forge>i{ display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--vermelho),var(--laranja) 55%,var(--amarelo)); transition:width .4s ease; }
+#qnum{ font-family:var(--mono); font-size:9px; color:var(--amarelo); white-space:nowrap; }
 
-/* BANCADA */
-#bancada{ position:relative; z-index:20; flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:14px; padding:14px 18px; }
-
-#problema{ width:100%; max-width:440px; border-radius:16px; border:2px solid var(--vermelho); background:rgba(255,48,96,.08); padding:16px 16px; text-align:center; box-shadow:0 0 22px rgba(255,48,96,.2); }
-#problema .pq{ font-family:var(--mono); font-size:7px; letter-spacing:1px; color:var(--vermelho); margin-bottom:8px; }
-#problema .pem{ font-size:40px; display:block; margin-bottom:6px; }
-#problema .pnm{ font-size:15px; font-weight:700; line-height:1.35; color:#fff; }
-
-/* barra de decisao (calor da forja) */
-#heatround{ width:100%; max-width:440px; height:12px; border-radius:7px; background:#1a1f3e; border:1px solid rgba(255,255,255,.16); overflow:hidden; }
-#heatround>i{ display:block; height:100%; width:100%; background:linear-gradient(90deg,var(--laranja),var(--amarelo)); transform-origin:left; }
-
-/* opcoes de recurso */
-#opts{ width:100%; max-width:440px; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-.opt{ display:flex; flex-direction:column; align-items:center; gap:5px; background:rgba(0,217,92,.07); border:2px solid var(--verde); border-radius:14px; padding:14px 8px; cursor:pointer; transition:transform .1s,background .15s,box-shadow .2s; box-shadow:0 0 14px rgba(0,217,92,.12); }
-.opt:active{ transform:scale(.95); }
-.opt .oe{ font-size:38px; line-height:1; }
-.opt .on{ font-family:var(--mono); font-size:9px; color:#fff; text-align:center; }
+/* BANCADA / quiz */
+#bancada{ position:relative; z-index:20; flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:16px 22px; }
+#qcard{ width:100%; max-width:450px; text-align:center; }
+#qcard .qk{ font-family:var(--mono); font-size:7px; letter-spacing:1px; color:var(--ciano); margin-bottom:12px; }
+#qcard .qem{ font-size:44px; display:block; margin-bottom:10px; }
+#qcard .qt{ font-size:18px; font-weight:700; line-height:1.4; color:#fff; }
+#opts{ width:100%; max-width:450px; display:flex; flex-direction:column; gap:11px; }
+.opt{ width:100%; text-align:left; background:rgba(0,249,255,.05); border:2px solid rgba(0,249,255,.3); border-radius:14px; padding:15px 16px; color:#fff; font-size:14.5px; line-height:1.35; cursor:pointer; transition:transform .1s,background .15s,border-color .15s; }
+.opt:active{ transform:scale(.98); }
+.opt:hover{ background:rgba(0,249,255,.1); border-color:var(--ciano); }
+.opt.pick{ background:rgba(255,217,61,.16); border-color:var(--amarelo); }
 .opt.dim{ opacity:.25; pointer-events:none; }
-.opt.pick{ background:rgba(255,217,61,.16); border-color:var(--amarelo); box-shadow:0 0 22px rgba(255,217,61,.4); }
 
-/* resultado da forja */
-#ideia{ width:100%; max-width:440px; min-height:96px; border-radius:14px; border:2px solid rgba(255,217,61,.45); background:rgba(255,217,61,.06); display:none; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:12px 14px; text-align:center; }
-#ideia.on{ display:flex; }
-#ideia .brand{ font-family:var(--mono); font-size:14px; color:var(--amarelo); text-shadow:0 0 10px var(--amarelo); }
-#ideia .pitch{ font-size:13px; line-height:1.4; color:#fff; }
-#ideia .selo{ display:inline-block; font-family:var(--mono); font-size:7px; letter-spacing:1px; padding:3px 9px; border-radius:999px; margin-top:2px; }
-.selo-ouro{ background:var(--amarelo); color:var(--navy-deep); } .selo-ousado{ background:var(--magenta); color:#fff; } .selo-maluco{ background:var(--ciano); color:var(--navy-deep); }
-#ideia .why{ font-size:11.5px; color:var(--ciano); line-height:1.35; }
-
-#spark{ position:absolute; left:50%; top:40%; z-index:40; transform:translate(-50%,-50%); font-size:40px; opacity:0; pointer-events:none; }
-#spark.go{ animation:spark .4s ease-out; }
+#spark{ position:absolute; left:50%; top:42%; z-index:40; transform:translate(-50%,-50%); font-size:40px; opacity:0; pointer-events:none; }
+#spark.go{ animation:spark .45s ease-out; }
 @keyframes spark{ 0%{opacity:1;transform:translate(-50%,-50%) scale(.6)} 100%{opacity:0;transform:translate(-50%,-130%) scale(1.4)} }
 
 /* TELAS */
@@ -102,8 +77,8 @@ body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hi
 .logo-row img{ filter:drop-shadow(0 0 8px rgba(0,249,255,.4)); }
 .logo-row .logo-sebrae{ height:30px; } .logo-row .logo-tnl{ height:22px; } .logo-row .logo-sep{ width:1px; height:20px; background:rgba(255,255,255,.25); }
 h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1.4; text-shadow:3px 3px 0 var(--laranja),6px 6px 0 var(--azul); margin-bottom:10px; }
-.tagline{ font-size:14px; color:var(--ciano); margin-bottom:16px; line-height:1.5; max-width:340px; }
-.howto{ font-size:12px; color:rgba(255,255,255,.72); line-height:1.7; max-width:340px; margin-bottom:12px; }
+.tagline{ font-size:14px; color:var(--ciano); margin-bottom:16px; line-height:1.5; max-width:350px; }
+.howto{ font-size:12.5px; color:rgba(255,255,255,.74); line-height:1.7; max-width:350px; margin-bottom:12px; }
 .howto b{ color:var(--amarelo); }
 .btn{ font-family:var(--mono); font-size:13px; letter-spacing:1px; padding:18px 28px; border:none; border-radius:999px; background:var(--amarelo); color:var(--navy-deep); cursor:pointer; box-shadow:0 6px 26px rgba(255,217,61,.5); margin-top:6px; animation:bob 1.6s ease-in-out infinite; }
 @keyframes bob{ 50%{transform:translateY(-5px)} }
@@ -114,24 +89,25 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
 .namepick .na{ width:52px; height:30px; border:1px solid rgba(0,249,255,.35); border-radius:8px; background:rgba(0,249,255,.08); color:var(--ciano); font-size:13px; cursor:pointer; }
 .namepick .na:active{ transform:scale(.92); }
 
-/* PATENTE MALUCA */
-.patente{ background:linear-gradient(160deg,#0a0f36,#241433); border:2px solid var(--amarelo); border-radius:20px; padding:22px 20px; max-width:360px; width:100%; box-shadow:0 0 40px rgba(255,217,61,.32); }
-.patente .selo-top{ font-family:var(--mono); font-size:8px; letter-spacing:2px; color:var(--laranja); margin-bottom:10px; }
-.patente .brand{ font-family:var(--mono); font-size:18px; color:var(--amarelo); text-shadow:0 0 14px var(--amarelo); line-height:1.4; margin-bottom:8px; }
-.patente .combo-emojis{ font-size:34px; margin-bottom:8px; }
-.patente .pitch{ font-size:13.5px; line-height:1.5; color:#fff; margin-bottom:12px; }
-.patente .cur{ font-size:12.5px; line-height:1.5; color:var(--ciano); border-top:1px solid rgba(255,255,255,.14); padding-top:11px; margin-bottom:4px; }
+/* PATENTE DO FAZEDOR (resultado) */
+.patente{ background:linear-gradient(160deg,#0a0f36,#241433); border:2px solid var(--amarelo); border-radius:20px; padding:24px 22px; max-width:380px; width:100%; box-shadow:0 0 40px rgba(255,217,61,.3); }
+.patente .selo-top{ font-family:var(--mono); font-size:8px; letter-spacing:2px; color:var(--laranja); margin-bottom:12px; }
+.patente .em{ font-size:52px; margin-bottom:6px; }
+.patente .arq{ font-family:var(--mono); font-size:19px; text-shadow:0 0 14px currentColor; line-height:1.4; margin-bottom:12px; }
+.patente .desc{ font-size:14px; line-height:1.5; color:#fff; margin-bottom:14px; }
+.patente .area-k{ font-family:var(--mono); font-size:7px; letter-spacing:1px; color:var(--ciano); margin-bottom:4px; }
+.patente .area{ font-family:var(--mono); font-size:11px; color:var(--amarelo); line-height:1.5; margin-bottom:12px; }
+.patente .ideia{ font-size:13px; line-height:1.45; color:rgba(255,255,255,.92); margin-bottom:12px; }
+.patente .ideia b{ color:var(--amarelo); }
+.patente .cur{ font-size:12px; line-height:1.5; color:var(--ciano); border-top:1px solid rgba(255,255,255,.14); padding-top:11px; }
 .patente .num{ font-family:var(--mono); font-size:8px; color:rgba(255,255,255,.5); margin-top:10px; letter-spacing:1px; }
-.statline{ display:flex; justify-content:space-around; margin:16px 0 4px; font-family:var(--mono); font-size:9px; max-width:360px; width:100%; }
-.statline .s b{ display:block; font-size:17px; color:var(--amarelo); margin-bottom:4px; }
-.statline .s span{ color:rgba(255,255,255,.6); }
-.gancho{ font-size:12.5px; color:rgba(255,255,255,.8); line-height:1.6; margin-top:14px; max-width:360px; }
+.gancho{ font-size:12.5px; color:rgba(255,255,255,.8); line-height:1.6; margin-top:16px; max-width:380px; }
 .gancho b{ color:var(--ciano); }
 .tags{ font-family:var(--mono); font-size:8px; color:var(--magenta-claro); margin-top:10px; letter-spacing:1px; }
 .curadoria{ position:fixed; bottom:4px; left:0; right:0; text-align:center; font-size:8px; color:rgba(255,255,255,.26); z-index:85; font-family:var(--mono); }
 #err{ position:fixed; top:0; left:0; right:0; background:#b00020; color:#fff; padding:10px; font:11px/1.4 monospace; z-index:9999; white-space:pre-wrap; display:none; }
-.toast{ position:fixed; left:50%; top:32%; transform:translate(-50%,-50%); z-index:88; font-family:var(--mono); font-size:18px; color:var(--amarelo); text-shadow:0 0 16px var(--amarelo); pointer-events:none; opacity:0; text-align:center; }
-.toast.show{ animation:toast 1.1s ease; }
+.toast{ position:fixed; left:50%; top:30%; transform:translate(-50%,-50%); z-index:88; font-family:var(--mono); font-size:16px; color:var(--amarelo); text-shadow:0 0 16px var(--amarelo); pointer-events:none; opacity:0; text-align:center; }
+.toast.show{ animation:toast 1s ease; }
 @keyframes toast{ 0%{opacity:0;transform:translate(-50%,-30%) scale(.7)} 25%{opacity:1;transform:translate(-50%,-50%) scale(1.1)} 70%{opacity:1} 100%{opacity:0;transform:translate(-50%,-60%)} }
 </style>
 </head>
@@ -146,22 +122,15 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
 
   <div id="hud">
     <div id="hudtop">
-      <span class="hl">FORJA</span>
-      <div id="timer"><i></i></div>
-      <span id="tnum">90</span>
+      <span class="hl">FORJANDO</span>
+      <div id="forge"><i></i></div>
+      <span id="qnum">1/6</span>
     </div>
-    <div id="hud2">
-      <div id="score">0 PTS <b id="combo"></b></div>
-      <div id="fase">FASE 1</div>
-    </div>
-    <div id="objective"></div>
   </div>
 
   <div id="bancada">
-    <div id="problema"><div class="pq">RESOLVE ISSO EM ALAGOAS</div><span class="pem">🧳</span><div class="pnm">…</div></div>
-    <div id="heatround"><i></i></div>
+    <div id="qcard"><div class="qk">DECIDE DO SEU JEITO · NÃO TEM ERRADO</div><span class="qem">🔨</span><div class="qt">…</div></div>
     <div id="opts"></div>
-    <div id="ideia"></div>
     <div id="spark">✦</div>
   </div>
 
@@ -173,8 +142,8 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
       <img class="logo-tnl" src="../../assets/logo-tnl-h.png" alt="Tiro na Lua" onerror="this.style.display='none'"/>
     </div>
     <h1 class="title">FORJA<br>DE IDEIAS</h1>
-    <p class="tagline">A ideia não cai do céu. Você forja com o que Alagoas já tem.</p>
-    <div class="howto">Aparece um <b>problema real</b> de Alagoas. Você escolhe qual <b>recurso do estado</b> forja a melhor solução. Pensa rápido: a forja esfria.</div>
+    <p class="tagline">Empreender não tem resposta certa. Tem o seu jeito.</p>
+    <div class="howto">Seis decisões de quem empreende em Alagoas. Não tem certo nem errado: escolhe do <b>seu jeito</b>. No fim, a forja revela <b>que tipo de fazedor você é</b> e onde você brilharia.</div>
     <div class="namepick" id="namepick"></div>
     <button class="btn" id="startBtn">ACENDER A FORJA</button>
   </div>
@@ -184,7 +153,7 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
 
 </div>
 
-<div class="curadoria">PROTÓTIPO v2 · recursos e curiosidades de Alagoas a validar com o Sebrae AL</div>
+<div class="curadoria">PROTÓTIPO v3 · perfis e curiosidades de Alagoas a validar com o Sebrae AL</div>
 
 <script>
 window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))return; var el=document.getElementById('err'); if(!el)return; el.style.display='block'; el.textContent+='⚠ '+(e.message||e)+' ('+((e.filename||'').split('/').pop())+':'+e.lineno+')\n'; });
@@ -193,158 +162,136 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
   'use strict';
   var $=function(s,r){return (r||document).querySelector(s);};
 
-  // ---------- recursos de Alagoas ----------
-  var RECURSOS=[
-    {nm:'COCO', em:'🥥', prod:'água de coco gelada', cur:'Alagoas tá entre os maiores produtores de coco do país: passam de 40 milhões de frutos por ano.'},
-    {nm:'SURURU', em:'🦪', prod:'caldo de sururu', cur:'O sururu da Lagoa Mundaú é Patrimônio Cultural de Alagoas desde 2014.'},
-    {nm:'RENDA FILÉ', em:'🧵', prod:'moda em renda filé', cur:'A renda filé de Pontal da Barra tem selo de Indicação Geográfica do INPI, igual vinho e champagne têm o deles.'},
-    {nm:'CANA', em:'🌾', prod:'rapadura e melaço', cur:'O açúcar é 79% de tudo que Alagoas exporta pro mundo.'},
-    {nm:'PRAIA', em:'🏖️', prod:'passeio de praia', cur:'Maragogi, o Caribe brasileiro, foi eleita a melhor cidade do Brasil pra turismo em 2025.'},
-    {nm:'CERÂMICA', em:'🏺', prod:'cerâmica artesanal', cur:'O barro de Alagoas vira arte e renda em comunidades inteiras do estado.'},
-    {nm:'SERTÃO', em:'🌵', prod:'mel e caju do sertão', cur:'O sertão alagoano transforma sol e caatinga em mel, caju e energia solar.'},
-    {nm:'PEIXE', em:'🐟', prod:'peixe fresco da lagoa', cur:'As lagoas Mundaú e Manguaba sustentam pescadores e marisqueiras há gerações.'},
-    {nm:'FOLGUEDO', em:'🎭', prod:'guerreiro e coco de roda', cur:'O guerreiro e o coco de roda são folguedos que só existem do jeito alagoano.'},
-    {nm:'TAPIOCA', em:'🥮', prod:'tapioca recheada', cur:'A mandioca vira tapioca, goma e renda na mão de quem faz em Alagoas.'}
+  // ---------- arquétipos de fazedor ----------
+  var ARQ={
+    inventor: { nm:'O INVENTOR', em:'💡', cor:'var(--ciano)',
+      desc:'Onde os outros veem barreira, você vê um jeito que ninguém tentou. Sua força é a ideia nova.',
+      area:'INOVAÇÃO E TECNOLOGIA',
+      ideia:'um app ou um invento que resolve uma dor de Alagoas de um jeito inédito',
+      cur:'Maceió tem polos de tecnologia crescendo (como o Jaraguá), cheios de gente jovem criando startup.'},
+    mao: { nm:'A MÃO NA MASSA', em:'🔨', cor:'var(--laranja)',
+      desc:'Você não fica só na ideia. Bota pra fazer, produto na mão, vendido hoje. Faz acontecer.',
+      area:'PRODUÇÃO E ARTESANATO',
+      ideia:'um produto feito à mão com a matéria-prima daqui, tipo renda filé, cerâmica ou comida da terra',
+      cur:'A renda filé de Pontal da Barra tem selo de Indicação Geográfica do INPI, igual vinho e champagne têm o deles.'},
+    conector: { nm:'O CONECTOR', em:'🤝', cor:'var(--verde-claro)',
+      desc:'Você junta gente. Sabe que sozinho vai rápido, mas com os outros vai longe. Sua força é a rede.',
+      area:'SERVIÇOS, TURISMO E COLETIVOS',
+      ideia:'uma cooperativa ou um serviço que conecta quem faz com quem precisa',
+      cur:'Maragogi, o Caribe brasileiro, foi eleita a melhor cidade do Brasil pra turismo em 2025: tem gente chegando.'},
+    raiz: { nm:'O RAIZ', em:'🌳', cor:'var(--amarelo)',
+      desc:'Você tem orgulho do que Alagoas já é. Sua força é transformar tradição e saber local em negócio.',
+      area:'CULTURA, GASTRONOMIA E CAMPO',
+      ideia:'um negócio que valoriza um saber, um sabor ou um folguedo bem alagoano',
+      cur:'O sururu da Lagoa Mundaú é Patrimônio Cultural de Alagoas e move a economia de comunidades inteiras.'}
+  };
+  var ORDEM=['inventor','mao','conector','raiz'];
+
+  // ---------- 6 decisões (sem certo/errado) ----------
+  var Q=[
+    { em:'💰', t:'Você tem R$100 e uma ideia. O primeiro passo?', o:[
+      {t:'Vendo pra alguém hoje, nem que seja improvisado', a:'mao'},
+      {t:'Chamo gente pra topar a ideia comigo', a:'conector'},
+      {t:'Penso num jeito que ninguém fez ainda', a:'inventor'},
+      {t:'Aposto no que já dá certo aqui na região', a:'raiz'} ]},
+    { em:'🏘️', t:'Um problema do seu bairro te incomoda. Você...', o:[
+      {t:'já vai resolvendo com as suas mãos', a:'mao'},
+      {t:'junta a vizinhança pra resolver junto', a:'conector'},
+      {t:'inventa uma solução diferente de tudo', a:'inventor'},
+      {t:'busca como o povo daqui sempre resolveu', a:'raiz'} ]},
+    { em:'✨', t:'O que mais te empolga numa ideia?', o:[
+      {t:'Ela ser a primeira, nunca vista', a:'inventor'},
+      {t:'Ver ela pronta, funcionando de verdade', a:'mao'},
+      {t:'Ela crescer com mais gente junto', a:'conector'},
+      {t:'Ela ter a cara de Alagoas', a:'raiz'} ]},
+    { em:'🥥', t:'Te dão um coco. Você pensa logo em...', o:[
+      {t:'água de coco gelada pra vender já', a:'mao'},
+      {t:'um produto novo que ninguém fez com coco', a:'inventor'},
+      {t:'reunir os produtores numa marca só', a:'conector'},
+      {t:'a feira, a tradição, o coco da terra', a:'raiz'} ]},
+    { em:'🔁', t:'Deu errado na primeira tentativa. Você...', o:[
+      {t:'tenta de um jeito totalmente diferente', a:'inventor'},
+      {t:'bota a mão de novo, ajusta e refaz', a:'mao'},
+      {t:'pede ajuda de quem manja', a:'conector'},
+      {t:'volta pro básico que sempre funciona', a:'raiz'} ]},
+    { em:'🚀', t:'Seu sonho é um negócio que...', o:[
+      {t:'muda o jogo, inova de verdade', a:'inventor'},
+      {t:'vive do trabalho das suas mãos', a:'mao'},
+      {t:'gera renda pra muita gente', a:'conector'},
+      {t:'leva o nome de Alagoas longe', a:'raiz'} ]}
   ];
-  // problema real + recursos que combinam forte (ouro) + objetivo pro pitch + brand sufixo
-  var PROBLEMAS=[
-    {nm:'O TURISTA QUER LEVAR ALAGOAS NA MALA', em:'🧳', sfx:'Tour', goal:'levar Alagoas na mala do turista', ouro:[2,5,8,0]},
-    {nm:'FALTA RENDA E TRABALHO NO BAIRRO', em:'💼', sfx:'Coop', goal:'gerar renda no bairro', ouro:[2,1,7,5]},
-    {nm:'COMIDA BOA E BARATA PRA GERAL', em:'🍽️', sfx:'Sabor', goal:'matar a fome com sabor', ouro:[9,7,1,0]},
-    {nm:'O SERTÃO TÁ SECO E PARADO', em:'☀️', sfx:'Sertão', goal:'fazer o sertão render', ouro:[6,3]},
-    {nm:'VENDER O DE ALAGOAS PRO MUNDO', em:'📱', sfx:'Tech', goal:'vender pro mundo todo', ouro:[2,9,8]},
-    {nm:'NÃO TEM O QUE FAZER NO FIM DE SEMANA', em:'🎉', sfx:'Folia', goal:'agitar o fim de semana', ouro:[4,8,0]},
-    {nm:'CASCA E RESTO VIRAM LIXO', em:'♻️', sfx:'Verde', goal:'transformar o que ia pro lixo', ouro:[0,5,9]},
-    {nm:'A GALERA QUER COMER MAIS SAUDÁVEL', em:'🥗', sfx:'Vida', goal:'comer bem de verdade', ouro:[0,7,9]}
-  ];
-  function selo(ri,p){ if(p.ouro.indexOf(ri)>=0) return {k:'ouro',nm:'PROMISSOR',bonus:140}; var h=(ri*7+p.em.length*13)%3; return h===0?{k:'ousado',nm:'OUSADO',bonus:70}:{k:'maluco',nm:'MALUCO',bonus:45}; }
-  function capit(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
-  function brand(r,p){ var b=r.nm.split(' ')[0]; return b.charAt(0)+b.slice(1).toLowerCase()+p.sfx; }
-  function pitch(r,p){ return capit(r.prod)+' pra '+p.goal+'.'; }
-  function why(sl){ return sl.k==='ouro'?'Combinação afiada. Alagoas é forte nisso, resolve de verdade.':(sl.k==='ousado'?'Ideia ousada. Pouca gente pensaria nisso, e pode dar certo.':'Maluca, mas quem sabe? Empreender também é ousar no improvável.'); }
 
   // ---------- estado ----------
   var ALPHA='ABCDEFGHIJKLMNOPQRSTUVWXYZ', nameIdx=[0,0,0];
   var S={};
-  function reset(){ S={ nome:'???', score:0, combo:0, comboMax:0, forjas:0, ouros:0, dur:90, restante:90, raf:0, last:0, running:false,
-    step:'choose', fase:1, curP:null, opts:[], roundTime:6, cooling:6, lastP:-1, best:null, _idle:performance.now() }; }
+  function reset(){ S={ nome:'???', qi:0, tally:{inventor:0,mao:0,conector:0,raiz:0}, locked:false, running:false, _idle:performance.now() }; }
   reset();
 
   // ---------- audio ----------
   var actx=null; function ac(){ if(!actx){try{actx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}} return actx; }
   function beep(f,d,t,v){ var c=ac(); if(!c)return; var o=c.createOscillator(),g=c.createGain(); o.type=t||'square'; o.frequency.value=f; g.gain.value=v||.05; o.connect(g); g.connect(c.destination); var n=c.currentTime; o.start(n); g.gain.exponentialRampToValueAtTime(.0001,n+(d||.12)); o.stop(n+(d||.12)+.02); }
   function sTick(){beep(520,.03,'square',.025);}
-  function sForge(){[330,440,660,880,1100].forEach(function(f,i){setTimeout(function(){beep(f,.1,'triangle',.06);},i*55);});}
-  function sOk(){beep(440,.07,'square',.05);setTimeout(function(){beep(660,.1,'square',.05);},55);}
-  function sMeh(){beep(200,.1,'sawtooth',.05);}
-  function sBad(){beep(140,.22,'sawtooth',.05);}
+  function sPick(){beep(440,.07,'square',.05);setTimeout(function(){beep(700,.1,'square',.05);},55);}
+  function sForge(){[220,330,440,660,880].forEach(function(f,i){setTimeout(function(){beep(f,.12,'triangle',.06);},i*70);});}
   function sWin(){[523,659,784,1046,1318,1568].forEach(function(f,i){setTimeout(function(){beep(f,.16,'triangle',.06);},i*100);});}
 
   function rint(n){return Math.floor(Math.random()*n);}
   function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=rint(i+1),t=a[i];a[i]=a[j];a[j]=t;}return a;}
-  function shakeIt(){var st=$('#stage');st.classList.remove('shake');void st.offsetWidth;st.classList.add('shake');}
   function flashIt(el){el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');}
   function toast(t){var e=$('#toast');e.textContent=t;e.classList.remove('show');void e.offsetWidth;e.classList.add('show');}
   function spark(){ var s=$('#spark'); s.classList.remove('go'); void s.offsetWidth; s.classList.add('go'); }
-  function setObjective(t){ $('#objective').textContent=t; }
 
-  function renderHUD(){
-    var frac=Math.max(0,S.restante/S.dur);
-    $('#timer>i').style.transform='scaleX('+frac+')';
-    $('#tnum').textContent=Math.ceil(S.restante);
-    $('#stage').classList.toggle('low', S.restante<=15);
-    $('#score').firstChild.textContent=S.score+' PTS ';
-    $('#combo').textContent=S.combo>1?('x'+S.combo):'';
-    $('#fase').textContent='FASE '+S.fase;
-  }
-  function addScore(b){ S.score+=b; renderHUD(); }
-
-  // ---------- loop ----------
-  function tick(ts){
-    if(!S.running)return;
-    if(!S.last)S.last=ts;
-    var dt=Math.min(0.1,(ts-S.last)/1000); S.last=ts;
-    S.restante-=dt; if(S.restante<=0){ S.restante=0; renderHUD(); return endGame(); }
-    var nf = S.restante>60?1:(S.restante>30?2:3); if(nf!==S.fase){ S.fase=nf; toast('FASE '+nf+(nf===3?' · NO CALOR':'')); }
-    if(S.step==='choose'){
-      S.cooling-=dt;
-      $('#heatround>i').style.transform='scaleX('+Math.max(0,S.cooling/S.roundTime)+')';
-      if(S.cooling<=0){ missRound(); }
-    }
-    renderHUD(); S.raf=requestAnimationFrame(tick);
-  }
-
-  // ---------- rodada: escolher o recurso certo ----------
-  function startRound(){
-    S.step='choose';
-    var pi; do { pi=rint(PROBLEMAS.length); } while(pi===S.lastP && PROBLEMAS.length>1); S.lastP=pi;
-    var p=PROBLEMAS[pi]; S.curP=p;
-    var n = S.fase===1?3:4;
-    S.roundTime = S.fase===1?6.5:(S.fase===2?5:3.8); S.cooling=S.roundTime;
-    // monta opcoes: garante 1 ouro + preenche com outros, embaralha
-    var ouro=shuffle(p.ouro), outros=[]; for(var i=0;i<RECURSOS.length;i++){ if(p.ouro.indexOf(i)<0) outros.push(i); }
-    outros=shuffle(outros);
-    var opts=[ouro[0]]; var pool=ouro.slice(1).concat(outros);
-    while(opts.length<n && pool.length){ opts.push(pool.shift()); }
-    S.opts=shuffle(opts);
-    $('#problema').innerHTML='<div class="pq">RESOLVE ISSO EM ALAGOAS</div><span class="pem">'+p.em+'</span><div class="pnm">'+p.nm+'</div>';
-    $('#heatround').style.display=''; $('#heatround>i').style.transform='scaleX(1)';
-    $('#ideia').classList.remove('on'); $('#ideia').innerHTML='';
-    var html=''; S.opts.forEach(function(ri,k){ var r=RECURSOS[ri]; html+='<button class="opt" data-ri="'+ri+'"><span class="oe">'+r.em+'</span><span class="on">'+r.nm+'</span></button>'; });
+  function showQ(){
+    S.locked=false;
+    var q=Q[S.qi];
+    $('#qnum').textContent=(S.qi+1)+'/'+Q.length;
+    $('#forge>i').style.width=Math.round((S.qi/Q.length)*100)+'%';
+    $('#qcard').innerHTML='<div class="qk">DECIDE DO SEU JEITO · NÃO TEM ERRADO</div><span class="qem">'+q.em+'</span><div class="qt">'+q.t+'</div>';
+    var html=''; q.o.forEach(function(op,k){ html+='<button class="opt" data-a="'+op.a+'" data-k="'+k+'">'+op.t+'</button>'; });
     $('#opts').innerHTML=html;
-    Array.prototype.slice.call(document.querySelectorAll('#opts .opt')).forEach(function(b){ b.onclick=function(){ choose(parseInt(b.getAttribute('data-ri'),10), b); }; });
-    setObjective('Qual recurso de Alagoas forja a solução? Pensa rápido.');
+    Array.prototype.slice.call(document.querySelectorAll('#opts .opt')).forEach(function(b){ b.onclick=function(){ pick(b.getAttribute('data-a'), b); }; });
   }
-  function choose(ri, btn){
-    if(S.step!=='choose')return;
-    S.step='reveal';
-    var r=RECURSOS[ri], p=S.curP, sl=selo(ri,p);
+  function pick(a, btn){
+    if(S.locked)return; S.locked=true;
+    S.tally[a]++;
     Array.prototype.slice.call(document.querySelectorAll('#opts .opt')).forEach(function(b){ if(b!==btn) b.classList.add('dim'); }); btn.classList.add('pick');
-    $('#heatround').style.display='none'; spark(); flashIt($('#problema'));
-    var rapido = S.cooling > S.roundTime*0.45;
-    var pts = 50 + sl.bonus + (rapido?40:0) + Math.round(S.cooling*6);
-    if(sl.k==='ouro'){ S.combo++; if(S.combo>S.comboMax)S.comboMax=S.combo; S.ouros++; pts+=S.combo*25; sForge(); toast('PROMISSOR! +'+pts); }
-    else if(sl.k==='ousado'){ sOk(); toast('OUSADO! +'+pts); }
-    else { S.combo=0; sMeh(); toast('MALUCO! +'+pts); }
-    addScore(pts); S.forjas++;
-    $('#ideia').classList.add('on');
-    $('#ideia').innerHTML='<div class="brand">'+brand(r,p)+'</div><div class="pitch">'+pitch(r,p)+'</div><span class="selo selo-'+sl.k+'">'+sl.nm+'</span><div class="why">'+why(sl)+'</div>';
-    var entry={ brand:brand(r,p), pitch:pitch(r,p), em:r.em+p.em, cur:r.cur, selo:sl.nm, gold:sl.k==='ouro', pts:pts };
-    if(!S.best || (entry.gold&&!S.best.gold) || (entry.gold===S.best.gold && pts>S.best.pts)) S.best=entry;
-    setObjective(why(sl));
-    setTimeout(function(){ if(S.running && S.restante>0) startRound(); }, 1200);
+    spark(); sPick(); flashIt($('#qcard'));
+    S.qi++;
+    $('#forge>i').style.width=Math.round((S.qi/Q.length)*100)+'%';
+    setTimeout(function(){ if(S.qi>=Q.length) forge(); else showQ(); }, 620);
   }
-  function missRound(){
-    if(S.step!=='choose')return;
-    S.step='reveal'; S.combo=0; S.forjas++;
-    $('#heatround').style.display='none'; shakeIt(); sBad(); toast('A FORJA ESFRIOU...');
-    setObjective('Faltou decidir a tempo. Vem outra!');
-    setTimeout(function(){ if(S.running && S.restante>0) startRound(); }, 900);
+  function vencedor(){
+    var max=-1, tops=[];
+    ORDEM.forEach(function(k){ var v=S.tally[k]; if(v>max){ max=v; tops=[k]; } else if(v===max){ tops.push(k); } });
+    return tops[rint(tops.length)]; // empate: sorteia entre os mais altos
   }
-
-  // ---------- fim ----------
-  function endGame(){
-    S.running=false; cancelAnimationFrame(S.raf); S.step='end'; sWin();
-    var b=S.best || { brand:'IDEIA ZERO', pitch:'Faltou forjar uma ideia dessa vez.', em:'🔨', cur:'', selo:'', pts:0 };
-    var num='AL-'+(1000+rint(9000));
+  function forge(){
+    $('#qcard').innerHTML='<span class="qem">🔥</span><div class="qt">Forjando seu perfil...</div>';
+    $('#opts').innerHTML=''; $('#forge>i').style.width='100%'; sForge(); toast('FORJANDO...');
+    setTimeout(reveal, 1100);
+  }
+  function reveal(){
+    var key=vencedor(), a=ARQ[key], num='AL-'+(1000+rint(9000));
     $('#endBody').innerHTML='<div class="patente">'+
-      '<div class="selo-top">★ PATENTE MALUCA · REGISTRADA EM ALAGOAS ★</div>'+
-      '<div class="combo-emojis">'+b.em+'</div>'+
-      '<div class="brand">'+b.brand+'</div>'+
-      '<div class="pitch">'+b.pitch+'</div>'+
-      (b.cur?'<div class="cur">'+b.cur+'</div>':'')+
-      '<div class="num">Nº '+num+' · forjada por '+S.nome+'</div>'+
+      '<div class="selo-top">★ PATENTE DO FAZEDOR · REGISTRADA EM ALAGOAS ★</div>'+
+      '<div class="em">'+a.em+'</div>'+
+      '<div class="arq" style="color:'+a.cor+'">VOCÊ É '+a.nm+'</div>'+
+      '<div class="desc">'+a.desc+'</div>'+
+      '<div class="area-k">SUA ÁREA PRA EMPREENDER EM ALAGOAS</div>'+
+      '<div class="area">'+a.area+'</div>'+
+      '<div class="ideia">Um negócio com a sua cara: <b>'+a.ideia+'</b>.</div>'+
+      '<div class="cur">'+a.cur+'</div>'+
+      '<div class="num">Nº '+num+' · '+S.nome+'</div>'+
       '</div>'+
-      '<div class="statline"><div class="s"><b>'+S.score+'</b><span>pontos</span></div><div class="s"><b>'+S.ouros+'</b><span>certeiras</span></div><div class="s"><b>x'+S.comboMax+'</b><span>combo</span></div></div>'+
-      '<div class="gancho">Empreender não é inventar do nada. É <b>olhar o que Alagoas já tem em volta</b> e combinar pra resolver um problema de verdade. A matéria-prima tava aqui o tempo todo. Tua trilha segue no Escalada.</div>'+
+      '<div class="gancho">Não existe fazedor certo ou errado. Existe o <b>seu jeito</b> de tirar a ideia do papel, e Alagoas tem espaço pra todos eles. Agora é seguir na trilha do Escalada.</div>'+
       '<div class="tags">#ToNoNeon #EscaladaSebrae @sebraealagoas</div>'+
-      '<button class="btn" id="replayBtn" style="margin-top:18px">FORJAR DE NOVO</button>'+
+      '<button class="btn" id="replayBtn" style="margin-top:18px">FAZER DE NOVO</button>'+
       '<button class="btn sec" onclick="location.href=\'/hub/\'">◂ VOLTAR AO HUB</button>';
-    persist();
+    persist(key);
     $('#replayBtn').onclick=start;
-    $('#screenEnd').classList.remove('hidden');
+    $('#screenEnd').classList.remove('hidden'); sWin();
   }
-  function persist(){ try{var k='neon-forja-placar';var a=JSON.parse(localStorage.getItem(k)||'[]');a.push({nome:S.nome,score:S.score,ouros:S.ouros,combo:S.comboMax,ts:new Date().toISOString()});a.sort(function(x,y){return y.score-x.score;});localStorage.setItem(k,JSON.stringify(a.slice(0,500)));}catch(e){} }
+  function persist(key){ try{var k='neon-forja-perfis';var a=JSON.parse(localStorage.getItem(k)||'[]');a.push({nome:S.nome,perfil:key,ts:new Date().toISOString()});localStorage.setItem(k,JSON.stringify(a.slice(-500)));}catch(e){} }
 
   // ---------- seletor de nome ----------
   function buildNamePick(){
@@ -362,22 +309,18 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
 
   // ---------- start ----------
   function start(){
-    if(S.raf) cancelAnimationFrame(S.raf);
     ac(); var nome=lerNome(); reset(); S.nome=nome; S.running=true;
-    $('#stage').classList.remove('low');
     $('#screenIntro').classList.add('hidden'); $('#screenEnd').classList.add('hidden');
-    renderHUD(); startRound();
-    S.raf=requestAnimationFrame(tick);
+    showQ();
   }
   $('#startBtn').onclick=start;
-  buildNamePick(); renderHUD();
+  buildNamePick();
 
   // idle/attract reset
   ['pointerdown','touchstart','keydown'].forEach(function(e){ window.addEventListener(e,function(){ S._idle=performance.now(); },{passive:true}); });
   setInterval(function(){
     if(performance.now()-S._idle>60000 && $('#screenIntro').classList.contains('hidden') && $('#screenEnd').classList.contains('hidden')){
       S._idle=performance.now();
-      if(S.raf) cancelAnimationFrame(S.raf); S.running=false;
       $('#screenEnd').classList.add('hidden'); $('#screenIntro').classList.remove('hidden');
     }
   }, 5000);
@@ -389,7 +332,7 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
     var m=location.search.match(/dev=(\w+)/); if(!m)return; ac=function(){return null;};
     var v=m[1];
     if(v==='play'){ start(); }
-    else if(v==='end'){ start(); S.best={brand:'CocoTour', pitch:'Água de coco gelada pra levar Alagoas na mala do turista.', em:'🥥🧳', cur:RECURSOS[0].cur, selo:'PROMISSOR', gold:true, pts:420}; S.score=1180; S.forjas=9; S.ouros=6; S.comboMax=4; endGame(); }
+    else if(v==='end'){ reset(); S.nome='LUC'; S.tally={inventor:1,mao:3,conector:1,raiz:1}; reveal(); }
   })();
 })();
 </script>
