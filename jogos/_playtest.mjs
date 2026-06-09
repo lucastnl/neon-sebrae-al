@@ -55,9 +55,35 @@ async function main() {
   const rectOf = sel => ev(`(()=>{const el=document.querySelector(${JSON.stringify(sel)});if(!el)return null;const r=el.getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2,v:r.width>0&&r.height>0};})()`);
   const clickSel = async sel => { const r = await rectOf(sel); if (!r || !r.v) return false; await clickXY(r.x, r.y); return true; };
 
+  const waitSel = async (sel, ms) => { for (let i = 0; i < (ms || 4000) / 100; i++) { const r = await rectOf(sel); if (r && r.v) return true; await sleep(100); } return false; };
+
   const log = [];
   await send(ws, 'Page.navigate', { url });
   await sleep(1500);
+
+  const jsClick = async sel => await ev(`(()=>{var e=document.querySelector(${JSON.stringify(sel)});if(e){e.click();return true}return false})()`);
+  if (game === 'forja') {
+    await shot('01_intro');
+    log.push('START: ' + await jsClick('#startBtn')); await sleep(700);
+    log.push('DIAG pos-click: ' + await ev(`JSON.stringify({introHidden:document.querySelector('#screenIntro').classList.contains('hidden'),act:(document.querySelector('#act')||{}).innerHTML||'(sem #act)',travarRect:(function(){var e=document.querySelector('#travarA');if(!e)return null;var r=e.getBoundingClientRect();return [Math.round(r.width),Math.round(r.height)]})()})`));
+    log.push('entrou no jogo (travarA visivel): ' + await waitSel('#travarA'));
+    let rounds = 0;
+    for (let r = 0; r < 6; r++) {
+      if (!await waitSel('#travarA', 3000)) break;
+      await jsClick('#travarA'); await sleep(300);
+      if (!await waitSel('#travarB', 2000)) break;
+      await jsClick('#travarB'); await sleep(300);
+      if (await waitSel('#forjarBtn', 2000)) { for (let k = 0; k < 10; k++) { await jsClick('#forjarBtn'); await sleep(45); } }
+      rounds++;
+      if (r === 1) await shot('02_round');
+      await sleep(1000);
+    }
+    log.push('rodadas jogadas: ' + rounds);
+    const sc = await ev(`(()=>{var e=document.querySelector('#score');return e?e.textContent.trim():''})()`);
+    log.push('score apos jogar: "' + sc + '" (sobe se as forjas pontuaram)');
+    // espera o fim (pavio) ou forca: deixa rodar ate acabar o tempo seria 90s; checa estado parcial
+    await shot('03_midgame');
+  }
 
   if (game === 'centelha') {
     await shot('01_intro');
