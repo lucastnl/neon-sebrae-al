@@ -9,7 +9,7 @@
 <title>Forja de Ideias · Neon Sebrae AL</title>
 
 <meta property="og:title" content="Forja de Ideias · Que fazedor você é?" />
-<meta property="og:description" content="Empreender não tem resposta certa. Tome as decisões do seu jeito e descubra que tipo de fazedor você é e em que área de Alagoas você brilha. Sai com a sua Patente do Fazedor. Neon Sebrae AL 2026." />
+<meta property="og:description" content="Da forja sobem fagulhas de oportunidade. Pega as que te chamam, sem certo nem errado, e descubra que tipo de fazedor você é e onde você brilha em Alagoas. Neon Sebrae AL 2026." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://neon-sebrae-al.netlify.app/jogos/forja-de-ideias/" />
 <meta property="og:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
@@ -37,37 +37,40 @@ body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hi
 #stage{ position:fixed; top:50%; left:50%; width:540px; height:960px; transform:translate(-50%,-50%) scale(var(--fit,1)); transform-origin:center center; display:flex; flex-direction:column; overflow:hidden; background:var(--navy-deep); }
 
 .bg{ position:absolute; inset:0; z-index:0; background:
-  linear-gradient(180deg,var(--navy-deep) 0%,var(--navy) 55%,#241433 100%),
-  repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(0,249,255,.045) 40px),
-  repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(0,249,255,.045) 40px); }
-.bg::after{ content:''; position:absolute; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0,rgba(0,0,0,.14) 1px,transparent 1px,transparent 3px); mix-blend-mode:multiply; opacity:.45; }
-.embers{ position:absolute; left:0; right:0; bottom:0; height:42%; z-index:0; pointer-events:none; background:radial-gradient(120% 80% at 50% 120%, rgba(255,140,66,.22), transparent 60%); }
+  linear-gradient(180deg,var(--navy-deep) 0%,var(--navy) 50%,#2a1633 100%),
+  repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(0,249,255,.04) 40px),
+  repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(0,249,255,.04) 40px); }
+.bg::after{ content:''; position:absolute; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0,rgba(0,0,0,.14) 1px,transparent 1px,transparent 3px); mix-blend-mode:multiply; opacity:.4; }
 
-.flash{ animation:flash .25s; } @keyframes flash{ 0%,100%{filter:none} 50%{filter:brightness(1.8)} }
+.flash{ animation:flash .25s; } @keyframes flash{ 0%,100%{filter:none} 50%{filter:brightness(1.7)} }
 
-/* HUD: progresso da forja */
-#hud{ position:relative; z-index:30; padding:14px 18px 6px; }
+/* HUD */
+#hud{ position:relative; z-index:30; padding:12px 16px 4px; background:linear-gradient(180deg,#05081f,transparent); }
 #hudtop{ display:flex; align-items:center; gap:10px; }
 .hl{ font-family:var(--mono); font-size:8px; color:var(--laranja); letter-spacing:1px; white-space:nowrap; }
-#forge{ flex:1; height:14px; border-radius:8px; background:#1a1f3e; border:1px solid rgba(255,255,255,.16); overflow:hidden; }
-#forge>i{ display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--vermelho),var(--laranja) 55%,var(--amarelo)); transition:width .4s ease; }
-#qnum{ font-family:var(--mono); font-size:9px; color:var(--amarelo); white-space:nowrap; }
+#timer{ flex:1; height:13px; border-radius:7px; background:#1a1f3e; border:1px solid rgba(255,255,255,.16); overflow:hidden; }
+#timer>i{ display:block; height:100%; width:100%; background:linear-gradient(90deg,var(--vermelho),var(--laranja) 55%,var(--amarelo)); transform-origin:left; transition:transform .2s linear; }
+#tnum{ font-family:var(--mono); font-size:12px; color:var(--amarelo); min-width:26px; text-align:right; text-shadow:0 0 8px var(--amarelo); }
+.low #tnum{ color:var(--vermelho); }
+#objective{ font-family:var(--mono); font-size:8px; line-height:1.5; color:var(--ciano); text-align:center; margin-top:8px; min-height:11px; text-shadow:0 0 6px var(--ciano); }
 
-/* BANCADA / quiz */
-#bancada{ position:relative; z-index:20; flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding:16px 22px; }
-#qcard{ width:100%; max-width:450px; text-align:center; }
-#qcard .qk{ font-family:var(--mono); font-size:7px; letter-spacing:1px; color:var(--ciano); margin-bottom:12px; }
-#qcard .qem{ font-size:44px; display:block; margin-bottom:10px; }
-#qcard .qt{ font-size:18px; font-weight:700; line-height:1.4; color:#fff; }
-#opts{ width:100%; max-width:450px; display:flex; flex-direction:column; gap:11px; }
-.opt{ width:100%; text-align:left; background:rgba(0,249,255,.05); border:2px solid rgba(0,249,255,.3); border-radius:14px; padding:15px 16px; color:#fff; font-size:14.5px; line-height:1.35; cursor:pointer; transition:transform .1s,background .15s,border-color .15s; }
-.opt:active{ transform:scale(.98); }
-.opt:hover{ background:rgba(0,249,255,.1); border-color:var(--ciano); }
-.opt.pick{ background:rgba(255,217,61,.16); border-color:var(--amarelo); }
-.opt.dim{ opacity:.25; pointer-events:none; }
+/* CAMPO de fagulhas */
+#field{ position:relative; z-index:20; flex:1; min-height:0; overflow:hidden; }
+.ember{ position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; width:96px; height:96px; border-radius:50%; border:2px solid currentColor; background:rgba(10,15,54,.55); cursor:pointer; will-change:transform; box-shadow:0 0 16px currentColor; }
+.ember .ee{ font-size:34px; line-height:1; }
+.ember .el{ font-family:var(--mono); font-size:6.5px; letter-spacing:.5px; color:#fff; text-align:center; }
+.ember.caught{ animation:caught .3s ease-out forwards; pointer-events:none; }
+@keyframes caught{ 0%{transform:scale(1);opacity:1} 100%{transform:scale(.2) translateY(80px);opacity:0} }
 
-#spark{ position:absolute; left:50%; top:42%; z-index:40; transform:translate(-50%,-50%); font-size:40px; opacity:0; pointer-events:none; }
-#spark.go{ animation:spark .45s ease-out; }
+/* forja na base */
+#forja{ position:relative; z-index:22; height:78px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:6px 18px 10px; }
+#forja .anvil{ font-size:30px; filter:drop-shadow(0 0 14px var(--laranja)); }
+#heatbar{ width:100%; max-width:430px; height:14px; border-radius:8px; background:#1a1f3e; border:1px solid rgba(255,255,255,.16); overflow:hidden; }
+#heatbar>i{ display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--laranja),var(--amarelo)); transition:width .25s ease; }
+#caught{ font-family:var(--mono); font-size:8px; color:var(--amarelo); }
+
+#spark{ position:absolute; left:50%; top:50%; z-index:40; transform:translate(-50%,-50%); font-size:40px; opacity:0; pointer-events:none; }
+#spark.go{ animation:spark .4s ease-out; }
 @keyframes spark{ 0%{opacity:1;transform:translate(-50%,-50%) scale(.6)} 100%{opacity:0;transform:translate(-50%,-130%) scale(1.4)} }
 
 /* TELAS */
@@ -89,7 +92,12 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
 .namepick .na{ width:52px; height:30px; border:1px solid rgba(0,249,255,.35); border-radius:8px; background:rgba(0,249,255,.08); color:var(--ciano); font-size:13px; cursor:pointer; }
 .namepick .na:active{ transform:scale(.92); }
 
-/* PATENTE DO FAZEDOR (resultado) */
+/* legenda das 4 vibes na intro */
+.vibes{ display:grid; grid-template-columns:1fr 1fr; gap:8px; max-width:330px; margin:4px 0 16px; }
+.vibe{ display:flex; align-items:center; gap:8px; font-size:11.5px; color:rgba(255,255,255,.8); background:rgba(255,255,255,.04); border-radius:10px; padding:8px 10px; }
+.vibe b{ font-size:20px; }
+
+/* PATENTE DO FAZEDOR */
 .patente{ background:linear-gradient(160deg,#0a0f36,#241433); border:2px solid var(--amarelo); border-radius:20px; padding:24px 22px; max-width:380px; width:100%; box-shadow:0 0 40px rgba(255,217,61,.3); }
 .patente .selo-top{ font-family:var(--mono); font-size:8px; letter-spacing:2px; color:var(--laranja); margin-bottom:12px; }
 .patente .em{ font-size:52px; margin-bottom:6px; }
@@ -106,7 +114,7 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
 .tags{ font-family:var(--mono); font-size:8px; color:var(--magenta-claro); margin-top:10px; letter-spacing:1px; }
 .curadoria{ position:fixed; bottom:4px; left:0; right:0; text-align:center; font-size:8px; color:rgba(255,255,255,.26); z-index:85; font-family:var(--mono); }
 #err{ position:fixed; top:0; left:0; right:0; background:#b00020; color:#fff; padding:10px; font:11px/1.4 monospace; z-index:9999; white-space:pre-wrap; display:none; }
-.toast{ position:fixed; left:50%; top:30%; transform:translate(-50%,-50%); z-index:88; font-family:var(--mono); font-size:16px; color:var(--amarelo); text-shadow:0 0 16px var(--amarelo); pointer-events:none; opacity:0; text-align:center; }
+.toast{ position:fixed; left:50%; top:28%; transform:translate(-50%,-50%); z-index:88; font-family:var(--mono); font-size:16px; color:var(--amarelo); text-shadow:0 0 16px var(--amarelo); pointer-events:none; opacity:0; text-align:center; }
 .toast.show{ animation:toast 1s ease; }
 @keyframes toast{ 0%{opacity:0;transform:translate(-50%,-30%) scale(.7)} 25%{opacity:1;transform:translate(-50%,-50%) scale(1.1)} 70%{opacity:1} 100%{opacity:0;transform:translate(-50%,-60%)} }
 </style>
@@ -118,20 +126,23 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
 
 <div id="stage">
   <div class="bg"></div>
-  <div class="embers"></div>
 
   <div id="hud">
     <div id="hudtop">
-      <span class="hl">FORJANDO</span>
-      <div id="forge"><i></i></div>
-      <span id="qnum">1/6</span>
+      <span class="hl">FORJA</span>
+      <div id="timer"><i></i></div>
+      <span id="tnum">35</span>
     </div>
+    <div id="objective"></div>
   </div>
 
-  <div id="bancada">
-    <div id="qcard"><div class="qk">DECIDE DO SEU JEITO · NÃO TEM ERRADO</div><span class="qem">🔨</span><div class="qt">…</div></div>
-    <div id="opts"></div>
-    <div id="spark">✦</div>
+  <div id="field"></div>
+  <div id="spark">✦</div>
+
+  <div id="forja">
+    <span class="anvil">🔥</span>
+    <div id="heatbar"><i></i></div>
+    <div id="caught">0 oportunidades na forja</div>
   </div>
 
   <!-- INTRO -->
@@ -142,8 +153,14 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
       <img class="logo-tnl" src="../../assets/logo-tnl-h.png" alt="Tiro na Lua" onerror="this.style.display='none'"/>
     </div>
     <h1 class="title">FORJA<br>DE IDEIAS</h1>
-    <p class="tagline">Empreender não tem resposta certa. Tem o seu jeito.</p>
-    <div class="howto">Seis decisões de quem empreende em Alagoas. Não tem certo nem errado: escolhe do <b>seu jeito</b>. No fim, a forja revela <b>que tipo de fazedor você é</b> e onde você brilharia.</div>
+    <p class="tagline">Da forja sobem oportunidades. Pega as que te chamam.</p>
+    <div class="howto">Não tem certo nem errado: agarra rápido o que combina com você. O que você pega revela <b>que tipo de fazedor você é</b>.</div>
+    <div class="vibes">
+      <div class="vibe"><b>💡</b> criar o novo</div>
+      <div class="vibe"><b>🔨</b> pôr a mão</div>
+      <div class="vibe"><b>🤝</b> juntar gente</div>
+      <div class="vibe"><b>🌳</b> a raiz daqui</div>
+    </div>
     <div class="namepick" id="namepick"></div>
     <button class="btn" id="startBtn">ACENDER A FORJA</button>
   </div>
@@ -153,7 +170,7 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
 
 </div>
 
-<div class="curadoria">PROTÓTIPO v3 · perfis e curiosidades de Alagoas a validar com o Sebrae AL</div>
+<div class="curadoria">PROTÓTIPO v4 · perfis e curiosidades de Alagoas a validar com o Sebrae AL</div>
 
 <script>
 window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))return; var el=document.getElementById('err'); if(!el)return; el.style.display='block'; el.textContent+='⚠ '+(e.message||e)+' ('+((e.filename||'').split('/').pop())+':'+e.lineno+')\n'; });
@@ -162,112 +179,127 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
   'use strict';
   var $=function(s,r){return (r||document).querySelector(s);};
 
-  // ---------- arquétipos de fazedor ----------
+  // ---------- arquétipos ----------
   var ARQ={
-    inventor: { nm:'O INVENTOR', em:'💡', cor:'var(--ciano)',
+    inventor: { nm:'O INVENTOR', em:'💡', cor:'var(--ciano)', col:'#00F9FF',
       desc:'Onde os outros veem barreira, você vê um jeito que ninguém tentou. Sua força é a ideia nova.',
       area:'INOVAÇÃO E TECNOLOGIA',
       ideia:'um app ou um invento que resolve uma dor de Alagoas de um jeito inédito',
       cur:'Maceió tem polos de tecnologia crescendo (como o Jaraguá), cheios de gente jovem criando startup.'},
-    mao: { nm:'A MÃO NA MASSA', em:'🔨', cor:'var(--laranja)',
+    mao: { nm:'A MÃO NA MASSA', em:'🔨', cor:'var(--laranja)', col:'#FF8C42',
       desc:'Você não fica só na ideia. Bota pra fazer, produto na mão, vendido hoje. Faz acontecer.',
       area:'PRODUÇÃO E ARTESANATO',
       ideia:'um produto feito à mão com a matéria-prima daqui, tipo renda filé, cerâmica ou comida da terra',
       cur:'A renda filé de Pontal da Barra tem selo de Indicação Geográfica do INPI, igual vinho e champagne têm o deles.'},
-    conector: { nm:'O CONECTOR', em:'🤝', cor:'var(--verde-claro)',
+    conector: { nm:'O CONECTOR', em:'🤝', cor:'var(--verde-claro)', col:'#00FF85',
       desc:'Você junta gente. Sabe que sozinho vai rápido, mas com os outros vai longe. Sua força é a rede.',
       area:'SERVIÇOS, TURISMO E COLETIVOS',
       ideia:'uma cooperativa ou um serviço que conecta quem faz com quem precisa',
       cur:'Maragogi, o Caribe brasileiro, foi eleita a melhor cidade do Brasil pra turismo em 2025: tem gente chegando.'},
-    raiz: { nm:'O RAIZ', em:'🌳', cor:'var(--amarelo)',
+    raiz: { nm:'O RAIZ', em:'🌳', cor:'var(--amarelo)', col:'#FFD93D',
       desc:'Você tem orgulho do que Alagoas já é. Sua força é transformar tradição e saber local em negócio.',
       area:'CULTURA, GASTRONOMIA E CAMPO',
       ideia:'um negócio que valoriza um saber, um sabor ou um folguedo bem alagoano',
-      cur:'O sururu da Lagoa Mundaú é Patrimônio Cultural de Alagoas e move a economia de comunidades inteiras.'}
+      cur:'O sururu da Lagoa Mundaú é Patrimônio Cultural de Alagoas e move a economia de comunidades inteiras.'},
+    completo: { nm:'O FAZEDOR COMPLETO', em:'🌟', cor:'var(--magenta-claro)', col:'#FF76FF',
+      desc:'Você enxerga oportunidade em tudo: cria, faz, junta e valoriza a raiz. Versátil que nem poucos.',
+      area:'VOCÊ TRANSITA POR TODAS',
+      ideia:'um negócio que mistura inovação, mão na massa, rede e tradição alagoana',
+      cur:'Os maiores fazedores de Alagoas combinam tudo isso: pé na tradição e cabeça no novo.'}
   };
-  var ORDEM=['inventor','mao','conector','raiz'];
-
-  // ---------- 6 decisões (sem certo/errado) ----------
-  var Q=[
-    { em:'💰', t:'Você tem R$100 e uma ideia. O primeiro passo?', o:[
-      {t:'Vendo pra alguém hoje, nem que seja improvisado', a:'mao'},
-      {t:'Chamo gente pra topar a ideia comigo', a:'conector'},
-      {t:'Penso num jeito que ninguém fez ainda', a:'inventor'},
-      {t:'Aposto no que já dá certo aqui na região', a:'raiz'} ]},
-    { em:'🏘️', t:'Um problema do seu bairro te incomoda. Você...', o:[
-      {t:'já vai resolvendo com as suas mãos', a:'mao'},
-      {t:'junta a vizinhança pra resolver junto', a:'conector'},
-      {t:'inventa uma solução diferente de tudo', a:'inventor'},
-      {t:'busca como o povo daqui sempre resolveu', a:'raiz'} ]},
-    { em:'✨', t:'O que mais te empolga numa ideia?', o:[
-      {t:'Ela ser a primeira, nunca vista', a:'inventor'},
-      {t:'Ver ela pronta, funcionando de verdade', a:'mao'},
-      {t:'Ela crescer com mais gente junto', a:'conector'},
-      {t:'Ela ter a cara de Alagoas', a:'raiz'} ]},
-    { em:'🥥', t:'Te dão um coco. Você pensa logo em...', o:[
-      {t:'água de coco gelada pra vender já', a:'mao'},
-      {t:'um produto novo que ninguém fez com coco', a:'inventor'},
-      {t:'reunir os produtores numa marca só', a:'conector'},
-      {t:'a feira, a tradição, o coco da terra', a:'raiz'} ]},
-    { em:'🔁', t:'Deu errado na primeira tentativa. Você...', o:[
-      {t:'tenta de um jeito totalmente diferente', a:'inventor'},
-      {t:'bota a mão de novo, ajusta e refaz', a:'mao'},
-      {t:'pede ajuda de quem manja', a:'conector'},
-      {t:'volta pro básico que sempre funciona', a:'raiz'} ]},
-    { em:'🚀', t:'Seu sonho é um negócio que...', o:[
-      {t:'muda o jogo, inova de verdade', a:'inventor'},
-      {t:'vive do trabalho das suas mãos', a:'mao'},
-      {t:'gera renda pra muita gente', a:'conector'},
-      {t:'leva o nome de Alagoas longe', a:'raiz'} ]}
-  ];
+  var OPP={
+    inventor:{ em:'💡', col:'#00F9FF', labels:['IDEIA NOVA','NUNCA VISTO','UM JEITO NOVO','INVENTAR'] },
+    mao:{ em:'🔨', col:'#FF8C42', labels:['PÔR A MÃO','VENDER HOJE','FAZER JÁ','NA FEIRA'] },
+    conector:{ em:'🤝', col:'#00FF85', labels:['JUNTAR GENTE','PARCERIA','EM REDE','COOPERAR'] },
+    raiz:{ em:'🌳', col:'#FFD93D', labels:['RAIZ DAQUI','TRADIÇÃO','SABOR DA TERRA','NOSSO'] }
+  };
+  var KEYS=['inventor','mao','conector','raiz'];
 
   // ---------- estado ----------
   var ALPHA='ABCDEFGHIJKLMNOPQRSTUVWXYZ', nameIdx=[0,0,0];
   var S={};
-  function reset(){ S={ nome:'???', qi:0, tally:{inventor:0,mao:0,conector:0,raiz:0}, locked:false, running:false, _idle:performance.now() }; }
+  function reset(){ S={ nome:'???', dur:35, restante:35, raf:0, last:0, running:false, embers:[], spawnT:0, tally:{inventor:0,mao:0,conector:0,raiz:0}, caught:0, heat:0, fase:1, _idle:performance.now() }; }
   reset();
 
   // ---------- audio ----------
   var actx=null; function ac(){ if(!actx){try{actx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}} return actx; }
   function beep(f,d,t,v){ var c=ac(); if(!c)return; var o=c.createOscillator(),g=c.createGain(); o.type=t||'square'; o.frequency.value=f; g.gain.value=v||.05; o.connect(g); g.connect(c.destination); var n=c.currentTime; o.start(n); g.gain.exponentialRampToValueAtTime(.0001,n+(d||.12)); o.stop(n+(d||.12)+.02); }
   function sTick(){beep(520,.03,'square',.025);}
-  function sPick(){beep(440,.07,'square',.05);setTimeout(function(){beep(700,.1,'square',.05);},55);}
+  function sCatch(){beep(660,.05,'square',.05);setTimeout(function(){beep(990,.08,'triangle',.05);},35);}
   function sForge(){[220,330,440,660,880].forEach(function(f,i){setTimeout(function(){beep(f,.12,'triangle',.06);},i*70);});}
   function sWin(){[523,659,784,1046,1318,1568].forEach(function(f,i){setTimeout(function(){beep(f,.16,'triangle',.06);},i*100);});}
 
   function rint(n){return Math.floor(Math.random()*n);}
-  function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=rint(i+1),t=a[i];a[i]=a[j];a[j]=t;}return a;}
   function flashIt(el){el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');}
   function toast(t){var e=$('#toast');e.textContent=t;e.classList.remove('show');void e.offsetWidth;e.classList.add('show');}
-  function spark(){ var s=$('#spark'); s.classList.remove('go'); void s.offsetWidth; s.classList.add('go'); }
+  function spark(x,y){ var s=$('#spark'); s.style.left=x+'px'; s.style.top=y+'px'; s.classList.remove('go'); void s.offsetWidth; s.classList.add('go'); }
+  function setObjective(t){ $('#objective').textContent=t; }
 
-  function showQ(){
-    S.locked=false;
-    var q=Q[S.qi];
-    $('#qnum').textContent=(S.qi+1)+'/'+Q.length;
-    $('#forge>i').style.width=Math.round((S.qi/Q.length)*100)+'%';
-    $('#qcard').innerHTML='<div class="qk">DECIDE DO SEU JEITO · NÃO TEM ERRADO</div><span class="qem">'+q.em+'</span><div class="qt">'+q.t+'</div>';
-    var html=''; q.o.forEach(function(op,k){ html+='<button class="opt" data-a="'+op.a+'" data-k="'+k+'">'+op.t+'</button>'; });
-    $('#opts').innerHTML=html;
-    Array.prototype.slice.call(document.querySelectorAll('#opts .opt')).forEach(function(b){ b.onclick=function(){ pick(b.getAttribute('data-a'), b); }; });
+  function renderHUD(){
+    var frac=Math.max(0,S.restante/S.dur);
+    $('#timer>i').style.transform='scaleX('+frac+')';
+    $('#tnum').textContent=Math.ceil(S.restante);
+    $('#stage').classList.toggle('low', S.restante<=8);
   }
-  function pick(a, btn){
-    if(S.locked)return; S.locked=true;
-    S.tally[a]++;
-    Array.prototype.slice.call(document.querySelectorAll('#opts .opt')).forEach(function(b){ if(b!==btn) b.classList.add('dim'); }); btn.classList.add('pick');
-    spark(); sPick(); flashIt($('#qcard'));
-    S.qi++;
-    $('#forge>i').style.width=Math.round((S.qi/Q.length)*100)+'%';
-    setTimeout(function(){ if(S.qi>=Q.length) forge(); else showQ(); }, 620);
+
+  // ---------- fagulhas ----------
+  function spawn(){
+    var field=$('#field'), h=field.clientHeight||600, w=field.clientWidth||500;
+    var k=KEYS[rint(KEYS.length)], opp=OPP[k], lab=opp.labels[rint(opp.labels.length)];
+    var el=document.createElement('div'); el.className='ember'; el.style.color=opp.col;
+    el.innerHTML='<span class="ee">'+opp.em+'</span><span class="el">'+lab+'</span>';
+    var x=10+rint(Math.max(1,w-110)); var y=h+10;
+    var vy = S.fase===1?(120+rint(40)):(S.fase===2?(165+rint(55)):(215+rint(75)));
+    var drift=(rint(2)?1:-1)*(8+rint(16));
+    el.style.left=x+'px'; el.style.top=y+'px';
+    field.appendChild(el);
+    var em={el:el, x:x, y:y, vy:vy, drift:drift, k:k, dead:false};
+    el.onclick=function(){ catchE(em); };
+    S.embers.push(em);
   }
+  function catchE(em){
+    if(em.dead)return; em.dead=true;
+    S.tally[em.k]++; S.caught++;
+    S.heat=Math.min(100, S.heat+7); $('#heatbar>i').style.width=S.heat+'%';
+    $('#caught').textContent=S.caught+(S.caught===1?' oportunidade na forja':' oportunidades na forja');
+    var r=em.el.getBoundingClientRect(), fr=$('#field').getBoundingClientRect();
+    spark(em.x+48, em.y-30);
+    em.el.classList.add('caught'); sCatch();
+    setTimeout(function(){ if(em.el&&em.el.parentNode) em.el.parentNode.removeChild(em.el); }, 300);
+    if(S.heat>=100 && !S._hot){ S._hot=true; toast('FORJA NO MÁXIMO!'); }
+  }
+
+  function tick(ts){
+    if(!S.running)return;
+    if(!S.last)S.last=ts;
+    var dt=Math.min(0.05,(ts-S.last)/1000); S.last=ts;
+    S.restante-=dt; if(S.restante<=0){ S.restante=0; renderHUD(); return forge(); }
+    S.fase = S.restante>23?1:(S.restante>11?2:3);
+    // sobe as fagulhas
+    for(var i=S.embers.length-1;i>=0;i--){ var em=S.embers[i];
+      if(em.dead){ S.embers.splice(i,1); continue; }
+      em.y-=em.vy*dt; em.x+=em.drift*dt;
+      em.el.style.top=em.y+'px'; em.el.style.left=em.x+'px';
+      if(em.y< -110){ if(em.el.parentNode) em.el.parentNode.removeChild(em.el); S.embers.splice(i,1); }
+    }
+    // spawn
+    S.spawnT+=dt*1000;
+    var interval = S.fase===1?780:(S.fase===2?560:420);
+    var maxOn = S.fase===1?3:(S.fase===2?4:5);
+    if(S.spawnT>=interval && S.embers.length<maxOn){ S.spawnT=0; spawn(); if(S.fase===3 && rint(2)) spawn(); }
+    renderHUD(); S.raf=requestAnimationFrame(tick);
+  }
+
+  // ---------- forja / resultado ----------
   function vencedor(){
-    var max=-1, tops=[];
-    ORDEM.forEach(function(k){ var v=S.tally[k]; if(v>max){ max=v; tops=[k]; } else if(v===max){ tops.push(k); } });
-    return tops[rint(tops.length)]; // empate: sorteia entre os mais altos
+    if(S.caught===0) return 'completo';
+    var max=-1, top=null, total=0; KEYS.forEach(function(k){ total+=S.tally[k]; if(S.tally[k]>max){max=S.tally[k];top=k;} });
+    return (max/total>=0.45)?top:'completo';
   }
   function forge(){
-    $('#qcard').innerHTML='<span class="qem">🔥</span><div class="qt">Forjando seu perfil...</div>';
-    $('#opts').innerHTML=''; $('#forge>i').style.width='100%'; sForge(); toast('FORJANDO...');
+    S.running=false; cancelAnimationFrame(S.raf);
+    S.embers.forEach(function(em){ if(em.el&&em.el.parentNode) em.el.parentNode.removeChild(em.el); }); S.embers=[];
+    setObjective('A forja acendeu...'); $('#heatbar>i').style.width='100%'; sForge(); toast('FORJANDO...');
     setTimeout(reveal, 1100);
   }
   function reveal(){
@@ -281,17 +313,17 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
       '<div class="area">'+a.area+'</div>'+
       '<div class="ideia">Um negócio com a sua cara: <b>'+a.ideia+'</b>.</div>'+
       '<div class="cur">'+a.cur+'</div>'+
-      '<div class="num">Nº '+num+' · '+S.nome+'</div>'+
+      '<div class="num">Nº '+num+' · '+S.nome+' · '+S.caught+' oportunidades forjadas</div>'+
       '</div>'+
-      '<div class="gancho">Não existe fazedor certo ou errado. Existe o <b>seu jeito</b> de tirar a ideia do papel, e Alagoas tem espaço pra todos eles. Agora é seguir na trilha do Escalada.</div>'+
+      '<div class="gancho">Não existe fazedor certo ou errado. Existe o <b>seu jeito</b> de enxergar oportunidade, e Alagoas tem espaço pra todos eles. Agora é seguir na trilha do Escalada.</div>'+
       '<div class="tags">#ToNoNeon #EscaladaSebrae @sebraealagoas</div>'+
-      '<button class="btn" id="replayBtn" style="margin-top:18px">FAZER DE NOVO</button>'+
+      '<button class="btn" id="replayBtn" style="margin-top:18px">FORJAR DE NOVO</button>'+
       '<button class="btn sec" onclick="location.href=\'/hub/\'">◂ VOLTAR AO HUB</button>';
     persist(key);
     $('#replayBtn').onclick=start;
     $('#screenEnd').classList.remove('hidden'); sWin();
   }
-  function persist(key){ try{var k='neon-forja-perfis';var a=JSON.parse(localStorage.getItem(k)||'[]');a.push({nome:S.nome,perfil:key,ts:new Date().toISOString()});localStorage.setItem(k,JSON.stringify(a.slice(-500)));}catch(e){} }
+  function persist(key){ try{var k='neon-forja-perfis';var a=JSON.parse(localStorage.getItem(k)||'[]');a.push({nome:S.nome,perfil:key,caught:S.caught,ts:new Date().toISOString()});localStorage.setItem(k,JSON.stringify(a.slice(-500)));}catch(e){} }
 
   // ---------- seletor de nome ----------
   function buildNamePick(){
@@ -309,18 +341,25 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
 
   // ---------- start ----------
   function start(){
-    ac(); var nome=lerNome(); reset(); S.nome=nome; S.running=true;
+    if(S.raf) cancelAnimationFrame(S.raf);
+    ac(); var nome=lerNome(); $('#field').innerHTML=''; reset(); S.nome=nome; S.running=true;
+    $('#stage').classList.remove('low'); $('#heatbar>i').style.width='0%'; S._hot=false;
+    $('#caught').textContent='0 oportunidades na forja';
     $('#screenIntro').classList.add('hidden'); $('#screenEnd').classList.add('hidden');
-    showQ();
+    setObjective('Pega as fagulhas que te chamam!');
+    renderHUD();
+    spawn(); spawn();   // já começa com fagulhas na tela
+    S.raf=requestAnimationFrame(tick);
   }
   $('#startBtn').onclick=start;
-  buildNamePick();
+  buildNamePick(); renderHUD();
 
   // idle/attract reset
   ['pointerdown','touchstart','keydown'].forEach(function(e){ window.addEventListener(e,function(){ S._idle=performance.now(); },{passive:true}); });
   setInterval(function(){
     if(performance.now()-S._idle>60000 && $('#screenIntro').classList.contains('hidden') && $('#screenEnd').classList.contains('hidden')){
       S._idle=performance.now();
+      if(S.raf) cancelAnimationFrame(S.raf); S.running=false; $('#field').innerHTML='';
       $('#screenEnd').classList.add('hidden'); $('#screenIntro').classList.remove('hidden');
     }
   }, 5000);
@@ -332,7 +371,7 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
     var m=location.search.match(/dev=(\w+)/); if(!m)return; ac=function(){return null;};
     var v=m[1];
     if(v==='play'){ start(); }
-    else if(v==='end'){ reset(); S.nome='LUC'; S.tally={inventor:1,mao:3,conector:1,raiz:1}; reveal(); }
+    else if(v==='end'){ reset(); S.nome='LUC'; S.tally={inventor:1,mao:4,conector:2,raiz:1}; S.caught=8; reveal(); }
   })();
 })();
 </script>
