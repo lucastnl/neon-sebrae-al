@@ -177,6 +177,22 @@ body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hi
 .key:active{ transform:scale(.94); }
 .key.wide{ grid-column:span 1; color:var(--vermelho); }
 
+/* cofre: puzzle de ordem (Graciliano) */
+.ord-slots{ display:flex; gap:10px; justify-content:center; margin-bottom:16px; }
+.ord-slot{ position:relative; width:60px; height:66px; border:2px dashed rgba(255,255,255,.22); border-radius:12px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.03); }
+.ord-slot.fill{ border-style:solid; border-color:var(--amarelo); background:rgba(255,217,61,.08); }
+.ord-slot .osn{ position:absolute; top:-9px; left:50%; transform:translateX(-50%); font-family:var(--mono); font-size:7px; color:var(--ciano); background:#070b22; padding:1px 5px; border-radius:6px; }
+.ord-slot img{ image-rendering:pixelated; border-radius:4px; }
+.ord-cards{ display:flex; gap:10px; justify-content:center; margin-bottom:12px; }
+.ord-card{ flex:1; max-width:104px; display:flex; flex-direction:column; align-items:center; gap:3px; background:rgba(0,249,255,.06); border:2px solid rgba(0,249,255,.3); border-radius:12px; padding:9px 5px; cursor:pointer; transition:transform .1s,opacity .2s,border-color .2s; }
+.ord-card:active{ transform:scale(.95); }
+.ord-card.used{ opacity:.25; pointer-events:none; }
+.ord-card .oc-ret{ width:52px; height:52px; display:flex; align-items:center; justify-content:center; }
+.ord-card .oc-ret img{ image-rendering:pixelated; }
+.ord-card .oc-nm{ font-family:var(--mono); font-size:7.5px; color:#fff; }
+.ord-card .oc-ano{ font-family:var(--mono); font-size:11px; color:var(--amarelo); text-shadow:0 0 8px var(--amarelo); }
+.ord-clr{ display:block; margin:0 auto; font-family:var(--mono); font-size:9px; color:var(--ciano); background:transparent; border:1px solid rgba(0,249,255,.35); border-radius:8px; padding:9px 14px; cursor:pointer; }
+
 /* fechadura */
 .tumblers{ display:flex; flex-direction:column; gap:12px; margin-bottom:16px; }
 .tumb{ position:relative; height:28px; border-radius:8px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); overflow:hidden; opacity:.4; }
@@ -312,7 +328,7 @@ h1.title{ font-family:var(--mono); font-size:clamp(19px,7vw,28px); line-height:1
       <div class="obj" id="radio"><div class="set"><div class="spk"></div><div class="kn"></div></div><div class="legs"></div><span class="lbl">RÁDIO</span></div>
       <div class="obj" id="porta"><div class="leaf"></div><div class="seam"></div><div class="lock"></div><div class="glow"></div><span class="lbl">PORTA</span></div>
 
-      <div id="chips"><div class="chip" data-i="0">⚡</div><div class="chip" data-i="1">🔢</div><div class="chip" data-i="2">🚪</div></div>
+      <div id="chips"><div class="chip" data-i="0">⚡</div><div class="chip" data-i="1">📖</div><div class="chip" data-i="2">🚪</div></div>
       <div id="dark"></div>
     </div>
   </div>
@@ -375,7 +391,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
   var S={};
   function reset(){ S={ nome:'???', score:0, combo:0, comboMax:0, erros:0, dicas:0,
     dur:90, restante:90, raf:0, last:0, running:false, state:'fios',
-    powered:false, senha:[], achados:[null,null,null], safeOpen:false, hasGazua:false, done:[false,false,false],
+    powered:false, done:[false,false,false],
     marker:0, mdir:1, mspeed:0.85, fechIdx:0, zones:[], paused:false, escolhido:'' }; }
   reset();
 
@@ -504,85 +520,72 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     S.done[0]=true; S.powered=true; chipDone(0); sPow();
     closeOv(); $('#room').classList.add('lit'); flashIt($('#scene')); addScore(400); ok();
     S.state='room';
-    setObjective('A luz acendeu! Toca nos objetos que piscam pra achar os 3 números.');
-    // senha sorteada (ordem e dígitos mudam a cada partida)
-    S.senha=shuffle(FIGS).map(function(f){var d=rint(10);return {fig:f,dg:d};});
-    ['radio','estante','retrato'].forEach(function(o){ obj(o).classList.add('glowme'); });
+    // o quadro some revelando o cofre do Graciliano (estacao visivel, sem catar nada)
+    $('#quadro').style.transition='opacity .5s,transform .5s'; $('#quadro').style.opacity='0'; $('#quadro').style.transform='translateX(-50%) scale(.9)';
+    setTimeout(function(){ $('#quadro').style.display='none'; },520);
+    $('#cofre').classList.add('show','glowme');
+    setObjective('A luz acendeu! Apareceu um cofre. Toca nele pra resolver com o Graciliano.');
     aparicao('hermeto', 'A <b>criatividade</b> do Hermeto religou a luz da sala.');
   }
 
   // =========================================================
-  //  VASCULHAR · objetos revelam pista + dígito
+  //  ESTAÇÃO 2 · COFRE (Graciliano) -> puzzle de ORDEM
   // =========================================================
-  function tapClue(figName){
-    if(!S.powered){ toast('TÁ ESCURO...'); return; }
-    var idx=-1; for(var i=0;i<S.senha.length;i++){ if(S.senha[i].fig.obj===figName) idx=i; }
-    if(idx<0) return;
-    S.achados[idx]=S.senha[idx].dg; obj(figName).classList.add('found'); obj(figName).classList.remove('glowme'); sRev();
-    if(S.achados.filter(function(x){return x!==null;}).length===3){ obj('quadro').classList.add('glowme'); setObjective('Achou os 3 números! Toca no QUADRO grande pra achar o cofre.'); }
-    var s=S.senha[idx];
-    openOv('VASCULHANDO', '<div class="clue"><div class="fig"><span class="ic">'+retrato(s.fig)+'</span><div><div class="nm">'+s.fig.nm+'</div><div class="ft">'+s.fig.ft+'</div></div><span class="dg">'+s.dg+'</span></div></div><div class="ovd" style="margin-top:14px">Anota: esse número entra na senha do cofre. <b>Acha os 3.</b></div>');
-  }
-
-  // =========================================================
-  //  ESTAÇÃO 2 · QUADRO -> COFRE (keypad)
-  // =========================================================
-  function openQuadro(){
-    if(!S.powered){ toast('TÁ ESCURO...'); return; }
-    if(!$('#cofre').classList.contains('show')){
-      $('#quadro').style.transition='transform .4s'; $('#quadro').style.transform='translateX(calc(-50% - 120px))';
-      $('#quadro').classList.remove('glowme'); $('#cofre').classList.add('show','glowme'); sC(); toast('UM COFRE!'); setObjective('Um cofre! Toca nele e digita os 3 números.');
-      return;
-    }
-    openCofre();
-  }
+  var ANOS={ hermeto:1936, graciliano:1892, marta:1986 };
   function openCofre(){
+    if(!S.powered){ toast('TÁ ESCURO...'); return; }
     if(S.done[1]){ toast('COFRE JÁ ABERTO'); return; }
     makerIntro('graciliano', runCofre);
   }
   function runCofre(){
     S.state='cofre'; $('#cofre').classList.remove('glowme');
-    var got=S.achados.filter(function(x){return x!==null;}).length;
-    var hint=S.senha.map(function(s,i){ return '<div class="sh">'+s.fig.ic+'<small>'+(S.achados[i]!==null?'✓':'?')+'</small></div>'; }).join('');
-    var entered=[];
-    var html='<div class="ovd">Digita os 3 números <b>na ordem dos ícones abaixo</b>. Tá vendo "?" em algum? Fecha e toca no rádio, na estante e no retrato pra achar.</div>'+
-      '<div class="senha-hint">'+hint+'</div>'+
-      '<div class="disp" id="disp"><div class="dcell"></div><div class="dcell"></div><div class="dcell"></div></div>'+
-      '<div class="keypad" id="keypad">'+[1,2,3,4,5,6,7,8,9].map(function(k){return '<button class="key">'+k+'</button>';}).join('')+'<button class="key wide" id="clr">C</button><button class="key">0</button><button class="key" id="okk">OK</button></div>';
-    openOv('COFRE · DIGITA A SENHA', html);
-    function refresh(){ var cells=$$('#disp .dcell'); cells.forEach(function(c,i){ c.textContent=entered[i]!=null?entered[i]:''; c.classList.toggle('fill',entered[i]!=null); }); }
-    $$('#keypad .key').forEach(function(b){ b.onclick=function(){
-      var t=b.textContent;
-      if(b.id==='clr'){ entered=[]; sC(); refresh(); return; }
-      if(b.id==='okk'){ checar(); return; }
-      if(entered.length<3){ entered.push(parseInt(t,10)); sC(); refresh(); if(entered.length===3) checar(); }
-    };});
-    function checar(){
-      if(entered.length<3) return;
-      var alvo=S.senha.map(function(s){return s.dg;});
-      if(entered.join('')===alvo.join('')){
-        S.done[1]=true; S.safeOpen=true; S.hasGazua=true; chipDone(1); $('#cofre').classList.add('open'); addScore(500); ok(); boost(2);
-        aparicao('graciliano', 'O <b>método</b> do Graciliano abriu o cofre.');
-        openOv('COFRE ABERTO 🔓', '<div class="clue"><div class="fig" style="border-color:var(--verde-claro);background:rgba(0,255,133,.08)"><span class="ic">🗝️</span><div><div class="nm" style="color:var(--verde-claro)">A GAZUA</div><div class="ft">Dentro do cofre tinha a gazua pra abrir a porta. Agora vai na porta.</div></div></div></div><div class="ovd" style="margin-top:14px"><b>Toca na PORTA</b> pra arrombar a fechadura.</div>');
-        setObjective('Pegou a gazua! Vai na porta e arromba a fechadura.');
-      } else { entered=[]; refresh(); fail(4); toast('SENHA ERRADA'); }
+    var alvo=FIGS.slice().sort(function(a,b){return ANOS[a.key]-ANOS[b.key];}); // cronologico
+    var baralho=shuffle(FIGS), seq=[];
+    function html(){
+      var slots='';
+      for(var i=0;i<3;i++){ var f=seq[i]?figByKey(seq[i]):null;
+        slots+='<div class="ord-slot'+(f?' fill':'')+'"><span class="osn">'+(i+1)+'º</span>'+(f?retrato(f,40):'')+'</div>'; }
+      var cards=baralho.map(function(f){ var used=seq.indexOf(f.key)>=0;
+        return '<button class="ord-card'+(used?' used':'')+'" data-k="'+f.key+'"><span class="oc-ret">'+retrato(f,52)+'</span><span class="oc-nm">'+f.nm+'</span><span class="oc-ano">'+ANOS[f.key]+'</span></button>'; }).join('');
+      return '<div class="ovd">O método é pôr em ordem. Toca nos três alagoanos <b>do mais antigo pro mais novo</b> (olha o ano de nascimento).</div>'+
+        '<div class="ord-slots">'+slots+'</div>'+
+        '<div class="ord-cards">'+cards+'</div>'+
+        '<button class="ord-clr" id="ordClr">↺ recomeçar</button>';
     }
+    function render(){
+      openOv('COFRE · A ORDEM DO GRACILIANO', html());
+      $$('#ov .ord-card').forEach(function(b){ b.onclick=function(){ var k=b.getAttribute('data-k'); if(seq.indexOf(k)>=0)return; seq.push(k); sC(); render(); }; });
+      var c=$('#ordClr'); if(c) c.onclick=function(){ seq=[]; sC(); render(); };
+      if(seq.length===3) setTimeout(checar,260);
+    }
+    function checar(){
+      var certo = seq[0]===alvo[0].key && seq[1]===alvo[1].key && seq[2]===alvo[2].key;
+      if(certo){
+        S.done[1]=true; chipDone(1); $('#cofre').classList.add('open'); $('#porta').classList.add('glowme'); addScore(500); ok(); boost(2);
+        setObjective('Cofre aberto! Agora arromba a porta com a Marta.');
+        aparicao('graciliano', 'O <b>método</b> do Graciliano abriu o cofre.');
+        setTimeout(closeOv, 200);
+      } else { shakeIt(); fail(4); toast('FORA DE ORDEM'); seq=[]; render(); }
+    }
+    render();
+    S._dica=function(){ toast('DO MENOR ANO PRO MAIOR'); };
   }
 
   // =========================================================
   //  ESTAÇÃO 3 · PORTA (fechadura timing)
   // =========================================================
   function openPorta(){
-    if(!S.hasGazua){ toast(S.powered?'PRECISA DA GAZUA':'TÁ ESCURO...'); return; }
+    if(!S.powered){ toast('TÁ ESCURO...'); return; }
+    if(!S.done[1]){ toast('ABRE O COFRE PRIMEIRO'); $('#cofre').classList.add('glowme'); return; }
     if(S.done[2]) return;
     makerIntro('marta', runPorta);
   }
   function runPorta(){
-    S.state='fechadura'; S.fechIdx=0; S.marker=0; S.mdir=1; S.mspeed=0.85; S.zones=[];
+    S.state='fechadura'; $('#porta').classList.remove('glowme'); S.fechIdx=0; S.marker=0; S.mdir=1; S.mspeed=0.85; S.zones=[];
     var rows='';
     for(var i=0;i<3;i++){ var zw=22-i*4, zp=10+rint(100-zw-20); S.zones.push({zw:zw,zp:zp});
       rows+='<div class="tumb'+(i===0?' active':'')+'"><div class="zone" style="left:'+zp+'%;width:'+zw+'%"></div><div class="mark" style="left:0%"></div></div>'; }
-    openOv('FECHADURA · ARROMBA COM A GAZUA', '<div class="ovd">Toca <b>TRAVAR</b> quando o pino bater na zona verde. Três pinos, e acelera.</div><div class="tumblers" id="tumblers">'+rows+'</div><button id="travarBtn">TRAVAR</button>');
+    openOv('FECHADURA · ARROMBA A PORTA', '<div class="ovd">Toca <b>TRAVAR</b> quando o pino bater na zona verde. Três pinos, e acelera.</div><div class="tumblers" id="tumblers">'+rows+'</div><button id="travarBtn">TRAVAR</button>');
     $('#travarBtn').onclick=travar;
   }
   function marker(dt){
@@ -634,7 +637,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     var c=$('#endCard'); c.parentElement.classList.remove('lose'); c.parentElement.classList.add('win');
     c.innerHTML='<div class="verdict">ESCAPOU!<br>A CENTELHA ACENDEU ⚡</div><div class="bignum">'+tempo+'s<small>'+S.nome+' saiu em</small></div>'+
       '<div class="statline"><div class="s"><b>'+S.score+'</b><span>pontos</span></div><div class="s"><b>x'+S.comboMax+'</b><span>combo</span></div><div class="s"><b>'+S.dicas+'</b><span>dicas</span></div></div>'+
-      '<div class="gancho">'+(S.escolhido?'A <b>'+S.escolhido.comp.toLowerCase()+'</b> de '+S.escolhido.nm.charAt(0)+S.escolhido.nm.slice(1).toLowerCase()+' te tirou do escuro. ':'')+'Religou a luz, achou a senha, arrombou a porta. <b>Todo problema travado tem um próximo passo.</b> Tua trilha segue no Escalada.</div>';
+      '<div class="gancho">'+(S.escolhido?'A <b>'+S.escolhido.comp.toLowerCase()+'</b> de '+S.escolhido.nm.charAt(0)+S.escolhido.nm.slice(1).toLowerCase()+' te tirou do escuro. ':'')+'Religou a luz, pôs tudo em ordem e arrombou a porta. <b>Todo problema travado tem um próximo passo.</b> Tua trilha segue no Escalada.</div>';
     $('#replayBtn').textContent='JOGAR DE NOVO'; $('#screenEnd').classList.remove('hidden');
   }
   function lose(){
@@ -649,12 +652,13 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
   // ---------- liga os objetos ----------
   function bindObjs(){
     $('#disjuntor').onclick=openDisjuntor;
-    $('#quadro').onclick=openQuadro;
     $('#cofre').onclick=openCofre;
     $('#porta').onclick=openPorta;
-    $('#radio').onclick=function(){tapClue('radio');};
-    $('#estante').onclick=function(){tapClue('estante');};
-    $('#retrato').onclick=function(){tapClue('retrato');};
+    // o resto é cenário da sala de Alagoas
+    $('#quadro').onclick=function(){ toast(S.powered?'um quadro torto':'tá escuro...'); };
+    $('#radio').onclick=function(){ toast(S.powered?'um rádio velho, calado':'tá escuro...'); };
+    $('#estante').onclick=function(){ toast(S.powered?'livros empoeirados':'tá escuro...'); };
+    $('#retrato').onclick=function(){ toast(S.powered?'um retrato na parede':'tá escuro...'); };
     $('#janela').onclick=function(){ toast(S.powered?'só a lua lá fora':'tá escuro...'); };
   }
 
@@ -664,7 +668,8 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
   function start(){
     ac(); var nome=lerNome(); reset(); S.nome=nome; S.running=true; S.state='room';
     $('#room').classList.remove('lit'); $('#stage').classList.remove('escape','low');
-    $('#quadro').style.transform=''; $('#cofre').classList.remove('show','open'); $('#porta').classList.remove('unlocked');
+    $('#quadro').style.transform=''; $('#quadro').style.opacity=''; $('#quadro').style.display='';
+    $('#cofre').classList.remove('show','open','glowme'); $('#porta').classList.remove('unlocked','glowme');
     $$('.obj').forEach(function(o){o.classList.remove('found');}); $$('.chip').forEach(function(c){c.classList.remove('done');});
     $('#ov').classList.remove('up');
     setObjective('A sala tá escura. Acha o que ainda brilha e religa a energia.');
@@ -684,9 +689,11 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     if(v==='dark'){ $('#screenIntro').classList.add('hidden'); setObjective('Acha o que brilha e religa.'); }
     else if(v==='fios'||v==='fuse'){ $('#screenIntro').classList.add('hidden'); openDisjuntor(); }
     else if(v==='aparic'){ $('#screenIntro').classList.add('hidden'); $('#room').classList.add('lit'); aparicao('marta','A <b>perseverança</b> da Marta arrombou a porta.'); }
-    else if(v==='lit'){ $('#screenIntro').classList.add('hidden'); S.powered=true; S.done[0]=true; chipDone(0); $('#room').classList.add('lit'); S.senha=FIGS.map(function(f){return {fig:f,dg:rint(10)};}); setObjective('Vasculha e abre o cofre.'); }
-    else if(v==='cofre'){ $('#screenIntro').classList.add('hidden'); S.powered=true; $('#room').classList.add('lit'); S.senha=FIGS.map(function(f){return {fig:f,dg:rint(10)};}); S.achados=S.senha.map(function(s){return s.dg;}); $('#cofre').classList.add('show'); openCofre(); }
-    else if(v==='fech'){ $('#screenIntro').classList.add('hidden'); S.powered=true; S.hasGazua=true; $('#room').classList.add('lit'); openPorta(); }
+    else if(v==='lit'){ $('#screenIntro').classList.add('hidden'); S.powered=true; S.done[0]=true; chipDone(0); $('#room').classList.add('lit'); $('#quadro').style.display='none'; $('#cofre').classList.add('show','glowme'); setObjective('Toca no cofre.'); }
+    else if(v==='cofre'){ $('#screenIntro').classList.add('hidden'); S.powered=true; S.done[0]=true; $('#room').classList.add('lit'); $('#quadro').style.display='none'; $('#cofre').classList.add('show'); openCofre(); }
+    else if(v==='ordem'){ $('#screenIntro').classList.add('hidden'); S.powered=true; S.done[0]=true; $('#room').classList.add('lit'); $('#quadro').style.display='none'; $('#cofre').classList.add('show'); runCofre(); }
+    else if(v==='fech'){ $('#screenIntro').classList.add('hidden'); S.powered=true; S.done[0]=true; S.done[1]=true; $('#room').classList.add('lit'); $('#quadro').style.display='none'; $('#cofre').classList.add('show','open'); openPorta(); }
+    else if(v==='pinos'){ $('#screenIntro').classList.add('hidden'); S.powered=true; S.done[0]=true; S.done[1]=true; $('#room').classList.add('lit'); runPorta(); }
     else if(v==='win'){ $('#screenIntro').classList.add('hidden'); $('#room').classList.add('lit'); win(); }
     else if(v==='pride'){ $('#screenIntro').classList.add('hidden'); $('#room').classList.add('lit'); prideScreen(); }
     else if(v==='pridem'){ $('#screenIntro').classList.add('hidden'); $('#room').classList.add('lit'); $('#screenPride').classList.remove('hidden'); prideReveal('marta'); }
