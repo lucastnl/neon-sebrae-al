@@ -8,8 +8,8 @@
 <meta name="theme-color" content="#050822" />
 <title>Forja de Ideias · Neon Sebrae AL</title>
 
-<meta property="og:title" content="Forja de Ideias · Monta a tua saída" />
-<meta property="og:description" content="Problemas reais da vida de um jovem de Alagoas. Você monta a sua própria solução, sem certo nem errado, e descobre que tipo de fazedor você é. Neon Sebrae AL 2026." />
+<meta property="og:title" content="Forja de Ideias · Forja o seu lugar no mundo" />
+<meta property="og:description" content="Quatro perguntas sobre você, em linguagem de quem é jovem. No fim, a forja revela o seu ikigai: o encontro do que você ama, faz bem, o mundo precisa e pode virar um corre. Tira foto e leva. Neon Sebrae AL 2026." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://neon-sebrae-al.netlify.app/jogos/forja-de-ideias/" />
 <meta property="og:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
@@ -30,6 +30,7 @@
   --ciano:#00F9FF; --azul:#2A4FDA; --azul-claro:#5680FF; --amarelo:#FFD93D; --laranja:#FF8C42; --vermelho:#FF3060;
   --branco:#FFF; --navy:#0A0F36; --navy-deep:#050822; --navy-mid:#1A1F4E;
   --mono:'Press Start 2P',monospace; --body:'Space Grotesk',sans-serif;
+  --c-ama:#FF76FF; --c-bom:#00F9FF; --c-precisa:#00FF85; --c-corre:#FFD93D;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;}
@@ -41,7 +42,6 @@ body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hi
   repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(0,249,255,.045) 40px),
   repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(0,249,255,.045) 40px); }
 .bg::after{ content:''; position:absolute; inset:0; pointer-events:none; background:repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0,rgba(0,0,0,.14) 1px,transparent 1px,transparent 3px); mix-blend-mode:multiply; opacity:.42; }
-.embers{ position:absolute; left:0; right:0; bottom:0; height:36%; z-index:0; pointer-events:none; background:radial-gradient(120% 80% at 50% 120%, rgba(255,140,66,.18), transparent 60%); }
 
 .flash{ animation:flash .25s; } @keyframes flash{ 0%,100%{filter:none} 50%{filter:brightness(1.7)} }
 
@@ -49,42 +49,52 @@ body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hi
 #hud{ position:relative; z-index:30; padding:14px 18px 4px; }
 #hudtop{ display:flex; align-items:center; gap:10px; }
 .hl{ font-family:var(--mono); font-size:8px; color:var(--laranja); letter-spacing:1px; white-space:nowrap; }
-#forge{ flex:1; height:13px; border-radius:7px; background:#1a1f3e; border:1px solid rgba(255,255,255,.16); overflow:hidden; }
+#forge{ flex:1; height:12px; border-radius:7px; background:#1a1f3e; border:1px solid rgba(255,255,255,.16); overflow:hidden; }
 #forge>i{ display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--vermelho),var(--laranja) 55%,var(--amarelo)); transition:width .4s ease; }
 #pnum{ font-family:var(--mono); font-size:9px; color:var(--amarelo); white-space:nowrap; }
 
+/* chips das 4 dimensões (vão preenchendo) */
+#chips{ display:flex; gap:6px; justify-content:center; margin-top:10px; flex-wrap:wrap; }
+.dchip{ display:flex; align-items:center; gap:4px; font-size:10px; padding:5px 8px; border-radius:999px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.14); color:rgba(255,255,255,.45); max-width:130px; }
+.dchip b{ font-size:13px; }
+.dchip.on{ color:#fff; }
+.dchip .dw{ font-family:var(--mono); font-size:6.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.dchip.cur{ box-shadow:0 0 10px currentColor; }
+
 /* BANCADA */
-#bancada{ position:relative; z-index:20; flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:14px; padding:16px 20px; overflow:auto; }
-#problema{ width:100%; max-width:450px; border-radius:16px; border:2px solid var(--vermelho); background:rgba(255,48,96,.07); padding:16px; text-align:center; box-shadow:0 0 20px rgba(255,48,96,.18); }
-#problema .pq{ font-family:var(--mono); font-size:7px; letter-spacing:1px; color:var(--vermelho); margin-bottom:8px; }
-#problema .pem{ font-size:38px; display:block; margin-bottom:6px; }
-#problema .pt{ font-size:15px; font-weight:700; line-height:1.4; color:#fff; }
+#bancada{ position:relative; z-index:20; flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:14px 20px; }
+#pergunta{ width:100%; max-width:450px; text-align:center; }
+#pergunta .pe{ font-size:42px; display:block; margin-bottom:8px; }
+#pergunta .pt{ font-size:19px; font-weight:700; line-height:1.35; color:#fff; }
+#pergunta .ps{ font-size:13px; color:var(--ciano); margin-top:8px; line-height:1.4; }
+#opts{ width:100%; max-width:460px; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.opt{ text-align:center; background:rgba(0,249,255,.05); border:2px solid rgba(0,249,255,.3); border-radius:14px; padding:14px 8px; color:#fff; font-size:13px; font-weight:600; cursor:pointer; transition:transform .1s,background .15s,border-color .15s; min-height:54px; display:flex; align-items:center; justify-content:center; }
+.opt:active{ transform:scale(.96); } .opt:hover{ background:rgba(0,249,255,.1); border-color:var(--ciano); }
 
-#buildline{ width:100%; max-width:450px; display:flex; gap:8px; justify-content:center; min-height:30px; flex-wrap:wrap; }
-.chip{ font-family:var(--mono); font-size:8px; padding:7px 10px; border-radius:999px; background:rgba(255,217,61,.14); color:var(--amarelo); border:1px solid rgba(255,217,61,.4); }
-
-#step{ font-family:var(--mono); font-size:9px; color:var(--ciano); text-shadow:0 0 6px var(--ciano); text-align:center; }
-#opts{ width:100%; max-width:450px; display:flex; flex-direction:column; gap:10px; }
-.opt{ width:100%; text-align:left; background:rgba(0,249,255,.05); border:2px solid rgba(0,249,255,.3); border-radius:14px; padding:14px 16px; color:#fff; font-size:14.5px; font-weight:600; cursor:pointer; transition:transform .1s,background .15s,border-color .15s; }
-.opt:active{ transform:scale(.98); } .opt:hover{ background:rgba(0,249,255,.1); border-color:var(--ciano); }
-
-/* resultado da forja (solução + reflexão) */
-#result{ width:100%; max-width:450px; display:none; flex-direction:column; gap:12px; }
-#result.on{ display:flex; }
-#result .sol{ border-radius:14px; border:2px solid var(--amarelo); background:rgba(255,217,61,.07); padding:16px; text-align:center; }
-#result .sol .sk{ font-family:var(--mono); font-size:7px; letter-spacing:1px; color:var(--laranja); margin-bottom:8px; }
-#result .sol .st{ font-size:14.5px; line-height:1.5; color:#fff; }
-#result .refl{ font-size:13.5px; line-height:1.5; color:var(--ciano); text-align:center; padding:0 6px; }
-#result .refl b{ color:var(--amarelo); }
-#contBtn{ font-family:var(--mono); font-size:13px; padding:16px; border:none; border-radius:14px; background:var(--amarelo); color:var(--navy-deep); cursor:pointer; box-shadow:0 6px 22px rgba(255,217,61,.45); }
-#contBtn:active{ transform:scale(.97); }
-
-#spark{ position:absolute; left:50%; top:35%; z-index:40; transform:translate(-50%,-50%); font-size:40px; opacity:0; pointer-events:none; }
+#spark{ position:absolute; left:50%; top:38%; z-index:40; transform:translate(-50%,-50%); font-size:40px; opacity:0; pointer-events:none; }
 #spark.go{ animation:spark .45s ease-out; }
 @keyframes spark{ 0%{opacity:1;transform:translate(-50%,-50%) scale(.6)} 100%{opacity:0;transform:translate(-50%,-130%) scale(1.4)} }
 
+/* DIAGRAMA IKIGAI (reveal) */
+.ikigai{ position:relative; width:300px; height:300px; margin:0 auto 6px; }
+.ik-c{ position:absolute; width:170px; height:170px; border-radius:50%; mix-blend-mode:screen; opacity:.55; border:2px solid; }
+.ik-ama{ top:8px; left:65px; background:var(--c-ama); border-color:var(--c-ama); }
+.ik-bom{ left:8px; top:65px; background:var(--c-bom); border-color:var(--c-bom); }
+.ik-precisa{ right:8px; top:65px; background:var(--c-precisa); border-color:var(--c-precisa); }
+.ik-corre{ bottom:8px; left:65px; background:var(--c-corre); border-color:var(--c-corre); }
+.ik-lab{ position:absolute; text-align:center; width:120px; z-index:3; }
+.ik-lab .lk{ font-family:var(--mono); font-size:6.5px; letter-spacing:.5px; }
+.ik-lab .lw{ font-family:var(--mono); font-size:8px; color:#fff; line-height:1.3; margin-top:2px; }
+.ik-lab.la-ama{ top:-6px; left:90px; } .ik-lab.la-ama .lk{ color:var(--c-ama); }
+.ik-lab.la-bom{ top:130px; left:-30px; } .ik-lab.la-bom .lk{ color:var(--c-bom); }
+.ik-lab.la-precisa{ top:130px; left:210px; } .ik-lab.la-precisa .lk{ color:var(--c-precisa); }
+.ik-lab.la-corre{ bottom:-6px; left:90px; } .ik-lab.la-corre .lk{ color:var(--c-corre); }
+.ik-core{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:64px; height:64px; border-radius:50%; z-index:4; display:flex; flex-direction:column; align-items:center; justify-content:center; background:radial-gradient(circle,#fff,var(--amarelo) 55%,transparent 78%); box-shadow:0 0 30px var(--amarelo); animation:corepulse 1.6s ease-in-out infinite; }
+.ik-core span{ font-family:var(--mono); font-size:7px; color:var(--navy-deep); }
+@keyframes corepulse{ 50%{ transform:translate(-50%,-50%) scale(1.12); box-shadow:0 0 44px var(--amarelo) } }
+
 /* TELAS */
-.screen{ position:absolute; inset:0; z-index:80; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:28px 24px; background:rgba(5,8,34,.95); overflow:auto; }
+.screen{ position:absolute; inset:0; z-index:80; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:26px 22px; background:rgba(5,8,34,.96); overflow:auto; }
 .screen.hidden{ display:none; }
 .logo-row{ display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:18px; opacity:.92; }
 .logo-row img{ filter:drop-shadow(0 0 8px rgba(0,249,255,.4)); }
@@ -102,24 +112,20 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
 .namepick .na{ width:52px; height:30px; border:1px solid rgba(0,249,255,.35); border-radius:8px; background:rgba(0,249,255,.08); color:var(--ciano); font-size:13px; cursor:pointer; }
 .namepick .na:active{ transform:scale(.92); }
 
-/* PATENTE DO FAZEDOR */
-.patente{ background:linear-gradient(160deg,#0a0f36,#241433); border:2px solid var(--amarelo); border-radius:20px; padding:24px 22px; max-width:380px; width:100%; box-shadow:0 0 40px rgba(255,217,61,.3); }
-.patente .selo-top{ font-family:var(--mono); font-size:8px; letter-spacing:2px; color:var(--laranja); margin-bottom:12px; }
-.patente .em{ font-size:52px; margin-bottom:6px; }
-.patente .arq{ font-family:var(--mono); font-size:19px; text-shadow:0 0 14px currentColor; line-height:1.4; margin-bottom:12px; }
-.patente .desc{ font-size:14px; line-height:1.5; color:#fff; margin-bottom:14px; }
-.patente .area-k{ font-family:var(--mono); font-size:7px; letter-spacing:1px; color:var(--ciano); margin-bottom:4px; }
-.patente .area{ font-family:var(--mono); font-size:11px; color:var(--amarelo); line-height:1.5; margin-bottom:12px; }
-.patente .ideia{ font-size:13px; line-height:1.45; color:rgba(255,255,255,.92); margin-bottom:12px; }
-.patente .ideia b{ color:var(--amarelo); }
-.patente .cur{ font-size:12px; line-height:1.5; color:var(--ciano); border-top:1px solid rgba(255,255,255,.14); padding-top:11px; }
-.patente .num{ font-family:var(--mono); font-size:8px; color:rgba(255,255,255,.5); margin-top:10px; letter-spacing:1px; }
-.gancho{ font-size:12.5px; color:rgba(255,255,255,.8); line-height:1.6; margin-top:16px; max-width:380px; }
+/* card do ikigai (reveal) */
+.ikcard{ background:linear-gradient(160deg,#0a0f36,#241433); border:2px solid var(--amarelo); border-radius:20px; padding:20px 18px; max-width:390px; width:100%; box-shadow:0 0 40px rgba(255,217,61,.3); }
+.ikcard .selo-top{ font-family:var(--mono); font-size:8px; letter-spacing:2px; color:var(--laranja); margin-bottom:8px; }
+.ikcard .who{ font-family:var(--mono); font-size:11px; color:var(--amarelo); margin-bottom:10px; }
+.ikcard .synth{ font-size:14px; line-height:1.6; color:#fff; margin:10px 4px 12px; }
+.ikcard .synth b{ color:var(--amarelo); }
+.ikcard .what{ font-size:12.5px; line-height:1.55; color:var(--ciano); border-top:1px solid rgba(255,255,255,.14); padding-top:12px; }
+.ikcard .what b{ color:#fff; }
+.foto{ font-family:var(--mono); font-size:8px; color:var(--magenta-claro); margin-top:12px; letter-spacing:1px; }
+.gancho{ font-size:12px; color:rgba(255,255,255,.72); line-height:1.6; margin-top:14px; max-width:390px; }
 .gancho b{ color:var(--ciano); }
-.tags{ font-family:var(--mono); font-size:8px; color:var(--magenta-claro); margin-top:10px; letter-spacing:1px; }
 .curadoria{ position:fixed; bottom:4px; left:0; right:0; text-align:center; font-size:8px; color:rgba(255,255,255,.26); z-index:85; font-family:var(--mono); }
 #err{ position:fixed; top:0; left:0; right:0; background:#b00020; color:#fff; padding:10px; font:11px/1.4 monospace; z-index:9999; white-space:pre-wrap; display:none; }
-.toast{ position:fixed; left:50%; top:28%; transform:translate(-50%,-50%); z-index:88; font-family:var(--mono); font-size:16px; color:var(--amarelo); text-shadow:0 0 16px var(--amarelo); pointer-events:none; opacity:0; text-align:center; }
+.toast{ position:fixed; left:50%; top:26%; transform:translate(-50%,-50%); z-index:88; font-family:var(--mono); font-size:16px; color:var(--amarelo); text-shadow:0 0 16px var(--amarelo); pointer-events:none; opacity:0; text-align:center; }
 .toast.show{ animation:toast 1s ease; }
 @keyframes toast{ 0%{opacity:0;transform:translate(-50%,-30%) scale(.7)} 25%{opacity:1;transform:translate(-50%,-50%) scale(1.1)} 70%{opacity:1} 100%{opacity:0;transform:translate(-50%,-60%)} }
 </style>
@@ -131,22 +137,19 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
 
 <div id="stage">
   <div class="bg"></div>
-  <div class="embers"></div>
 
   <div id="hud">
     <div id="hudtop">
       <span class="hl">FORJANDO</span>
       <div id="forge"><i></i></div>
-      <span id="pnum">1/3</span>
+      <span id="pnum">1/4</span>
     </div>
+    <div id="chips"></div>
   </div>
 
   <div id="bancada">
-    <div id="problema"><div class="pq">UM PROBLEMA REAL · RESOLVE DO SEU JEITO</div><span class="pem">🎯</span><div class="pt">…</div></div>
-    <div id="buildline"></div>
-    <div id="step"></div>
+    <div id="pergunta"><span class="pe">💛</span><div class="pt">…</div><div class="ps"></div></div>
     <div id="opts"></div>
-    <div id="result"></div>
     <div id="spark">✦</div>
   </div>
 
@@ -158,8 +161,8 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
       <img class="logo-tnl" src="../../assets/logo-tnl-h.png" alt="Tiro na Lua" onerror="this.style.display='none'"/>
     </div>
     <h1 class="title">FORJA<br>DE IDEIAS</h1>
-    <p class="tagline">Empreender é resolver problema. E não tem resposta certa.</p>
-    <div class="howto">Três problemas reais da sua vida. Pra cada um, você <b>monta a sua própria saída</b> combinando peças, do seu jeito. No fim, a forja revela <b>que tipo de fazedor você é</b>.</div>
+    <p class="tagline">Toda pessoa tem um lugar no mundo. Bora forjar o seu?</p>
+    <div class="howto">Quatro perguntas sobre <b>você</b>, sem certo nem errado. No fim, a forja junta tudo e revela o <b>seu ikigai</b>: o ponto onde o que você é encontra o que o mundo precisa.</div>
     <div class="namepick" id="namepick"></div>
     <button class="btn" id="startBtn">ACENDER A FORJA</button>
   </div>
@@ -169,7 +172,7 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
 
 </div>
 
-<div class="curadoria">PROTÓTIPO v5 · problemas, perfis e curiosidades a validar com o Sebrae AL</div>
+<div class="curadoria">PROTÓTIPO v6 · ikigai em linguagem jovem · acervo a validar com o Sebrae AL</div>
 
 <script>
 window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))return; var el=document.getElementById('err'); if(!el)return; el.style.display='block'; el.textContent+='⚠ '+(e.message||e)+' ('+((e.filename||'').split('/').pop())+':'+e.lineno+')\n'; });
@@ -178,72 +181,31 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
   'use strict';
   var $=function(s,r){return (r||document).querySelector(s);};
 
-  // ---------- arquétipos ----------
-  var ARQ={
-    inventor:{ nm:'O INVENTOR', em:'💡', cor:'var(--ciano)',
-      desc:'Onde os outros veem barreira, você vê um jeito que ninguém tentou. Sua força é a ideia nova.',
-      area:'INOVAÇÃO E TECNOLOGIA',
-      cur:'Maceió tem polos de tecnologia crescendo (como o Jaraguá), cheios de gente jovem criando startup.'},
-    mao:{ nm:'A MÃO NA MASSA', em:'🔨', cor:'var(--laranja)',
-      desc:'Você não fica só na ideia. Bota pra fazer, produto na mão, resolvido hoje. Faz acontecer.',
-      area:'PRODUÇÃO E ARTESANATO',
-      cur:'A renda filé de Pontal da Barra tem selo de Indicação Geográfica do INPI, igual vinho e champagne têm o deles.'},
-    conector:{ nm:'O CONECTOR', em:'🤝', cor:'var(--verde-claro)',
-      desc:'Você junta gente. Sabe que sozinho vai rápido, mas com os outros vai longe. Sua força é a rede.',
-      area:'SERVIÇOS, TURISMO E COLETIVOS',
-      cur:'Maragogi, o Caribe brasileiro, foi eleita a melhor cidade do Brasil pra turismo em 2025: tem gente chegando.'},
-    raiz:{ nm:'O RAIZ', em:'🌳', cor:'var(--amarelo)',
-      desc:'Você tem orgulho do que Alagoas já é. Sua força é transformar tradição e saber local em solução.',
-      area:'CULTURA, GASTRONOMIA E CAMPO',
-      cur:'O sururu da Lagoa Mundaú é Patrimônio Cultural de Alagoas e move a economia de comunidades inteiras.'},
-    completo:{ nm:'O FAZEDOR COMPLETO', em:'🌟', cor:'var(--magenta-claro)',
-      desc:'Você resolve misturando tudo: cria, faz, junta e valoriza a raiz. Versátil que nem poucos.',
-      area:'VOCÊ TRANSITA POR TODAS',
-      cur:'Os maiores fazedores de Alagoas combinam tudo isso: pé na tradição e cabeça no novo.'}
-  };
-  var KEYS=['inventor','mao','conector','raiz'];
-
-  // problemas reais da fase do jovem
-  var PROB=[
-    {em:'🎯', t:'Você manja de uma parada (edição, corte, unha, desenho, jogo, cozinha...). Como vira uma renda?', curto:'transformar o seu talento em renda'},
-    {em:'🎉', t:'Rolê com a galera e tá todo mundo sem grana. Qual a sua saída?', curto:'curtir junto mesmo sem grana'},
-    {em:'🏫', t:'Tem um perrengue na sua escola ou na sua rua que ninguém resolve. Como você ataca?', curto:'resolver o perrengue do seu lado'}
+  // ---------- as 4 dimensões do ikigai (perguntas do Lucas, em linguagem jovem) ----------
+  var DIMS=[
+    { key:'ama', em:'💛', cor:'var(--c-ama)', q:'O QUE TE DÁ ENERGIA?', sub:'o que você ama, faria nem que fosse de graça',
+      opts:['CRIAR E ARTE','GAMES','ESPORTE','MÚSICA','AJUDAR GENTE','TECNOLOGIA','COZINHAR','A RUA E A NATUREZA'] },
+    { key:'bom', em:'💪', cor:'var(--c-bom)', q:'NO QUE VOCÊ MANDA BEM?', sub:'o que te pedem ajuda, o que reconhecem em você',
+      opts:['DESENHAR E EDITAR','ORGANIZAR','FALAR E CONVENCER','FAZER COM A MÃO','RESOLVER TRETA','LIDERAR','ENSINAR','ESPORTE'] },
+    { key:'precisa', em:'🌍', cor:'var(--c-precisa)', q:'O QUE A SUA QUEBRADA PRECISA?', sub:'o que falta no seu bairro, escola ou cidade',
+      opts:['CULTURA E LAZER','RENDA E TRABALHO','CUIDAR DO MEIO AMBIENTE','EDUCAÇÃO','SAÚDE','SEGURANÇA','INCLUSÃO','VALORIZAR A NOSSA CARA'] },
+    { key:'corre', em:'🔥', cor:'var(--c-corre)', q:'O QUE PODE VIRAR UM CORRE?', sub:'o que disso pode te dar uma grana ou um nome',
+      opts:['UM SERVIÇO','CONTEÚDO NA NET','UM PRODUTO PRA VENDER','UM PROJETO OU COLETIVO','DAR AULA OU OFICINA','UM EVENTO OU ROLÊ'] }
   ];
-  // slot 1: com o quê
-  var COM=[
-    {l:'O MEU TALENTO', f:'usando o seu próprio talento', a:'mao'},
-    {l:'O QUE ALAGOAS TEM', f:'usando o que a terra já dá (coco, renda, sabor, cultura)', a:'raiz'},
-    {l:'A INTERNET', f:'usando a internet como aliada', a:'inventor'},
-    {l:'A GALERA JUNTA', f:'usando a força da galera junto', a:'conector'}
-  ];
-  // slot 2: de que jeito
-  var JEITO=[
-    {l:'BOTO PRA FAZER JÁ', f:'botando a mão e fazendo acontecer logo', a:'mao'},
-    {l:'INVENTO ALGO NOVO', f:'inventando um jeito que ninguém tentou', a:'inventor'},
-    {l:'JUNTO GERAL', f:'chamando todo mundo pra somar', a:'conector'},
-    {l:'DO JEITO DAQUI', f:'valorizando o jeito e o saber daqui', a:'raiz'}
-  ];
-  var REFL={
-    inventor:'Você foi pela criação, buscou o caminho novo. Quem <b>inventa</b> em vez de copiar tem a cara de quem muda o jogo.',
-    mao:'Você foi pra cima e botou a mão. Enquanto uns só planejam, você já tá <b>fazendo</b>, e é assim que sai do papel.',
-    conector:'Você resolveu <b>juntando gente</b>. Raro e poderoso: muita coisa em Alagoas começou numa roda de amigos.',
-    raiz:'Você foi pela força do que <b>já é nosso</b>. Valorizar a raiz é um baita caminho de negócio, e dá orgulho.',
-    mix:'Você <b>misturou jeitos diferentes</b> pra resolver. Isso é versatilidade, e versátil resolve quase tudo.'
-  };
+  var DLAB={ ama:'O QUE VOCÊ AMA', bom:'O QUE FAZ BEM', precisa:'O QUE O MUNDO PRECISA', corre:'O QUE DÁ RETORNO' };
 
   // ---------- estado ----------
   var ALPHA='ABCDEFGHIJKLMNOPQRSTUVWXYZ', nameIdx=[0,0,0];
   var S={};
-  function reset(){ S={ nome:'???', qi:0, slot:0, pick1:null, tally:{inventor:0,mao:0,conector:0,raiz:0}, solucoes:[], running:false, _idle:performance.now() }; }
+  function reset(){ S={ nome:'???', qi:0, picks:{ama:'',bom:'',precisa:'',corre:''}, running:false, _idle:performance.now() }; }
   reset();
 
   // ---------- audio ----------
   var actx=null; function ac(){ if(!actx){try{actx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}} return actx; }
   function beep(f,d,t,v){ var c=ac(); if(!c)return; var o=c.createOscillator(),g=c.createGain(); o.type=t||'square'; o.frequency.value=f; g.gain.value=v||.05; o.connect(g); g.connect(c.destination); var n=c.currentTime; o.start(n); g.gain.exponentialRampToValueAtTime(.0001,n+(d||.12)); o.stop(n+(d||.12)+.02); }
   function sTick(){beep(520,.03,'square',.025);}
-  function sPick(){beep(440,.07,'square',.05);setTimeout(function(){beep(700,.1,'square',.05);},55);}
-  function sForja(){[220,330,440,660].forEach(function(f,i){setTimeout(function(){beep(f,.1,'triangle',.06);},i*60);});}
-  function sForge(){[220,330,440,660,880].forEach(function(f,i){setTimeout(function(){beep(f,.12,'triangle',.06);},i*70);});}
+  function sPick(){beep(520,.06,'square',.05);setTimeout(function(){beep(780,.1,'triangle',.05);},45);}
+  function sForge(){[262,330,392,523,659,784].forEach(function(f,i){setTimeout(function(){beep(f,.14,'triangle',.06);},i*90);});}
   function sWin(){[523,659,784,1046,1318,1568].forEach(function(f,i){setTimeout(function(){beep(f,.16,'triangle',.06);},i*100);});}
 
   function rint(n){return Math.floor(Math.random()*n);}
@@ -251,82 +213,65 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
   function toast(t){var e=$('#toast');e.textContent=t;e.classList.remove('show');void e.offsetWidth;e.classList.add('show');}
   function spark(){ var s=$('#spark'); s.classList.remove('go'); void s.offsetWidth; s.classList.add('go'); }
 
-  function setForge(){ $('#forge>i').style.width=Math.round((S.qi/PROB.length)*100)+'%'; $('#pnum').textContent=(Math.min(S.qi+1,PROB.length))+'/'+PROB.length; }
-
-  function showProblem(){
-    S.slot=0; S.pick1=null;
-    var p=PROB[S.qi];
-    setForge();
-    $('#problema').innerHTML='<div class="pq">UM PROBLEMA REAL · RESOLVE DO SEU JEITO</div><span class="pem">'+p.em+'</span><div class="pt">'+p.t+'</div>';
-    $('#buildline').innerHTML='';
-    $('#result').classList.remove('on'); $('#result').innerHTML='';
-    renderOpts();
+  function renderChips(){
+    var html=''; DIMS.forEach(function(d,i){
+      var picked=S.picks[d.key];
+      html+='<div class="dchip'+(picked?' on':'')+(i===S.qi?' cur':'')+'" style="color:'+d.cor+'"><b>'+d.em+'</b><span class="dw" style="color:'+(picked?'#fff':'rgba(255,255,255,.4)')+'">'+(picked||'...')+'</span></div>';
+    });
+    $('#chips').innerHTML=html;
   }
-  function renderOpts(){
-    var arr = S.slot===0?COM:JEITO;
-    $('#step').textContent = S.slot===0?'1 · COM O QUÊ VOCÊ RESOLVE?':'2 · E DE QUE JEITO?';
-    var html=''; arr.forEach(function(op,k){ html+='<button class="opt" data-k="'+k+'">'+op.l+'</button>'; });
+  function showQ(){
+    var d=DIMS[S.qi];
+    $('#forge>i').style.width=Math.round((S.qi/4)*100)+'%'; $('#pnum').textContent=(S.qi+1)+'/4';
+    $('#pergunta').innerHTML='<span class="pe">'+d.em+'</span><div class="pt" style="color:'+d.cor+'">'+d.q+'</div><div class="ps">'+d.sub+'</div>';
+    var html=''; d.opts.forEach(function(o,k){ html+='<button class="opt" data-k="'+k+'">'+o+'</button>'; });
     $('#opts').innerHTML=html;
     Array.prototype.slice.call(document.querySelectorAll('#opts .opt')).forEach(function(b){ b.onclick=function(){ pick(parseInt(b.getAttribute('data-k'),10)); }; });
+    renderChips();
   }
   function pick(k){
-    var op = (S.slot===0?COM:JEITO)[k];
-    S.tally[op.a]++; sPick(); spark();
-    var chip=document.createElement('span'); chip.className='chip'; chip.textContent=(S.slot===0?'✋ ':'⚡ ')+op.l; $('#buildline').appendChild(chip);
-    if(S.slot===0){ S.pick1=op; S.slot=1; renderOpts(); }
-    else { montar(S.pick1, op); }
-  }
-  function montar(p1, p2){
-    $('#step').textContent=''; $('#opts').innerHTML='';
-    var prob=PROB[S.qi];
-    var sol='A sua saída pra '+prob.curto+': '+p1.f+', '+p2.f+'.';
-    S.solucoes.push(sol);
-    var refl = (p1.a===p2.a)?REFL[p1.a]:REFL.mix;
-    sForja(); flashIt($('#problema'));
-    var last = S.qi>=PROB.length-1;
-    $('#result').innerHTML='<div class="sol"><div class="sk">🔨 VOCÊ FORJOU</div><div class="st">'+sol+'</div></div>'+
-      '<div class="refl">'+refl+'</div>'+
-      '<button id="contBtn">'+(last?'VER MEU PERFIL ▸':'PRÓXIMO PROBLEMA ▸')+'</button>';
-    $('#result').classList.add('on');
-    $('#contBtn').onclick=function(){ S.qi++; if(S.qi>=PROB.length){ forge(); } else { showProblem(); } };
+    var d=DIMS[S.qi]; S.picks[d.key]=d.opts[k]; sPick(); spark(); flashIt($('#pergunta'));
+    renderChips();
+    S.qi++;
+    setTimeout(function(){ if(S.qi>=4) forge(); else showQ(); }, 360);
   }
 
-  // ---------- forja / resultado ----------
-  function vencedor(){
-    var max=-1, top=null, total=0; KEYS.forEach(function(k){ total+=S.tally[k]; if(S.tally[k]>max){max=S.tally[k];top=k;} });
-    if(total===0) return 'completo';
-    return (max/total>=0.45)?top:'completo';
-  }
+  function lower(s){ return s.charAt(0)+s.slice(1).toLowerCase(); }
   function forge(){
-    setForge(); $('#forge>i').style.width='100%';
-    $('#problema').innerHTML='<span class="pem">🔥</span><div class="pt">Forjando o seu perfil...</div>';
-    $('#buildline').innerHTML=''; $('#step').textContent=''; $('#opts').innerHTML=''; $('#result').classList.remove('on');
-    sForge(); toast('FORJANDO...');
-    setTimeout(reveal, 1100);
+    $('#forge>i').style.width='100%'; $('#pnum').textContent='4/4';
+    $('#pergunta').innerHTML='<span class="pe">🔥</span><div class="pt">Forjando o seu lugar no mundo...</div>';
+    $('#opts').innerHTML=''; sForge(); toast('FORJANDO...');
+    setTimeout(reveal, 1300);
+  }
+
+  function diagram(){
+    var p=S.picks;
+    function lab(cls,key){ return '<div class="ik-lab la-'+cls+'"><div class="lk">'+DLAB[key]+'</div><div class="lw">'+(p[key]||'')+'</div></div>'; }
+    return '<div class="ikigai">'+
+      '<div class="ik-c ik-ama"></div><div class="ik-c ik-bom"></div><div class="ik-c ik-precisa"></div><div class="ik-c ik-corre"></div>'+
+      lab('ama','ama')+lab('bom','bom')+lab('precisa','precisa')+lab('corre','corre')+
+      '<div class="ik-core"><span>O SEU</span><span>IKIGAI</span></div>'+
+      '</div>';
   }
   function reveal(){
-    var key=vencedor(), a=ARQ[key], num='AL-'+(1000+rint(9000));
-    var minhaIdeia = S.solucoes.length? S.solucoes[S.solucoes.length-1].replace(/^A sua saída pra [^:]+:\s*/,'') : '';
-    $('#endBody').innerHTML='<div class="patente">'+
-      '<div class="selo-top">★ PATENTE DO FAZEDOR · REGISTRADA EM ALAGOAS ★</div>'+
-      '<div class="em">'+a.em+'</div>'+
-      '<div class="arq" style="color:'+a.cor+'">VOCÊ É '+a.nm+'</div>'+
-      '<div class="desc">'+a.desc+'</div>'+
-      '<div class="area-k">SUA ÁREA PRA EMPREENDER EM ALAGOAS</div>'+
-      '<div class="area">'+a.area+'</div>'+
-      (minhaIdeia?'<div class="ideia">Um jeito seu de resolver que apareceu no caminho: <b>'+minhaIdeia+'</b></div>':'')+
-      '<div class="cur">'+a.cur+'</div>'+
-      '<div class="num">Nº '+num+' · '+S.nome+'</div>'+
+    var p=S.picks, num='AL-'+(1000+rint(9000));
+    var synth='Você ama <b>'+lower(p.ama)+'</b>, manda bem em <b>'+lower(p.bom)+'</b>, a sua quebrada precisa de <b>'+lower(p.precisa)+'</b>, e isso pode virar <b>'+lower(p.corre)+'</b>.';
+    $('#endBody').innerHTML='<div class="ikcard">'+
+      '<div class="selo-top">★ O SEU IKIGAI · FORJADO EM ALAGOAS ★</div>'+
+      '<div class="who">'+S.nome+' · Nº '+num+'</div>'+
+      diagram()+
+      '<div class="synth">'+synth+'</div>'+
+      '<div class="what"><b>Ikigai</b> é uma palavra japonesa pro encontro de tudo isso: o que você ama, o que faz bem, o que o mundo precisa e o que dá retorno. É o seu lugar no mundo, o seu motivo de acordar com gás. E o primeiro passo cabe em 48h.</div>'+
+      '<div class="foto">📸 TIRA UMA FOTO E LEVA O SEU IKIGAI CONTIGO</div>'+
       '</div>'+
-      '<div class="gancho">Não existe fazedor certo ou errado. Existe o <b>seu jeito</b> de resolver problema, e Alagoas precisa de todos eles. Agora é seguir na trilha do Escalada.</div>'+
-      '<div class="tags">#ToNoNeon #EscaladaSebrae @sebraealagoas</div>'+
-      '<button class="btn" id="replayBtn" style="margin-top:18px">RESOLVER DE NOVO</button>'+
+      '<div class="gancho">Não existe ikigai certo ou errado, existe o <b>seu</b>. Esse é só o começo: a trilha segue no Escalada.</div>'+
+      '<button class="btn" id="replayBtn" style="margin-top:16px">FORJAR DE NOVO</button>'+
       '<button class="btn sec" onclick="location.href=\'/hub/\'">◂ VOLTAR AO HUB</button>';
-    persist(key);
+    persist();
     $('#replayBtn').onclick=start;
     $('#screenEnd').classList.remove('hidden'); sWin();
   }
-  function persist(key){ try{var k='neon-forja-perfis';var a=JSON.parse(localStorage.getItem(k)||'[]');a.push({nome:S.nome,perfil:key,ts:new Date().toISOString()});localStorage.setItem(k,JSON.stringify(a.slice(-500)));}catch(e){} }
+  function persist(){ try{var k='neon-forja-ikigai';var a=JSON.parse(localStorage.getItem(k)||'[]');a.push({nome:S.nome,picks:S.picks,ts:new Date().toISOString()});localStorage.setItem(k,JSON.stringify(a.slice(-500)));}catch(e){} }
 
   // ---------- seletor de nome ----------
   function buildNamePick(){
@@ -346,12 +291,11 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
   function start(){
     ac(); var nome=lerNome(); reset(); S.nome=nome; S.running=true;
     $('#screenIntro').classList.add('hidden'); $('#screenEnd').classList.add('hidden');
-    showProblem();
+    showQ();
   }
   $('#startBtn').onclick=start;
   buildNamePick();
 
-  // idle/attract reset
   ['pointerdown','touchstart','keydown'].forEach(function(e){ window.addEventListener(e,function(){ S._idle=performance.now(); },{passive:true}); });
   setInterval(function(){
     if(performance.now()-S._idle>60000 && $('#screenIntro').classList.contains('hidden') && $('#screenEnd').classList.contains('hidden')){
@@ -367,7 +311,7 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
     var m=location.search.match(/dev=(\w+)/); if(!m)return; ac=function(){return null;};
     var v=m[1];
     if(v==='play'){ start(); }
-    else if(v==='end'){ reset(); S.nome='LUC'; S.tally={inventor:1,mao:3,conector:1,raiz:1}; S.solucoes=['A sua saída pra transformar o seu talento em renda: usando a internet como aliada, botando a mão e fazendo acontecer logo.']; reveal(); }
+    else if(v==='end'){ reset(); S.nome='LUC'; S.picks={ama:'GAMES',bom:'DESENHAR E EDITAR',precisa:'CULTURA E LAZER',corre:'CONTEÚDO NA NET'}; reveal(); }
   })();
 })();
 </script>
