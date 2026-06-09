@@ -243,6 +243,11 @@ body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hi
 .screen{ position:absolute; inset:0; z-index:80; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:28px 24px; background:rgba(5,8,34,.95); }
 .screen.hidden{ display:none; }
 .logo{ height:24px; margin-bottom:18px; filter:drop-shadow(0 0 8px rgba(0,249,255,.4)); opacity:.9; }
+.logo-row{ display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:18px; opacity:.92; }
+.logo-row img{ filter:drop-shadow(0 0 8px rgba(0,249,255,.4)); }
+.logo-row .logo-sebrae{ height:30px; }
+.logo-row .logo-tnl{ height:22px; }
+.logo-row .logo-sep{ width:1px; height:20px; background:rgba(255,255,255,.25); }
 h1.title{ font-family:var(--mono); font-size:clamp(19px,7vw,28px); line-height:1.5; text-shadow:3px 3px 0 var(--magenta),6px 6px 0 var(--azul); margin-bottom:10px; }
 .tagline{ font-size:14px; color:var(--ciano); margin-bottom:18px; line-height:1.5; max-width:330px; }
 .howto{ font-size:12px; color:rgba(255,255,255,.72); line-height:1.7; max-width:320px; margin-bottom:14px; }
@@ -253,6 +258,11 @@ h1.title{ font-family:var(--mono); font-size:clamp(19px,7vw,28px); line-height:1
 .namewrap{ display:flex; gap:10px; margin:6px 0 16px; }
 .namebox{ width:50px; height:58px; border:2px solid var(--ciano); border-radius:12px; background:rgba(0,249,255,.06); font-family:var(--mono); font-size:24px; color:#fff; text-align:center; text-transform:uppercase; }
 .namebox:focus{ outline:none; border-color:var(--amarelo); box-shadow:0 0 14px var(--amarelo); }
+.namepick{ display:flex; gap:12px; justify-content:center; margin:8px 0 16px; }
+.namepick .ns{ display:flex; flex-direction:column; align-items:center; gap:5px; }
+.namepick .nl{ width:52px; height:60px; border:2px solid var(--ciano); border-radius:12px; background:rgba(0,249,255,.06); font-family:var(--mono); font-size:26px; color:#fff; display:flex; align-items:center; justify-content:center; }
+.namepick .na{ width:52px; height:30px; border:1px solid rgba(0,249,255,.35); border-radius:8px; background:rgba(0,249,255,.08); color:var(--ciano); font-size:13px; cursor:pointer; }
+.namepick .na:active{ transform:scale(.92); }
 .endcard{ background:linear-gradient(160deg,#0a0f36,#1a1f4e); border:2px solid var(--amarelo); border-radius:20px; padding:24px 22px; max-width:336px; width:100%; box-shadow:0 0 40px rgba(255,217,61,.3); }
 .endcard .verdict{ font-family:var(--mono); font-size:15px; line-height:1.5; margin-bottom:12px; }
 .win .verdict{ color:var(--amarelo); text-shadow:0 0 14px var(--amarelo); }
@@ -348,11 +358,15 @@ h1.title{ font-family:var(--mono); font-size:clamp(19px,7vw,28px); line-height:1
 
   <!-- INTRO -->
   <div class="screen win" id="screenIntro">
-    <img class="logo" src="../../assets/logo-tnl-h.png" alt="Tiro na Lua" onerror="this.style.display='none'"/>
+    <div class="logo-row">
+      <img class="logo-sebrae" src="../../assets/logo-sebrae-branca.webp" alt="Sebrae Alagoas" onerror="this.style.display='none'"/>
+      <span class="logo-sep"></span>
+      <img class="logo-tnl" src="../../assets/logo-tnl-h.png" alt="Tiro na Lua" onerror="this.style.display='none'"/>
+    </div>
     <h1 class="title">ACENDE A<br>CENTELHA</h1>
     <p class="tagline">A energia caiu, você tá trancado e o pavio tá queimando. Três fazedores de Alagoas deixaram a centelha nessa sala. O talento de cada um destrava uma saída.</p>
     <div class="howto"><b>1.</b> <b style="color:var(--ciano)">Hermeto</b> religa a luz (criatividade) &nbsp;·&nbsp; <b>2.</b> <b style="color:var(--ciano)">Graciliano</b> abre o cofre (método) &nbsp;·&nbsp; <b>3.</b> <b style="color:var(--ciano)">Marta</b> arromba a porta (perseverança).</div>
-    <div class="namewrap"><input class="namebox" id="n0" maxlength="1" autocomplete="off"/><input class="namebox" id="n1" maxlength="1" autocomplete="off"/><input class="namebox" id="n2" maxlength="1" autocomplete="off"/></div>
+    <div class="namepick" id="namepick"></div>
     <button class="btn" id="startBtn">ENTRAR NA SALA</button>
   </div>
 
@@ -454,7 +468,7 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
   function tick(ts){
     if(!S.running)return;
     if(!S.last)S.last=ts;
-    var dt=(ts-S.last)/1000;S.last=ts;
+    var dt=Math.min(0.1,(ts-S.last)/1000);S.last=ts;  // clamp: volta de background nao mata a partida de uma vez
     if(!S.paused){ S.restante-=dt; if(S.restante<=0){S.restante=0;renderHUD();return lose();} }
     if(!S.paused && S.state==='fechadura' && $('#ov').classList.contains('up')) marker(dt);
     renderHUD(); S.raf=requestAnimationFrame(tick);
@@ -691,7 +705,20 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
 
   $('#dicaBtn').onclick=function(){ if(!S.running||S.paused||!S._dica)return; S.dicas++; S.combo=0; S.restante=Math.max(1,S.restante-6); renderHUD(); try{S._dica();}catch(e){} };
 
-  function lerNome(){var n='';['#n0','#n1','#n2'].forEach(function(s){var v=($(s).value||'').toUpperCase().replace(/[^A-Z]/g,'');n+=v||'?';});return n.slice(0,3)||'???';}
+  // seletor de iniciais por setas (padrao do arcade, sem teclado do sistema)
+  var ALPHA='ABCDEFGHIJKLMNOPQRSTUVWXYZ', nameIdx=[0,0,0];
+  function buildNamePick(){
+    var np=$('#namepick'); if(!np) return; np.innerHTML='';
+    for(var i=0;i<3;i++){ (function(i){
+      var s=document.createElement('div'); s.className='ns';
+      s.innerHTML='<button class="na up" type="button">▲</button><div class="nl">'+ALPHA[nameIdx[i]]+'</div><button class="na dn" type="button">▼</button>';
+      np.appendChild(s);
+      var nl=s.querySelector('.nl');
+      s.querySelector('.up').onclick=function(){ nameIdx[i]=(nameIdx[i]+1)%26; nl.textContent=ALPHA[nameIdx[i]]; try{sC();}catch(e){} };
+      s.querySelector('.dn').onclick=function(){ nameIdx[i]=(nameIdx[i]+25)%26; nl.textContent=ALPHA[nameIdx[i]]; try{sC();}catch(e){} };
+    })(i); }
+  }
+  function lerNome(){ return nameIdx.map(function(i){return ALPHA[i];}).join('')||'???'; }
   function start(){
     if(S.raf) cancelAnimationFrame(S.raf);   // mata qualquer loop anterior (anti duplo-toque no START/REPLAY)
     ac(); var nome=lerNome(); reset(); S.nome=nome; S.running=true; S.state='room';
@@ -705,13 +732,27 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
     $('#screenIntro').classList.add('hidden'); $('#screenEnd').classList.add('hidden'); $('#screenPride').classList.add('hidden');
     S.raf=requestAnimationFrame(tick);
   }
-  ['#n0','#n1','#n2'].forEach(function(s,i){var el=$(s);el.addEventListener('input',function(){el.value=(el.value||'').toUpperCase().replace(/[^A-Z]/g,'').slice(0,1);if(el.value&&i<2)$(['#n0','#n1','#n2'][i+1]).focus();});});
+  buildNamePick();
   $('#startBtn').onclick=start; $('#replayBtn').onclick=start;
   bindObjs(); renderHUD();
 
   // escala o palco pra preencher o totem (qualquer tela) mantendo a proporcao
   function fitStage(){ var f=Math.min(window.innerWidth/540, window.innerHeight/960); document.documentElement.style.setProperty('--fit', f); }
   window.addEventListener('resize', fitStage); fitStage();
+
+  // idle/attract: totem abandonado fora da intro volta sozinho pra tela inicial
+  var _idle=performance.now();
+  function bumpIdle(){ _idle=performance.now(); }
+  ['pointerdown','touchstart','keydown'].forEach(function(e){ window.addEventListener(e,bumpIdle,{passive:true}); });
+  setInterval(function(){
+    if(performance.now()-_idle>60000 && $('#screenIntro').classList.contains('hidden')){
+      bumpIdle();
+      if(S.raf) cancelAnimationFrame(S.raf); S.running=false; S.paused=false;
+      $('#ov').classList.remove('up'); $('#aparicao').classList.remove('show');
+      $('#screenEnd').classList.add('hidden'); $('#screenPride').classList.add('hidden');
+      $('#screenIntro').classList.remove('hidden');
+    }
+  }, 5000);
 
   // dev hook
   (function(){

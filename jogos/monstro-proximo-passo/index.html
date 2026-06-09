@@ -46,8 +46,25 @@ window.addEventListener('unhandledrejection', e => {
   window._neonErrors.push({ msg: 'unhandled promise: ' + (e.reason?.message || e.reason), src: 'promise', line: '?', col: '?' });
 });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.106.2/dist/umd/supabase.js" integrity="sha384-m/8UHFJHeU6nrCKP2hBnAseuvAKUmLF+8e5bWos5CJL023vuxX7kiVL5t8yjsJhV" crossorigin="anonymous"></script>
-<script src="/assets/js/neon-store.js?v=6"></script>
+<script>
+/* NeonStore LOCAL: offline, placar unico na propria maquina (sem Supabase, sem caravana, sem operador). */
+window.NeonStore = (function(){
+  var KEY='neon-monstro-placar';
+  function load(){ try{return JSON.parse(localStorage.getItem(KEY)||'[]');}catch(e){return [];} }
+  function save(a){ try{a.sort(function(x,y){return (y.score||0)-(x.score||0);});localStorage.setItem(KEY,JSON.stringify(a.slice(0,500)));}catch(e){} }
+  return {
+    online:false,
+    init:function(){ return Promise.resolve(true); },
+    getCaravanaAtiva:function(){ return Promise.resolve(null); },
+    encerrarCaravanaAtiva:function(){ return Promise.resolve({ok:true}); },
+    listarHistoricoCaravanas:function(){ return Promise.resolve([]); },
+    topPartidasCaravanaAtiva:function(limit){ return Promise.resolve(load().slice(0, limit||5)); },
+    topPartidasGeral:function(limit){ return Promise.resolve(load().slice(0, limit||5)); },
+    salvarPartida:function(p){ p=p||{}; var a=load(); a.push({nome_jogador:p.nome_jogador||'AAA', score:p.score|0, fase_max:p.fase_max|0, combo_max:p.combo_max|0, acertos:p.acertos|0, ts:new Date().toISOString()}); save(a); return Promise.resolve({ok:true, data:p}); },
+    operadorAcao:function(acao){ if(acao==='reset'||acao==='limpar_atual'){ save([]); } return Promise.resolve({ok:true}); }
+  };
+})();
+</script>
 <script>
 window.addEventListener('load', () => {
   const errs = window._neonErrors || [];
@@ -924,6 +941,12 @@ html, body {
   padding: 0 14px;
 }
 
+/* logos no header (Sebrae + TNL, equilibrados) */
+.header-brand-slot { display: flex; align-items: center; gap: 8px; }
+.header-brand-slot .hbl-sebrae { height: 18px; opacity: 0.9; }
+.header-brand-slot .hbl-tnl { height: 13px; opacity: 0.9; }
+.header-brand-slot .hbl-sep { width: 1px; height: 13px; background: rgba(255,255,255,0.25); }
+
 /* CARAVANA BADGE */
 .caravana-badge {
   position: absolute;
@@ -1356,13 +1379,15 @@ html, body {
   <div class="bg-mountain"></div>
 
   <div class="header">
-    <!-- TROCAR pelo logo do Sebrae Alagoas quando o asset chegar:
-         <img src="../../assets/logo-sebrae-al.png" alt="Sebrae Alagoas" /> -->
-    <div class="header-brand-slot" aria-hidden="true"></div>
-    <button class="op-btn" id="btn-operator" title="Operador">⚙️</button>
+    <div class="header-brand-slot">
+      <img class="hbl-sebrae" src="../../assets/logo-sebrae-branca.webp" alt="Sebrae Alagoas" onerror="this.style.display='none'"/>
+      <span class="hbl-sep"></span>
+      <img class="hbl-tnl" src="../../assets/logo-tnl-h.png" alt="Tiro na Lua" onerror="this.style.display='none'"/>
+    </div>
+    <button class="op-btn" id="btn-operator" title="Operador" style="display:none">⚙️</button>
   </div>
 
-  <div class="caravana-badge" id="caravana-badge">CARAVANA 01</div>
+  <div class="caravana-badge" id="caravana-badge" style="display:none">CARAVANA 01</div>
 
   <!-- START -->
   <div class="screen" id="screen-start">
@@ -1594,6 +1619,7 @@ html, body {
       <button class="end-button" id="btn-replay">▶ DE NOVO</button>
       <button class="end-button" id="btn-rank" hidden style="background:var(--amarelo);box-shadow:0 0 24px rgba(255,217,61,0.6), 4px 4px 0 var(--navy-deep);">🏆 RANKING</button>
     </div>
+    <button class="end-button" id="btn-hub" style="margin-top:10px;background:transparent;border:1px solid var(--ciano);color:var(--ciano);box-shadow:none;" onclick="location.href='/hub/'">◂ VOLTAR AO HUB</button>
   </div>
 
   <!-- INITIALS INPUT -->
@@ -1745,7 +1771,7 @@ const LESSONS = {
 const PHASES = [
   { id: 1, name: 'O VAZIO',  duration: 25, fallSpeed: 70,  spawnMin: 1800, spawnMax: 2400, maxSimul: 1, bossHp: 80,  cls: '' },
   { id: 2, name: 'A SUBIDA', duration: 30, fallSpeed: 100, spawnMin: 1200, spawnMax: 1800, maxSimul: 2, bossHp: 120, cls: 'phase-2' },
-  { id: 3, name: 'O TOPO',   duration: 0,  fallSpeed: 120, spawnMin: 900,  spawnMax: 1400, maxSimul: 3, bossHp: 0,   cls: 'phase-3', infinite: true }
+  { id: 3, name: 'O TOPO',   duration: 45, fallSpeed: 120, spawnMin: 900,  spawnMax: 1400, maxSimul: 3, bossHp: 0,   cls: 'phase-3', infinite: true }
 ];
 
 const HS_KEY = 'escalada-boss-ranking-v2';
@@ -2117,7 +2143,11 @@ function advancePhase() {
 function tick() {
   if (!state.gameRunning || state.mode !== 'playing') return;
   const phase = PHASES[state.phaseIndex];
-  if (phase.infinite) return;
+  if (phase.infinite) {           // O Topo tem teto (timer mostra ∞), pra nao prender a fila
+    state.phaseTimeLeft--;
+    if (state.phaseTimeLeft <= 0) endGame(true);  // sobreviveu ao topo, vitoria
+    return;
+  }
   state.phaseTimeLeft--;
   $('timer').textContent = state.phaseTimeLeft;
   if (state.phaseTimeLeft <= 0) {
@@ -2787,8 +2817,8 @@ $('op-reset-no').addEventListener('click', () => showOpView('op-view-menu'));
     }, 1000);
   }
 
-  // Detector 2: debugger trick. Se DevTools aberto, debugger pausa e mede tempo.
-  setInterval(() => {
+  // Detector 2 (debugger): so em ?dev=. Em producao/kiosk dava falso-positivo sob jank e assustava visitante.
+  if (/dev=/.test(location.search)) setInterval(() => {
     const start = performance.now();
     // eslint-disable-next-line no-debugger
     debugger;
@@ -2807,6 +2837,21 @@ $('op-reset-no').addEventListener('click', () => showOpView('op-view-menu'));
   console.log('%cGOTCHA 👁️', 'font-size:48px;color:#FFD93D;text-shadow:3px 3px 0 #000;');
   console.log('%cTudo aqui virou log. Os medos te pegaram fora do jogo.', 'font-size:14px;color:#FF00FF;');
   console.log('%cSe veio testar: as defesas estão todas no ar. Tenta uma partida limpa.', 'font-size:12px;color:#fff;');
+})();
+
+// idle/attract: totem abandonado fora da tela inicial volta sozinho pra start
+(function(){
+  var t = performance.now();
+  ['pointerdown','touchstart','keydown'].forEach(function(e){ window.addEventListener(e, function(){ t = performance.now(); }, { passive: true }); });
+  setInterval(function(){
+    var ss = document.getElementById('screen-start');
+    if (performance.now() - t > 60000 && ss && ss.hidden) {
+      t = performance.now();
+      try { state.gameRunning = false; state.mode = 'idle'; clearInterval(state.loopRef); cancelAnimationFrame(state.rafRef); } catch (e) {}
+      document.querySelectorAll('.fall-block').forEach(function(el){ el.remove(); });
+      try { showScreen('start'); } catch (e) {}
+    }
+  }, 5000);
 })();
 </script>
 </body>
