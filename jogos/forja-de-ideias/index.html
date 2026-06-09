@@ -96,6 +96,12 @@ body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hi
 /* TELAS */
 .screen{ position:absolute; inset:0; z-index:80; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:26px 22px; background:rgba(5,8,34,.96); overflow:auto; }
 .screen.hidden{ display:none; }
+/* telas de fim ancoram no topo e rolam, nunca cortam */
+#screenEnd, #screenMore{ justify-content:flex-start; padding-top:26px; padding-bottom:34px; }
+/* CTA de foto destacado (as pessoas fotografam pra usar numa IA depois) */
+.fotocta{ display:flex; align-items:center; gap:10px; justify-content:center; text-align:left; background:rgba(255,118,255,.12); border:1.5px solid var(--magenta-claro); border-radius:14px; padding:12px 14px; margin:14px auto 0; max-width:380px; font-size:13px; line-height:1.4; color:#fff; }
+.fotocta .cam{ font-size:26px; }
+.fotocta b{ color:var(--magenta-claro); }
 .logo-row{ display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:18px; opacity:.92; }
 .logo-row img{ filter:drop-shadow(0 0 8px rgba(0,249,255,.4)); }
 .logo-row .logo-sebrae{ height:30px; } .logo-row .logo-tnl{ height:22px; } .logo-row .logo-sep{ width:1px; height:20px; background:rgba(255,255,255,.25); }
@@ -124,14 +130,14 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
 .namehint{ font-size:11px; color:rgba(255,255,255,.62); margin-bottom:10px; max-width:300px; line-height:1.4; }
 .ikcard .ik-logos{ display:flex; align-items:center; justify-content:center; gap:12px; margin-top:14px; opacity:.9; }
 .ikcard .ik-logos .lg-sebrae{ height:22px; } .ikcard .ik-logos .lg-tnl{ height:16px; } .ikcard .ik-logos .sep{ width:1px; height:15px; background:rgba(255,255,255,.3); }
-.ikdef{ font-size:11px; color:rgba(255,255,255,.6); line-height:1.45; margin:8px auto 0; max-width:320px; }
-.morecard{ background:rgba(0,249,255,.05); border:2px solid rgba(0,249,255,.35); border-radius:18px; padding:18px 16px 8px; max-width:400px; width:100%; }
-.morecard .mk{ font-family:var(--mono); font-size:10px; color:var(--ciano); text-shadow:0 0 8px var(--ciano); margin-bottom:12px; }
+.ikdef{ font-size:12px; color:rgba(255,255,255,.62); line-height:1.45; margin:8px auto 0; max-width:330px; }
+.morecard{ background:rgba(0,249,255,.05); border:2px solid rgba(0,249,255,.35); border-radius:18px; padding:20px 18px 14px; max-width:430px; width:100%; }
+.morecard .mk{ font-family:var(--mono); font-size:12px; color:var(--ciano); text-shadow:0 0 8px var(--ciano); margin-bottom:14px; line-height:1.5; }
 .morecard .caminho{ margin-top:0; }
-.caminho{ max-width:390px; width:100%; margin-top:16px; background:rgba(0,249,255,.06); border:1px solid rgba(0,249,255,.3); border-radius:14px; padding:14px 16px; }
-.caminho .ck{ font-family:var(--mono); font-size:7px; letter-spacing:1px; color:var(--ciano); margin-bottom:7px; }
-.caminho .ct{ font-size:13px; line-height:1.5; color:#fff; }
-.aprofundar{ max-width:390px; width:100%; margin-top:10px; font-size:12px; line-height:1.55; color:rgba(255,255,255,.78); }
+.caminho{ max-width:400px; width:100%; margin-top:16px; background:rgba(0,249,255,.06); border:1px solid rgba(0,249,255,.3); border-radius:14px; padding:16px; }
+.caminho .ck{ font-family:var(--mono); font-size:8.5px; letter-spacing:.5px; color:var(--ciano); margin-bottom:9px; line-height:1.5; }
+.caminho .ct{ font-size:15px; line-height:1.55; color:#fff; }
+.aprofundar{ max-width:400px; width:100%; margin-top:12px; font-size:13.5px; line-height:1.55; color:rgba(255,255,255,.82); }
 .aprofundar b{ color:var(--amarelo); }
 .gancho{ font-size:12px; color:rgba(255,255,255,.72); line-height:1.6; margin-top:14px; max-width:390px; }
 .gancho b{ color:var(--ciano); }
@@ -290,7 +296,7 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
       '<div class="synth">'+synth+'</div>'+
       '<div class="ikdef">Ikigai: onde o que você ama, faz bem, o mundo precisa e te dá retorno se encontram. O seu lugar no mundo.</div>'+
       '<div class="ik-logos"><img class="lg-sebrae" src="../../assets/logo-sebrae-branca.webp" alt="Sebrae Alagoas" onerror="this.style.display=\'none\'"/><span class="sep"></span><img class="lg-tnl" src="../../assets/logo-tnl-h.png" alt="Tiro na Lua" onerror="this.style.display=\'none\'"/></div>'+
-      '<div class="foto">📸 TIRA UMA FOTO E LEVA O SEU IKIGAI</div>'+
+      '<div class="fotocta"><span class="cam">📸</span><div><b>Tira uma foto do seu ikigai!</b> Leva contigo, vai te servir lá na frente.</div></div>'+
       '</div>'+
       '<button class="btn" id="moreBtn" style="margin-top:14px">E AGORA? ▸</button>';
     persist();
@@ -302,8 +308,9 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
     var cross='Junta o que você <b>ama</b> ('+lower(p.ama)+') com o que a sua quebrada <b>precisa</b> ('+lower(p.precisa)+'): isso te joga num campo que tá explodindo, a <b>'+campo.n+'</b>, '+campo.t+' Pouca gente da sua idade sabe que isso existe.';
     $('#moreBody').innerHTML='<div class="morecard">'+
       '<div class="mk">E AGORA? UM CAMINHO PRA SEGUIR</div>'+
-      '<div class="caminho"><div class="ck">⚡ UM CRUZAMENTO QUE TALVEZ VOCÊ NÃO IMAGINAVA</div><div class="ct">'+cross+'</div></div>'+
-      '<div class="aprofundar"><b>Pra ir além:</b> tira a foto do seu ikigai e mostra pra alguém que te inspira, ou joga a imagem numa IA (tipo ChatGPT ou Gemini) e pede "me ajuda a explorar esse meu ikigai e achar carreiras e projetos de impacto". Ikigai é trabalho pra vida toda.</div>'+
+      '<div class="caminho"><div class="ck">⚡ UM CRUZAMENTO QUE VOCÊ TALVEZ NÃO IMAGINAVA</div><div class="ct">'+cross+'</div></div>'+
+      '<div class="fotocta"><span class="cam">📸</span><div><b>Tira uma foto dessa tela também.</b> Depois joga as duas (o seu ikigai e essa) numa IA, tipo ChatGPT ou Gemini, e pede: "me ajuda a explorar isso e achar carreiras e projetos de impacto".</div></div>'+
+      '<div class="aprofundar" style="text-align:center;margin-top:14px">Ikigai é trabalho pra vida toda. Isso aqui é só o começo.</div>'+
       '</div>'+
       '<button class="btn" id="replayBtn" style="margin-top:14px">FORJAR DE NOVO</button>'+
       '<button class="btn sec" id="backIk">◂ VER MEU IKIGAI DE NOVO</button>'+
