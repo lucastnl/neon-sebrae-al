@@ -309,7 +309,8 @@ h1.title{ font-family:var(--mono); font-size:clamp(19px,7vw,28px); line-height:1
 .pride-ret img{ image-rendering:pixelated; }
 .pride-nm{ font-family:var(--mono); font-size:16px; color:var(--amarelo); text-shadow:0 0 14px var(--amarelo); margin-bottom:8px; }
 .pride-chip{ display:inline-block; font-family:var(--mono); font-size:8px; letter-spacing:1px; color:var(--navy-deep); background:var(--ciano); border-radius:999px; padding:5px 12px; margin-bottom:14px; }
-.pride-cur{ font-size:13.5px; line-height:1.55; color:rgba(255,255,255,.9); margin-bottom:12px; }
+.pride-punch{ font-size:15px; line-height:1.5; color:var(--amarelo); font-weight:700; text-shadow:0 0 12px rgba(255,217,61,.4); margin-bottom:12px; }
+.pride-cur{ font-size:12.5px; line-height:1.5; color:rgba(255,255,255,.78); margin-bottom:12px; }
 .pride-kick{ font-size:12.5px; line-height:1.5; color:var(--ciano); border-top:1px solid rgba(255,255,255,.14); padding-top:11px; }
 </style>
 </head>
@@ -398,14 +399,17 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
     {ic:'🎵', key:'hermeto', nm:'HERMETO', comp:'CRIATIVIDADE', obj:'radio',
      ft:'o Bruxo dos Sons, de Lagoa da Canoa. Tira música de qualquer coisa.',
      intro:'faz música até de um copo d\'água. Criatividade é achar caminho onde parece não ter.',
+     punch:'Encantou plateias do mundo inteiro com um som que ninguém tinha inventado. E saiu de Lagoa da Canoa, no agreste de Alagoas.',
      cur:'Criança, fez uma flauta de talo de abóbora e ficava tocando pros passarinhos e pra água da lagoa. Adulto, virou música de copo, de chaleira e até da própria barba. Em 1996 compôs uma música por dia, o ano inteiro.'},
     {ic:'📖', key:'graciliano', nm:'GRACILIANO', comp:'MÉTODO', obj:'estante',
      ft:'de Quebrângulo. Escreveu Vidas Secas com paciência de relojoeiro.',
      intro:'punha cada palavra no lugar certo. Método é a ordem que abre o que tá trancado.',
+     punch:'Virou leitura obrigatória nas escolas do Brasil inteiro. E saiu de Quebrângulo, uma cidadezinha do agreste de Alagoas.',
      cur:'Nasceu em Quebrângulo, uma cidadezinha do agreste de Alagoas, e de lá virou um dos maiores escritores que o Brasil já teve. Antes dos livros foi prefeito de Palmeira dos Índios, e seus relatórios de prestação de contas eram tão diretos e bem escritos que viraram fama no país inteiro. Do interiorzinho alagoano pra leitura do Brasil todo.'},
     {ic:'⚽', key:'marta', nm:'MARTA', comp:'PERSEVERANÇA', obj:'retrato',
      ft:'de Dois Riachos. A Rainha, a melhor jogadora do mundo.',
      intro:'caiu, levantou e não parou até ser a melhor do mundo. Perseverança é insistir no tempo certo até travar.',
+     punch:'Foi eleita a melhor do planeta seis vezes, mais que qualquer homem ou mulher na história. E saiu de Dois Riachos, no sertão de Alagoas.',
      cur:'Jogava na rua de terra com os meninos porque não tinha time pra menina. Saiu de Dois Riachos aos 14 atrás do sonho. Virou seis vezes a melhor do mundo, mais que qualquer jogador, homem ou mulher, e é a maior artilheira da história das Copas.'}
   ];
   // retrato 16-bit com fallback pro emoji enquanto o PNG não existe
@@ -511,11 +515,21 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
   }
   function runDisjuntor(){
     S.state='fios';
-    var sr=1, solved=false;
-    var masks=[6,12,6, 9,3,10, 6,10,12];   // config base solúvel (fonte esq-meio -> lâmpada dir-meio)
+    var sr=1, solved=false, SRC=3, DST=5;
     function rot(m){ return ((m<<1)|(m>>3))&15; }
+    // caminho diferente a cada partida: passeio aleatorio de SRC (esq-meio) ate DST (dir-meio)
+    function dirBit(a,b){ var ar=a/3|0,ac=a%3,br=b/3|0,bc=b%3; if(br<ar)return 1; if(bc>ac)return 2; if(br>ar)return 4; return 8; }
+    function neigh(c){ var r=c/3|0,col=c%3,o=[]; if(r>0)o.push(c-3); if(r<2)o.push(c+3); if(col>0)o.push(c-1); if(col<2)o.push(c+1); return o; }
+    function carve(c,vis){ if(c===DST)return [c]; var ns=shuffle(neigh(c)); for(var i=0;i<ns.length;i++){ if(vis.indexOf(ns[i])<0){ var res=carve(ns[i],vis.concat([ns[i]])); if(res)return [c].concat(res); } } return null; }
+    var path=carve(SRC,[SRC])||[3,4,5];
+    var masks=[0,0,0,0,0,0,0,0,0];
+    for(var pi=0;pi<path.length;pi++){ var cc=path[pi];
+      if(pi>0) masks[cc]|=dirBit(cc,path[pi-1]);
+      if(pi<path.length-1) masks[cc]|=dirBit(cc,path[pi+1]); }
+    masks[SRC]|=8; masks[DST]|=2;                                 // recebe o ⚡ / manda pra 💡
+    for(var dc=0;dc<9;dc++){ if(path.indexOf(dc)<0) masks[dc]=1+rint(15); }   // pecas-isca pelo grid
     for(var i=0;i<9;i++){ var t=rint(4); for(var z=0;z<t;z++) masks[i]=rot(masks[i]); }
-    masks[sr*3] |= 8;   // a peça da entrada sempre recebe o ⚡: acende de cara e dá o norte
+    masks[SRC]|=8;   // a peca da entrada sempre recebe o ⚡: acende de cara e da o norte
     var DIRS=[[1,-1,0,4],[2,0,1,8],[4,1,0,1],[8,0,-1,2]]; // [bit,dr,dc,opp]
     function powered(){
       var pw=[false,false,false,false,false,false,false,false,false], q=[], src=sr*3+0;
@@ -667,8 +681,9 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
       '<div class="pride-ret">'+retrato(f,130)+'</div>'+
       '<div class="pride-nm">'+f.nm+'</div>'+
       '<div class="pride-chip">'+f.comp+'</div>'+
+      '<div class="pride-punch">'+(f.punch||'')+'</div>'+
       '<div class="pride-cur">'+f.cur+'</div>'+
-      '<div class="pride-kick">Nasceu no mesmo chão que você. A centelha é alagoana.</div></div>'+
+      '<div class="pride-kick">A mesma terra que criou você criou gente assim. A centelha é alagoana.</div></div>'+
       '<button class="btn" id="prideGo">SAIR COM ORGULHO ⚡</button>';
     var g=$('#prideGo'); if(g) g.onclick=function(){ $('#screenPride').classList.add('hidden'); win(); };
   }
