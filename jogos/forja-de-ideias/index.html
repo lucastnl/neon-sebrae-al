@@ -121,6 +121,14 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
 .ikcard .what{ font-size:12.5px; line-height:1.55; color:var(--ciano); border-top:1px solid rgba(255,255,255,.14); padding-top:12px; }
 .ikcard .what b{ color:#fff; }
 .foto{ font-family:var(--mono); font-size:8px; color:var(--magenta-claro); margin-top:12px; letter-spacing:1px; }
+.namehint{ font-size:11px; color:rgba(255,255,255,.62); margin-bottom:10px; max-width:300px; line-height:1.4; }
+.ikcard .ik-logos{ display:flex; align-items:center; justify-content:center; gap:12px; margin-top:14px; opacity:.9; }
+.ikcard .ik-logos .lg-sebrae{ height:22px; } .ikcard .ik-logos .lg-tnl{ height:16px; } .ikcard .ik-logos .sep{ width:1px; height:15px; background:rgba(255,255,255,.3); }
+.caminho{ max-width:390px; width:100%; margin-top:16px; background:rgba(0,249,255,.06); border:1px solid rgba(0,249,255,.3); border-radius:14px; padding:14px 16px; }
+.caminho .ck{ font-family:var(--mono); font-size:7px; letter-spacing:1px; color:var(--ciano); margin-bottom:7px; }
+.caminho .ct{ font-size:13px; line-height:1.5; color:#fff; }
+.aprofundar{ max-width:390px; width:100%; margin-top:10px; font-size:12px; line-height:1.55; color:rgba(255,255,255,.78); }
+.aprofundar b{ color:var(--amarelo); }
 .gancho{ font-size:12px; color:rgba(255,255,255,.72); line-height:1.6; margin-top:14px; max-width:390px; }
 .gancho b{ color:var(--ciano); }
 .curadoria{ position:fixed; bottom:4px; left:0; right:0; text-align:center; font-size:8px; color:rgba(255,255,255,.26); z-index:85; font-family:var(--mono); }
@@ -163,6 +171,7 @@ h1.title{ font-family:var(--mono); font-size:clamp(20px,7vw,30px); line-height:1
     <h1 class="title">FORJA<br>DE IDEIAS</h1>
     <p class="tagline">Toda pessoa tem um lugar no mundo. Bora forjar o seu?</p>
     <div class="howto">Quatro perguntas sobre <b>você</b>, sem certo nem errado. No fim, a forja junta tudo e revela o <b>seu ikigai</b>: o ponto onde o que você é encontra o que o mundo precisa.</div>
+    <div class="namehint">Use as setas ▲▼ pra pôr as suas <b style="color:var(--ciano)">iniciais</b> (as 3 primeiras letras do seu nome).</div>
     <div class="namepick" id="namepick"></div>
     <button class="btn" id="startBtn">ACENDER A FORJA</button>
   </div>
@@ -193,6 +202,17 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
       opts:['UM SERVIÇO','CONTEÚDO NA NET','UM PRODUTO PRA VENDER','UM PROJETO OU COLETIVO','DAR AULA OU OFICINA','UM EVENTO OU ROLÊ'] }
   ];
   var DLAB={ ama:'O QUE VOCÊ AMA', bom:'O QUE FAZ BEM', precisa:'O QUE O MUNDO PRECISA', corre:'O QUE DÁ RETORNO' };
+  // biblioteca curada de caminhos possíveis (offline, sem IA), keyed na paixão (o coração do ikigai)
+  var CAMINHO={
+    'CRIAR E ARTE':'Sabia que dá pra viver de arte e design? Um traço seu pode virar estampa, marca, mural, capa, identidade visual, tatuagem, animação.',
+    'GAMES':'Sabia que dá pra trabalhar COM games sem ser pro player? Criar conteúdo, testar jogos, level design, organizar campeonato, narrar partida.',
+    'ESPORTE':'Sabia que esporte é carreira muito além de atleta? Preparador, gestor de evento, criador de conteúdo esportivo, treinar a molecada da sua quebrada.',
+    'MÚSICA':'Sabia que música é uma indústria inteira? Produzir, mixar, agenciar artista, fazer trilha de vídeo, dar aula, montar rolê e evento.',
+    'AJUDAR GENTE':'Sabia que "ajudar gente" move profissões inteiras? Saúde, educação, projeto social, e existe edital com grana pra quem resolve problema da comunidade.',
+    'TECNOLOGIA':'Sabia que Alagoas tá contratando tech? Programar, dados, automação, suporte. E dá pra começar com curso gratuito online, do seu próprio celular.',
+    'COZINHAR':'Sabia que da cozinha sai negócio de verdade? Marmita, doce, food bike, conteúdo de receita. E o sabor de Alagoas (coco, sururu) o mundo inteiro quer.',
+    'A RUA E A NATUREZA':'Sabia que natureza vira trabalho? Turismo, guia, projeto ambiental, agroecologia. Alagoas é o Caribe brasileiro, cheio de oportunidade verde.'
+  };
 
   // ---------- estado ----------
   var ALPHA='ABCDEFGHIJKLMNOPQRSTUVWXYZ', nameIdx=[0,0,0];
@@ -263,8 +283,11 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
       '<div class="synth">'+synth+'</div>'+
       '<div class="what"><b>Ikigai</b> é uma palavra japonesa pro encontro de tudo isso: o que você ama, o que faz bem, o que o mundo precisa e o que dá retorno. É o seu lugar no mundo, o seu motivo de acordar com gás. E o primeiro passo cabe em 48h.</div>'+
       '<div class="foto">📸 TIRA UMA FOTO E LEVA O SEU IKIGAI CONTIGO</div>'+
+      '<div class="ik-logos"><img class="lg-sebrae" src="../../assets/logo-sebrae-branca.webp" alt="Sebrae Alagoas" onerror="this.style.display=\'none\'"/><span class="sep"></span><img class="lg-tnl" src="../../assets/logo-tnl-h.png" alt="Tiro na Lua" onerror="this.style.display=\'none\'"/></div>'+
       '</div>'+
-      '<div class="gancho">Não existe ikigai certo ou errado, existe o <b>seu</b>. Esse é só o começo: a trilha segue no Escalada.</div>'+
+      '<div class="caminho"><div class="ck">⚡ UM CAMINHO QUE TALVEZ VOCÊ NÃO IMAGINAVA</div><div class="ct">'+(CAMINHO[p.ama]||'O que você ama pode virar profissão. Tem mais caminho do que parece, e o mundo precisa do seu.')+'</div></div>'+
+      '<div class="aprofundar">Ikigai é trabalho pra vida toda, isso aqui é só o começo. <b>Pra ir além:</b> tira a foto e mostra pra alguém que te inspira, ou joga a imagem numa IA (tipo ChatGPT ou Gemini) e pede "me ajuda a explorar esse meu ikigai". Vai te surpreender.</div>'+
+      '<div class="gancho">Não existe ikigai certo ou errado, existe o <b>seu</b>. A trilha segue no Escalada.</div>'+
       '<button class="btn" id="replayBtn" style="margin-top:16px">FORJAR DE NOVO</button>'+
       '<button class="btn sec" onclick="location.href=\'/hub/\'">◂ VOLTAR AO HUB</button>';
     persist();
