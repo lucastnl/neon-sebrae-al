@@ -15,9 +15,8 @@
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
 
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+<!-- fontes hospedadas localmente: jogo funciona offline no totem -->
+<link rel="stylesheet" href="../../assets/fonts/fonts.css" />
 
 <style>
 :root{
@@ -30,7 +29,8 @@
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;}
 body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hidden; -webkit-font-smoothing:antialiased; user-select:none; touch-action:none; image-rendering:pixelated; }
-#stage{ position:fixed; inset:0; display:flex; flex-direction:column; max-width:560px; margin:0 auto; overflow:hidden; }
+/* resolução de design 540x960 (9:16): escala pra preencher qualquer totem mantendo a proporção */
+#stage{ position:fixed; top:50%; left:50%; width:540px; height:960px; transform:translate(-50%,-50%) scale(var(--fit,1)); transform-origin:center center; display:flex; flex-direction:column; overflow:hidden; }
 .shake{ animation:shake .3s; }
 @keyframes shake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-7px)} 50%{transform:translateX(7px)} 75%{transform:translateX(-4px)} }
 .flash{ animation:flash .25s; }
@@ -128,10 +128,17 @@ body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hi
 #porta{ bottom:0; left:50%; transform:translateX(-50%); width:96px; height:48%; z-index:9; }
 #porta .leaf{ position:absolute; inset:0; background:linear-gradient(180deg,#1a2150,#0e1438); border:5px solid #3a4690; border-bottom:none; border-radius:6px 6px 0 0; }
 #porta .seam{ position:absolute; top:8%; bottom:0; left:50%; width:3px; background:rgba(0,0,0,.5); }
-#porta .lock{ position:absolute; top:46%; right:14%; width:18px; height:18px; border-radius:50%; background:var(--vermelho); box-shadow:0 0 10px var(--vermelho); }
+#porta .lock{ position:absolute; top:46%; right:12%; width:20px; height:20px; border-radius:50%; background:var(--vermelho); box-shadow:0 0 10px var(--vermelho); display:flex; align-items:center; justify-content:center; font-size:11px; }
+#porta .lock::after{ content:'🔒'; }
 #porta.unlocked .lock{ background:var(--verde-claro); box-shadow:0 0 12px var(--verde-claro); }
+#porta.unlocked .lock::after{ content:'🔓'; }
 .escape #porta .leaf{ transform:translateY(-100%); transition:transform .8s cubic-bezier(.6,0,.2,1); }
 .escape #porta .glow{ position:absolute; inset:0; background:radial-gradient(circle,#fff,#FFE9A8 50%,transparent 75%); }
+
+/* dedinho de norte: aponta pro disjuntor no escuro, some no 1º toque */
+#taphint{ position:absolute; top:23%; right:7%; z-index:26; font-size:30px; pointer-events:none; filter:drop-shadow(0 0 8px var(--amarelo)); animation:tapbob 1s infinite; }
+#taphint.hide{ display:none; }
+@keyframes tapbob{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-9px) } }
 
 /* selos de progresso (chips no topo da sala) */
 #chips{ position:absolute; top:6px; left:50%; transform:translateX(-50%); z-index:26; display:flex; gap:8px; }
@@ -198,7 +205,9 @@ body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hi
 .tumb{ position:relative; height:28px; border-radius:8px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.12); overflow:hidden; opacity:.4; }
 .tumb.active{ opacity:1; border-color:var(--ciano); }
 .tumb.locked{ opacity:1; background:rgba(0,255,133,.14); border-color:var(--verde-claro); }
-.tumb .zone{ position:absolute; top:0; bottom:0; background:rgba(0,255,133,.3); border-left:1px solid var(--verde-claro); border-right:1px solid var(--verde-claro); }
+.tumb.locked::after{ content:'🔒'; position:absolute; right:7px; top:50%; transform:translateY(-50%); font-size:12px; }
+.tumb .zone{ position:absolute; top:0; bottom:0; background:rgba(0,255,133,.3); border-left:1px solid var(--verde-claro); border-right:1px solid var(--verde-claro); display:flex; align-items:center; justify-content:center; }
+.tumb .zone::after{ content:'✓'; font-size:12px; color:#fff; opacity:.92; text-shadow:0 0 4px var(--verde-claro); }
 .tumb .mark{ position:absolute; top:-2px; bottom:-2px; width:5px; background:var(--amarelo); box-shadow:0 0 12px var(--amarelo); border-radius:3px; }
 #travarBtn{ font-family:var(--mono); font-size:14px; padding:18px; border:none; border-radius:12px; background:var(--amarelo); color:var(--navy-deep); cursor:pointer; box-shadow:0 6px 24px rgba(255,217,61,.45); width:100%; }
 #travarBtn:active{ transform:scale(.97); }
@@ -330,6 +339,7 @@ h1.title{ font-family:var(--mono); font-size:clamp(19px,7vw,28px); line-height:1
 
       <div id="chips"><div class="chip" data-i="0">⚡</div><div class="chip" data-i="1">📖</div><div class="chip" data-i="2">🚪</div></div>
       <div id="dark"></div>
+      <div id="taphint" class="hide">👆</div>
     </div>
   </div>
 
@@ -481,6 +491,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
   // =========================================================
   function openDisjuntor(){
     if(busy())return;
+    $('#taphint').classList.add('hide');
     if(S.done[0]){ toast('LUZ JÁ TÁ ON'); return; }
     makerIntro('hermeto', runDisjuntor);
   }
@@ -544,7 +555,8 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
   }
   function runCofre(){
     S.state='cofre'; $('#cofre').classList.remove('glowme');
-    var alvo=FIGS.slice().sort(function(a,b){return ANOS[a.key]-ANOS[b.key];}); // cronologico
+    var asc = rint(2)===0; // sorteia o sentido da ordem cronológica
+    var alvo=FIGS.slice().sort(function(a,b){return (ANOS[a.key]-ANOS[b.key])*(asc?1:-1);});
     var baralho=shuffle(FIGS), seq=[];
     function html(){
       var slots='';
@@ -552,7 +564,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
         slots+='<div class="ord-slot'+(f?' fill':'')+'"><span class="osn">'+(i+1)+'º</span>'+(f?retrato(f,40):'')+'</div>'; }
       var cards=baralho.map(function(f){ var used=seq.indexOf(f.key)>=0;
         return '<button class="ord-card'+(used?' used':'')+'" data-k="'+f.key+'"><span class="oc-ret">'+retrato(f,52)+'</span><span class="oc-nm">'+f.nm+'</span><span class="oc-ano">'+ANOS[f.key]+'</span></button>'; }).join('');
-      return '<div class="ovd">O método é pôr em ordem. Toca nos três alagoanos <b>do mais antigo pro mais novo</b> (olha o ano de nascimento).</div>'+
+      return '<div class="ovd">O método é pôr em ordem. Toca nos três alagoanos <b>'+(asc?'do mais antigo pro mais novo':'do mais novo pro mais antigo')+'</b> (olha o ano de nascimento).</div>'+
         '<div class="ord-slots">'+slots+'</div>'+
         '<div class="ord-cards">'+cards+'</div>'+
         '<button class="ord-clr" id="ordClr">↺ recomeçar</button>';
@@ -573,7 +585,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
       } else { shakeIt(); fail(4); toast('FORA DE ORDEM'); seq=[]; render(); }
     }
     render();
-    S._dica=function(){ toast('DO MENOR ANO PRO MAIOR'); };
+    S._dica=function(){ toast(asc?'DO MENOR ANO PRO MAIOR':'DO MAIOR ANO PRO MENOR'); };
   }
 
   // =========================================================
@@ -614,7 +626,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
       cur.classList.remove('active'); cur.classList.add('locked'); sLock(); ok();
       S.fechIdx++; S.marker=rint(30); S.mdir=rint(2)?1:-1;
       if(S.fechIdx>=3){ S.done[2]=true; S.running=false; chipDone(2); $('#porta').classList.add('unlocked'); addScore(700); ok(); closeOv(); aparicao('marta', 'A <b>perseverança</b> da Marta arrombou a porta.', escape); }
-      else { S.mspeed+=S.zones[S.fechIdx].inc; t[S.fechIdx].classList.add('active'); }
+      else { S.mspeed=Math.min(1.7, S.mspeed+S.zones[S.fechIdx].inc); t[S.fechIdx].classList.add('active'); }
     } else { fail(3); }
   }
 
@@ -685,7 +697,7 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
     $('#quadro').style.transform=''; $('#quadro').style.opacity=''; $('#quadro').style.display='';
     $('#cofre').classList.remove('show','open','glowme'); $('#porta').classList.remove('unlocked','glowme');
     $$('.obj').forEach(function(o){o.classList.remove('found');}); $$('.chip').forEach(function(c){c.classList.remove('done');});
-    $('#ov').classList.remove('up');
+    $('#ov').classList.remove('up'); $('#taphint').classList.remove('hide');
     setObjective('A sala tá escura. Acha o que ainda brilha e religa a energia.');
     renderHUD();
     $('#screenIntro').classList.add('hidden'); $('#screenEnd').classList.add('hidden'); $('#screenPride').classList.add('hidden');
@@ -695,12 +707,16 @@ window.addEventListener('error', function(e){ var el=document.getElementById('er
   $('#startBtn').onclick=start; $('#replayBtn').onclick=start;
   bindObjs(); renderHUD();
 
+  // escala o palco pra preencher o totem (qualquer tela) mantendo a proporcao
+  function fitStage(){ var f=Math.min(window.innerWidth/540, window.innerHeight/960); document.documentElement.style.setProperty('--fit', f); }
+  window.addEventListener('resize', fitStage); fitStage();
+
   // dev hook
   (function(){
     var m=location.search.match(/dev=(\w+)/); if(!m)return; ac=function(){return null;};
     S.running=true; S.nome='DEV'; reset(); S.running=true; S.nome='DEV';
     var v=m[1];
-    if(v==='dark'){ $('#screenIntro').classList.add('hidden'); setObjective('Acha o que brilha e religa.'); }
+    if(v==='dark'){ $('#screenIntro').classList.add('hidden'); $('#taphint').classList.remove('hide'); setObjective('Acha o que brilha e religa.'); }
     else if(v==='fios'||v==='fuse'){ $('#screenIntro').classList.add('hidden'); openDisjuntor(); }
     else if(v==='cano'){ $('#screenIntro').classList.add('hidden'); runDisjuntor(); }
     else if(v==='aparic'){ $('#screenIntro').classList.add('hidden'); $('#room').classList.add('lit'); aparicao('marta','A <b>perseverança</b> da Marta arrombou a porta.'); }
