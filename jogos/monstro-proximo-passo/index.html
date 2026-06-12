@@ -293,6 +293,7 @@ html, body {
   transform: translate(2px, 2px);
   box-shadow: 0 0 24px rgba(0, 217, 92, 0.6), 2px 2px 0 var(--navy-deep);
 }
+@keyframes replayBob { 50% { transform: translateY(-5px); } }
 
 #screen-play { background: transparent; padding: 0; }
 
@@ -1616,7 +1617,7 @@ html, body {
       </div>
     </div>
     <div class="btn-row">
-      <button class="end-button" id="btn-replay">▶ DE NOVO</button>
+      <button class="end-button" id="btn-replay" style="font-size:16px;padding:22px 34px;width:min(92%,420px);animation:replayBob 1.5s ease-in-out infinite;">▶ JOGAR DE NOVO</button>
       <button class="end-button" id="btn-rank" hidden style="background:var(--amarelo);box-shadow:0 0 24px rgba(255,217,61,0.6), 4px 4px 0 var(--navy-deep);">🏆 RANKING</button>
     </div>
     <button class="end-button" id="btn-hub" style="margin-top:10px;background:transparent;border:1px solid var(--ciano);color:var(--ciano);box-shadow:none;" onclick="location.href='/hub/'">◂ VOLTAR AO HUB</button>
@@ -2540,14 +2541,11 @@ async function chooseFear(fearKey) {
   $('share-reflection').textContent = lesson.reflection;
   $('share-practice').textContent = lesson.practice;
   $('share-trail').textContent = 'SOBRE ' + fear.label + ' · ' + lesson.trail;
-  // botão antigo de RANKING não é mais usado: agora TODA partida com score > 0
-  // passa obrigatoriamente pelas iniciais antes do share. Pontuação não se perde.
+  // Ordem nova (pedido do Lucas no evento): REFLEXÃO primeiro, com calma.
+  // As iniciais ficam pro FIM, no botão DE NOVO (igual fliperama de verdade).
   $('btn-rank').hidden = true;
-  if (state.pendingScore > 0) {
-    askInitials(state.pendingScore, state.pendingStage);
-  } else {
-    showScreen('share');
-  }
+  state.scoreSaved = false;
+  showScreen('share');
 }
 
 function askInitials(score, stage) {
@@ -2590,8 +2588,9 @@ async function saveInitials() {
     await renderRanking();
     btn.textContent = orig;
     btn.disabled = false;
-    // Vai pra share AGORA que a partida foi salva com nome real.
-    showScreen('share');
+    // Salvou: volta pra tela inicial, onde o TOP 5 aparece com o nome novo + botão COMEÇAR.
+    state.scoreSaved = true;
+    showScreen('start');
   } catch (err) {
     console.error('[jogo] saveInitials EXCEPTION:', err);
     alert('EXCEPTION saveInitials: ' + (err.message || err));
@@ -2602,7 +2601,11 @@ async function saveInitials() {
 
 // ============ EVENTS ============
 $('btn-start').addEventListener('click', startGame);
-$('btn-replay').addEventListener('click', startGame);
+// DE NOVO: se tem pontuação ainda não registrada, primeiro grava as iniciais (fim de fliperama), senão recomeça direto.
+$('btn-replay').addEventListener('click', () => {
+  if (state.pendingScore > 0 && !state.scoreSaved) askInitials(state.pendingScore, state.pendingStage);
+  else startGame();
+});
 $('btn-rank').addEventListener('click', () => askInitials(state.pendingScore, state.pendingStage));
 $('btn-save-initials').addEventListener('click', saveInitials);
 

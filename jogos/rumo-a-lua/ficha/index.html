@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#050822" />
+<title>Ficha · Rumo à Lua (design)</title>
+
+<meta property="og:title" content="Ficha de Design · Rumo à Lua" />
+<meta property="og:description" content="Jogo 4 do totem do Neon Sebrae AL: um toque só, atravessando Alagoas em 16-bit. A gravidade é o desânimo; cada toque, um próximo passo. Ficha de design." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://neon-sebrae-al.netlify.app/jogos/rumo-a-lua/ficha/" />
+<meta property="og:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
+
+<link rel="stylesheet" href="../../../assets/fonts/fonts.css" />
+<link rel="stylesheet" href="../../../assets/ficha.css" />
+<style> :root { --accent: #FFD93D; } </style>
+</head>
+<body>
+
+<div class="float-btns">
+  <a class="hub-btn" href="/hub/">◂ HUB</a>
+  <button class="print-btn" onclick="window.print()">⬇ PDF</button>
+</div>
+
+<div class="sheet">
+
+  <header>
+    <div class="logo"><img src="../../../assets/logo-tnl-h.png" alt="Tiro na Lua" /></div>
+    <div class="title">
+      <h1>RUMO À LUA</h1>
+      <div class="sub">Arcade Neon · jogo 4 · Espaço Educação Empreendedora · Neon Sebrae AL 2026</div>
+      <div class="sub" style="color:var(--amarelo);margin-top:5px">"A gravidade puxa. Cada toque é um próximo passo."</div>
+    </div>
+    <div class="badge">JOGÁVEL · <span>v1</span><br>dia 2 do evento</div>
+  </header>
+
+  <div class="grid">
+
+    <!-- 00 DECISÃO -->
+    <div class="block full" style="background:rgba(255,0,255,0.05);border-color:rgba(255,118,255,0.4)">
+      <div class="tag" style="color:var(--magenta-claro);text-shadow:0 0 8px var(--magenta)">⚠ DECISÃO DE DESIGN · 4º TOTEM</div>
+      <p>Nasceu no meio do evento: um totem a mais, e o jogo que a galera mais amou foi o Monstro (ação). O Rumo à Lua pega a <strong style="color:var(--verde-claro)">família do flappy</strong> (um toque, viciante, "quase! de novo") e costura com o método: a célula motora <strong style="color:var(--verde-claro)">ritmo contínuo de UM toque</strong> estava vazia na matriz, e o loop curto com replay imediato é perfeito pra fila. Construído em horas herdando o cânone (offline, 540×960, iniciais no fim, idle reset).</p>
+    </div>
+
+    <!-- 01 CONCEITO -->
+    <div class="block">
+      <div class="tag">01 · CONCEITO</div>
+      <h2>O foguete é o sonho.<br>A gravidade é o desânimo.</h2>
+      <p>O jogador atravessa Alagoas voando num foguetinho 16-bit. A gravidade puxa pra baixo o tempo todo; <strong>cada toque é um próximo passo</strong> que mantém o sonho no ar. Parar de agir = cair. Persistência virou mecânica, não discurso.</p>
+      <p class="muted">Amarra o nome da casa (Tiro na Lua) e o mote do evento: planta a semente, acende a centelha, e voa.</p>
+    </div>
+
+    <!-- 02 MECÂNICA -->
+    <div class="block">
+      <div class="tag">02 · MECÂNICA</div>
+      <h2>Um toque. Só isso.</h2>
+      <div class="flow">
+        <div class="step"><div><strong>Toca</strong> pra dar impulso. Solta, e a gravidade cobra.</div></div>
+        <div class="step"><div><strong>Desvia</strong> dos perrengues (colunas temáticas de cada lugar).</div></div>
+        <div class="step"><div><strong>Vai longe.</strong> Cada perrengue atravessado = 1 ponto. A cada 5, muda o cenário.</div></div>
+      </div>
+      <p class="muted">Acessível em 2 segundos pra quem nunca jogou, profundo pra quem quer recorde. Zero leitura durante o voo.</p>
+    </div>
+
+    <!-- 03 A VIAGEM -->
+    <div class="block full">
+      <div class="tag">03 · A VIAGEM · ALAGOAS EM 16-BIT</div>
+      <h2>Oito paradas, do farol à Lua</h2>
+      <p>Cada fase é um lugar icônico de Alagoas desenhado em pixel art, com o nome do lugar no HUD e um fato de orgulho na chegada ("VOCÊ CHEGOU EM..."). Geografia e pertencimento embutidos no progresso:</p>
+      <div class="kv" style="margin-top:10px">
+        <p><strong>1</strong> Orla de Maceió · Ponta Verde (o farol listrado)</p>
+        <p><strong>2</strong> Maragogi (as piscinas naturais do Caribe brasileiro)</p>
+        <p><strong>3</strong> Penedo (casario colonial à beira do Velho Chico)</p>
+        <p><strong>4</strong> Foz do Velho Chico · Piaçabuçu (o rio encontra o mar)</p>
+        <p><strong>5</strong> Catedral de Arapiraca · Agreste</p>
+        <p><strong>6</strong> Serra da Barriga · União dos Palmares (Quilombo dos Palmares)</p>
+        <p><strong>7</strong> Cânions do Velho Chico · Piranhas</p>
+        <p><strong>8</strong> O espaço, rumo à Lua 🚀</p>
+      </div>
+    </div>
+
+    <!-- 04 MOTOR -->
+    <div class="block">
+      <div class="tag">04 · MOTOR DE DIVERSÃO</div>
+      <h2>O "quase!" que vicia</h2>
+      <div class="kv">
+        <p><strong>TENSÃO</strong> velocidade e aperto dos vãos crescem por fase</p>
+        <p><strong>FEEDBACK</strong> som de ponto, banner de chegada, fanfarra de fase</p>
+        <p><strong>DOMÍNIO</strong> recorde pessoal + TOP 10 da máquina</p>
+        <p><strong>REPLAY</strong> partida de ~30-60s, botão grandão JOGAR DE NOVO</p>
+      </div>
+    </div>
+
+    <!-- 05 RANKING -->
+    <div class="block">
+      <div class="tag">05 · RANKING DE FLIPERAMA</div>
+      <h2>Iniciais no FIM, como manda o arcade</h2>
+      <p>Fim de partida: primeiro a <strong>reflexão</strong>, com calma. Depois, se entrou no TOP 10, registra as iniciais (▲▼, com instrução) e vê seu nome destacado no placar da máquina. Sem internet, sem cadastro: <strong>localStorage</strong>, um placar por totem pros 3 dias.</p>
+      <p class="muted">Lição do dia 1 aplicada: iniciais no final (não no começo) e botão de replay gigante.</p>
+    </div>
+
+    <!-- 06 MATRIZ -->
+    <div class="block full">
+      <div class="tag">06 · MATRIZ DE COBERTURA · 4 JOGOS TNL</div>
+      <h2>Cada jogo numa célula distinta</h2>
+      <div class="kv">
+        <p><strong>MONSTRO</strong> reflexo / escolha sob pressão · enfrentar os medos</p>
+        <p><strong>CENTELHA</strong> lógica / dedução · criatividade, método, perseverança (fazedores de AL)</p>
+        <p><strong>FORJA</strong> reflexão / autoconhecimento · ikigai, o seu lugar no mundo</p>
+        <p><strong>RUMO À LUA</strong> ritmo contínuo de um toque · persistência e visão (não parar de agir)</p>
+      </div>
+    </div>
+
+    <!-- 07 EDU -->
+    <div class="block edu full">
+      <div class="tag">07 · MAPEAMENTO EDUCACIONAL</div>
+      <h2>Persistência como experiência física</h2>
+      <div class="edu-grid">
+        <div class="edu-col">
+          <h3>ENTRECOMP <span class="src">· Competências Empreendedoras</span></h3>
+          <div class="edu-row"><div class="k">VISÃO</div><div class="v">Vision <em>1.3</em>. O sonho lá na frente (a Lua) puxando a ação de agora.</div></div>
+          <div class="edu-row"><div class="k">PERSISTIR</div><div class="v">Motivation & perseverance <em>2.2</em>. Parar de agir = cair. O corpo aprende.</div></div>
+        </div>
+        <div class="edu-col">
+          <h3>BNCC <span class="src">· Competências Gerais</span></h3>
+          <div class="edu-row"><div class="k">LOCAL</div><div class="v">Repertório cultural <em>CG 1/CG 3</em>. Oito lugares de Alagoas, nomeados e desenhados.</div></div>
+          <div class="edu-row"><div class="k">PERCURSO</div><div class="v">Projeto de vida <em>CG 6</em>. "Quem persiste, voa" como reflexão final.</div></div>
+        </div>
+      </div>
+      <p class="edu-note">Dor atacada: "desisto quando fica difícil". Reflexão do fim: a gravidade (desânimo) puxou o tempo todo, e cada toque foi um próximo passo. Acervo de lugares/fatos a validar com o Sebrae AL.</p>
+    </div>
+
+  </div>
+
+  <footer>
+    <div>neon-sebrae-al.netlify.app / jogos / rumo-a-lua</div>
+    <div class="stamp">TIRO NA LUA · SEBRAE AL · ESCALADA</div>
+  </footer>
+
+</div>
+
+</body>
+</html>

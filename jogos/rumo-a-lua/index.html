@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="theme-color" content="#050822" />
+<title>Rumo à Lua · Neon Sebrae AL</title>
+
+<meta property="og:title" content="Rumo à Lua" />
+<meta property="og:description" content="A gravidade puxa o sonho pra baixo. Cada toque é um próximo passo. Atravesse Alagoas voando, da orla de Maceió aos Cânions do São Francisco, e vá o mais longe que conseguir. Arcade Neon do Sebrae AL 2026." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://neon-sebrae-al.netlify.app/jogos/rumo-a-lua/" />
+<meta property="og:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://neon-sebrae-al.netlify.app/assets/neon-banner.jpeg" />
+
+<!-- fontes locais (offline, mesmas dos outros jogos do totem) -->
+<link rel="stylesheet" href="../../assets/fonts/fonts.css" />
+<script>
+/* scale-to-fit do totem (resolucao de design 540x960) */
+(function(){
+  function fit(){ var f=Math.min(window.innerWidth/540, window.innerHeight/960); document.documentElement.style.setProperty('--fit', f); }
+  window.addEventListener('resize', fit); window.addEventListener('DOMContentLoaded', fit); fit();
+})();
+</script>
+
+<style>
+:root{
+  --verde:#00D95C; --verde-claro:#00FF85; --magenta:#FF00FF; --magenta-claro:#FF76FF;
+  --ciano:#00F9FF; --azul:#2A4FDA; --azul-claro:#5680FF; --amarelo:#FFD93D; --laranja:#FF8C42; --vermelho:#FF3060;
+  --branco:#FFF; --navy:#0A0F36; --navy-deep:#050822; --navy-mid:#1A1F4E;
+  --mono:'Press Start 2P',monospace; --body:'Space Grotesk',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{ background:#000; color:var(--branco); font-family:var(--body); overflow:hidden; -webkit-font-smoothing:antialiased; user-select:none; touch-action:none; }
+#stage{ position:fixed; top:50%; left:50%; width:540px; height:960px; transform:translate(-50%,-50%) scale(var(--fit,1)); transform-origin:center center; overflow:hidden; background:var(--navy-deep); }
+
+#game{ position:absolute; inset:0; width:540px; height:960px; image-rendering:pixelated; image-rendering:crisp-edges; }
+
+/* HUD durante o voo */
+#hud{ position:absolute; top:0; left:0; right:0; z-index:20; padding:14px 18px; display:flex; justify-content:space-between; align-items:flex-start; pointer-events:none; }
+#score{ font-family:var(--mono); font-size:34px; color:#fff; text-shadow:3px 3px 0 rgba(0,0,0,.55), 0 0 14px var(--amarelo); }
+#lugar{ font-family:var(--mono); font-size:8px; color:#fff; text-shadow:2px 2px 0 rgba(0,0,0,.6); text-align:right; line-height:1.6; opacity:.95; max-width:240px; }
+
+/* banner de fase (chegada num lugar) */
+#banner{ position:absolute; top:24%; left:50%; transform:translateX(-50%); z-index:25; width:86%; text-align:center; pointer-events:none; opacity:0; transition:opacity .3s; }
+#banner.show{ opacity:1; }
+#banner .b1{ font-family:var(--mono); font-size:9px; color:var(--ciano); text-shadow:2px 2px 0 rgba(0,0,0,.6); margin-bottom:8px; letter-spacing:1px; }
+#banner .b2{ font-family:var(--mono); font-size:17px; color:#fff; text-shadow:3px 3px 0 rgba(0,0,0,.6), 0 0 16px var(--amarelo); line-height:1.5; margin-bottom:8px; }
+#banner .b3{ font-size:13px; color:rgba(255,255,255,.95); text-shadow:1px 1px 0 rgba(0,0,0,.7); line-height:1.45; }
+
+/* dedinho de tutorial */
+#taphint{ position:absolute; left:50%; top:58%; transform:translateX(-50%); z-index:24; text-align:center; pointer-events:none; transition:opacity .3s; }
+#taphint .h1{ font-size:42px; animation:tapb 0.9s infinite; }
+#taphint .h2{ font-family:var(--mono); font-size:9px; color:#fff; text-shadow:2px 2px 0 rgba(0,0,0,.6); margin-top:6px; }
+@keyframes tapb{ 50%{ transform:translateY(-10px) } }
+#taphint.hide{ opacity:0; }
+
+/* TELAS */
+.screen{ position:absolute; inset:0; z-index:80; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; text-align:center; padding:30px 24px 34px; background:rgba(5,8,34,.95); overflow:auto; }
+.screen.hidden{ display:none; }
+.logo-row{ display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:16px; opacity:.92; }
+.logo-row img{ filter:drop-shadow(0 0 8px rgba(0,249,255,.4)); }
+.logo-row .logo-sebrae{ height:30px; } .logo-row .logo-tnl{ height:22px; } .logo-row .logo-sep{ width:1px; height:20px; background:rgba(255,255,255,.25); }
+h1.title{ font-family:var(--mono); font-size:clamp(22px,7vw,32px); line-height:1.4; text-shadow:3px 3px 0 var(--magenta),6px 6px 0 var(--azul); margin-bottom:10px; }
+.tagline{ font-size:14px; color:var(--ciano); margin-bottom:14px; line-height:1.5; max-width:360px; }
+.howto{ font-size:12.5px; color:rgba(255,255,255,.74); line-height:1.7; max-width:360px; margin-bottom:14px; }
+.howto b{ color:var(--amarelo); }
+.btn{ font-family:var(--mono); font-size:15px; letter-spacing:1px; padding:22px 34px; border:none; border-radius:999px; background:var(--amarelo); color:var(--navy-deep); cursor:pointer; box-shadow:0 6px 26px rgba(255,217,61,.5); margin-top:10px; animation:bob 1.6s ease-in-out infinite; width:min(92%,420px); }
+@keyframes bob{ 50%{transform:translateY(-5px)} }
+.btn.sec{ background:transparent; color:var(--ciano); border:1px solid var(--ciano); box-shadow:none; animation:none; font-size:11px; padding:13px 22px; width:auto; }
+
+/* ranking */
+.rank{ width:min(92%,400px); background:rgba(10,15,54,.7); border:2px solid var(--amarelo); border-radius:16px; padding:14px 16px; margin:10px 0 4px; }
+.rank .rt{ font-family:var(--mono); font-size:10px; color:var(--amarelo); text-shadow:0 0 8px var(--amarelo); margin-bottom:10px; letter-spacing:1px; }
+.rank .rr{ display:flex; justify-content:space-between; font-family:var(--mono); font-size:11px; padding:5px 4px; color:rgba(255,255,255,.85); }
+.rank .rr .pos{ color:var(--ciano); width:34px; text-align:left; }
+.rank .rr .nm{ color:var(--verde-claro); letter-spacing:2px; flex:1; text-align:left; }
+.rank .rr .sc{ color:var(--amarelo); }
+.rank .rr.me{ background:rgba(255,217,61,.16); border-radius:6px; outline:1px solid var(--amarelo); }
+.rank .empty{ font-family:var(--mono); font-size:9px; color:rgba(255,255,255,.4); padding:8px 0; }
+
+/* fim de viagem (reflexao) */
+.endcard{ background:linear-gradient(160deg,#0a0f36,#241433); border:2px solid var(--amarelo); border-radius:20px; padding:22px 20px; max-width:400px; width:100%; box-shadow:0 0 40px rgba(255,217,61,.3); margin-top:6px; }
+.endcard .verdict{ font-family:var(--mono); font-size:15px; color:var(--amarelo); text-shadow:0 0 12px var(--amarelo); line-height:1.5; margin-bottom:10px; }
+.endcard .bignum{ font-family:var(--mono); font-size:44px; color:var(--verde-claro); text-shadow:0 0 18px var(--verde-claro); margin:6px 0 2px; }
+.endcard .bignum small{ font-size:11px; color:var(--ciano); display:block; margin-top:8px; }
+.endcard .where{ font-family:var(--mono); font-size:9px; color:var(--ciano); margin:10px 0 12px; line-height:1.6; }
+.endcard .gancho{ font-size:13.5px; color:rgba(255,255,255,.88); line-height:1.6; border-top:1px solid rgba(255,255,255,.14); padding-top:12px; }
+.endcard .gancho b{ color:var(--amarelo); }
+
+/* iniciais (no FIM, fliperama raiz) */
+.inwrap{ margin:14px 0 6px; }
+.intitle{ font-family:var(--mono); font-size:12px; color:var(--verde-claro); text-shadow:0 0 10px var(--verde-claro); line-height:1.6; margin-bottom:6px; }
+.insub{ font-size:12px; color:rgba(255,255,255,.65); margin-bottom:14px; max-width:320px; }
+.namepick{ display:flex; gap:14px; justify-content:center; }
+.namepick .ns{ display:flex; flex-direction:column; align-items:center; gap:6px; }
+.namepick .nl{ width:62px; height:72px; border:2px solid var(--ciano); border-radius:14px; background:rgba(0,249,255,.06); font-family:var(--mono); font-size:32px; color:#fff; display:flex; align-items:center; justify-content:center; }
+.namepick .na{ width:62px; height:36px; border:1px solid rgba(0,249,255,.35); border-radius:9px; background:rgba(0,249,255,.08); color:var(--ciano); font-size:15px; cursor:pointer; }
+.namepick .na:active{ transform:scale(.92); }
+
+.curadoria{ position:absolute; bottom:4px; left:0; right:0; text-align:center; font-size:8px; color:rgba(255,255,255,.26); z-index:85; font-family:var(--mono); }
+#err{ position:fixed; top:0; left:0; right:0; background:#b00020; color:#fff; padding:10px; font:11px/1.4 monospace; z-index:9999; white-space:pre-wrap; display:none; }
+</style>
+</head>
+<body>
+
+<div id="err"></div>
+
+<div id="stage">
+  <canvas id="game" width="270" height="480"></canvas>
+
+  <div id="hud" style="display:none">
+    <div id="score">0</div>
+    <div id="lugar"></div>
+  </div>
+  <div id="banner"><div class="b1"></div><div class="b2"></div><div class="b3"></div></div>
+  <div id="taphint" class="hide"><div class="h1">👆</div><div class="h2">TOCA PRA SUBIR</div></div>
+
+  <!-- INTRO -->
+  <div class="screen" id="screenIntro">
+    <div class="logo-row">
+      <img class="logo-sebrae" src="../../assets/logo-sebrae-branca.webp" alt="Sebrae Alagoas" onerror="this.style.display='none'"/>
+      <span class="logo-sep"></span>
+      <img class="logo-tnl" src="../../assets/logo-tnl-h.png" alt="Tiro na Lua" onerror="this.style.display='none'"/>
+    </div>
+    <h1 class="title">RUMO<br>À LUA</h1>
+    <p class="tagline">O foguete é o seu sonho. A gravidade é o desânimo, puxando o tempo todo.</p>
+    <div class="howto"><b>Toca na tela pra subir.</b> Cada toque é um próximo passo. Atravessa Alagoas, desvia dos perrengues e vai o mais longe que aguentar.</div>
+    <div class="rank" id="rankIntro"><div class="rt">🏆 TOP 10 DA MÁQUINA</div><div id="rankIntroRows"><div class="empty">--- AINDA VAZIO ---</div></div></div>
+    <button class="btn" id="startBtn">🚀 DECOLAR</button>
+  </div>
+
+  <!-- FIM DA VIAGEM (reflexao primeiro, com calma) -->
+  <div class="screen hidden" id="screenEnd">
+    <div class="endcard">
+      <div class="verdict" id="endVerdict">O SONHO CAIU. DE NOVO!</div>
+      <div class="bignum" id="endScore">0<small>perrengues atravessados</small></div>
+      <div class="where" id="endWhere"></div>
+      <div class="gancho">A gravidade puxou o tempo inteiro. Mas <b>cada toque seu foi um próximo passo</b> que segurou o sonho no ar. Empreender é isso: ninguém voa sem insistir. <b>Quem persiste, voa.</b> Tua trilha segue no Escalada.</div>
+    </div>
+    <button class="btn" id="contBtn">CONTINUAR ▸</button>
+  </div>
+
+  <!-- INICIAIS (so no fim, fliperama raiz) -->
+  <div class="screen hidden" id="screenInitials">
+    <div class="inwrap">
+      <div class="intitle">🏆 VOCÊ ENTROU<br>PRO TOP 10!</div>
+      <div class="insub">Registra a tua marca: usa as setas ▲▼ pra pôr as suas iniciais (as 3 primeiras letras do seu nome).</div>
+      <div class="namepick" id="namepick"></div>
+    </div>
+    <button class="btn" id="saveBtn">REGISTRAR ✓</button>
+  </div>
+
+  <!-- RANKING + REPLAY -->
+  <div class="screen hidden" id="screenRank">
+    <div class="logo-row" style="margin-top:6px">
+      <img class="logo-sebrae" src="../../assets/logo-sebrae-branca.webp" alt="Sebrae Alagoas" onerror="this.style.display='none'"/>
+      <span class="logo-sep"></span>
+      <img class="logo-tnl" src="../../assets/logo-tnl-h.png" alt="Tiro na Lua" onerror="this.style.display='none'"/>
+    </div>
+    <div class="rank" id="rankEnd"><div class="rt">🏆 TOP 10 DA MÁQUINA</div><div id="rankEndRows"></div></div>
+    <button class="btn" id="replayBtn">🚀 JOGAR DE NOVO</button>
+  </div>
+
+</div>
+
+<div class="curadoria">PROTÓTIPO v1 · lugares de Alagoas em 16-bit · Arcade Neon</div>
+
+<script>
+window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))return; var el=document.getElementById('err'); if(!el)return; el.style.display='block'; el.textContent+='⚠ '+(e.message||e)+' ('+((e.filename||'').split('/').pop())+':'+e.lineno+')\n'; });
+
+(function(){
+  'use strict';
+  var $=function(s){return document.querySelector(s);};
+  var cv=$('#game'), cx=cv.getContext('2d');
+  var W=270, H=480;
+
+  // ---------- as fases: a viagem por Alagoas ----------
+  // cada fase: nome, fato (orgulho local), paleta do ceu [topo,base], chao, agua?, obstaculo
+  var FASES=[
+    { nm:'ORLA DE MACEIÓ · PONTA VERDE', fato:'O farol listrado e o mar verde: o cartão-postal de Maceió.',
+      ceu:['#7ED8F0','#CFF3EC'], far:'#9adfd2', chao:'#E8D9A8', obst:['#2e8b57','#1f6b40'], detail:'orla' },
+    { nm:'MARAGOGI', fato:'O Caribe brasileiro: eleita a melhor cidade do Brasil pra turismo em 2025.',
+      ceu:['#5FC9E8','#BFF2E5'], far:'#7fd9c8', chao:'#F2E6B8', obst:['#1e9e8a','#15705f'], detail:'maragogi' },
+    { nm:'PENEDO', fato:'Cidade histórica à beira do Velho Chico, cheia de casario colonial.',
+      ceu:['#F4B860','#FBE3B0'], far:'#d99a52', chao:'#C9A86A', obst:['#a85f3c','#7c422a'], detail:'penedo' },
+    { nm:'FOZ DO VELHO CHICO · PIAÇABUÇU', fato:'Onde o Rio São Francisco se encontra com o mar, entre dunas.',
+      ceu:['#6FC9E0','#F2E8C8'], far:'#5ab8d0', chao:'#EFE0B0', obst:['#caa45a','#9a7a3a'], detail:'foz' },
+    { nm:'CATEDRAL DE ARAPIRACA · AGRESTE', fato:'O coração do agreste alagoano, terra trabalhadeira.',
+      ceu:['#F2C879','#FBEAC8'], far:'#d9a85a', chao:'#C9A05A', obst:['#7a8a3a','#566428'], detail:'agreste' },
+    { nm:'SERRA DA BARRIGA · UNIÃO DOS PALMARES', fato:'A terra do Quilombo dos Palmares, onde Zumbi viveu. História viva.',
+      ceu:['#3E7D5A','#A8D8A0'], far:'#2f5f46', chao:'#3E6B3A', obst:['#1f4d2e','#143521'], detail:'serra' },
+    { nm:'CÂNIONS DO VELHO CHICO · PIRANHAS', fato:'Paredões gigantes do Rio São Francisco, pertinho de Piranhas.',
+      ceu:['#E8956D','#F7D9A8'], far:'#c46a45', chao:'#B5703F', obst:['#9c5530','#6e3a1e'], detail:'canion' },
+    { nm:'RUMO À LUA!', fato:'Você atravessou Alagoas inteira. Agora é espaço. Leva Alagoas com você!',
+      ceu:['#050822','#1A1F4E'], far:'#2A2F5E', chao:'#0A0F36', obst:['#5680FF','#2A4FDA'], detail:'espaco' }
+  ];
+  var PONTOS_POR_FASE=5; // a cada 5 perrengues muda o cenario
+
+  // ---------- estado ----------
+  var ALPHA='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  var S={};
+  function reset(){ S={ mode:'intro', y:H*0.45, vy:0, score:0, fase:0, obst:[], farX:0, nearX:0, t:0, last:0, raf:0,
+    speed:62, gravity:780, flapV:-258, started:false, dead:false, deadT:0, nameIdx:[0,0,0], bannerT:0, _idle:performance.now() }; }
+  reset();
+
+  // ---------- audio ----------
+  var actx=null; function ac(){ if(!actx){try{actx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}} return actx; }
+  function beep(f,d,t,v){ var c=ac(); if(!c)return; var o=c.createOscillator(),g=c.createGain(); o.type=t||'square'; o.frequency.value=f; g.gain.value=v||.05; o.connect(g); g.connect(c.destination); var n=c.currentTime; o.start(n); g.gain.exponentialRampToValueAtTime(.0001,n+(d||.12)); o.stop(n+(d||.12)+.02); }
+  function sFlap(){beep(480,.05,'square',.04);}
+  function sPoint(){beep(880,.07,'triangle',.05);}
+  function sFase(){[523,659,784,1046].forEach(function(f,i){setTimeout(function(){beep(f,.12,'triangle',.06);},i*70);});}
+  function sCrash(){beep(160,.2,'sawtooth',.07);setTimeout(function(){beep(90,.3,'sawtooth',.06);},120);}
+  function sWin(){[523,659,784,1046,1318].forEach(function(f,i){setTimeout(function(){beep(f,.14,'triangle',.06);},i*90);});}
+  function sTick(){beep(520,.03,'square',.025);}
+
+  function rint(n){return Math.floor(Math.random()*n);}
+
+  // ---------- ranking local (placar unico da maquina) ----------
+  var RKEY='neon-rumo-placar';
+  function loadRank(){ try{return JSON.parse(localStorage.getItem(RKEY)||'[]');}catch(e){return [];} }
+  function saveRank(a){ try{a.sort(function(x,y){return y.score-x.score;});localStorage.setItem(RKEY,JSON.stringify(a.slice(0,10)));}catch(e){} }
+  function qualifies(sc){ if(sc<=0)return false; var a=loadRank(); return a.length<10 || sc>a[a.length-1].score; }
+  function renderRank(el, highlight){
+    var a=loadRank(), html='';
+    if(!a.length){ el.innerHTML='<div class="empty">--- AINDA VAZIO ---</div>'; return; }
+    a.forEach(function(r,i){
+      var me = highlight && r.nome===highlight.nome && r.score===highlight.score && !highlight._used;
+      if(me) highlight._used=true;
+      html+='<div class="rr'+(me?' me':'')+'"><span class="pos">'+(i+1)+'º</span><span class="nm">'+r.nome+'</span><span class="sc">'+r.score+'</span></div>';
+    });
+    el.innerHTML=html;
+  }
+
+  // ---------- fases ----------
+  function faseIdx(){ return Math.min(FASES.length-1, Math.floor(S.score/PONTOS_POR_FASE)); }
+  function faseAtual(){ return FASES[S.fase]; }
+  function showBanner(f){
+    var b=$('#banner');
+    b.querySelector('.b1').textContent = S.fase===FASES.length-1 ? '★ ÚLTIMA PARADA ★' : 'VOCÊ CHEGOU EM';
+    b.querySelector('.b2').textContent = f.nm;
+    b.querySelector('.b3').textContent = f.fato;
+    b.classList.add('show'); S.bannerT=3.2;
+  }
+
+  // ---------- obstaculos ----------
+  function spawnObst(x){
+    var gap = Math.max(118, 150 - S.fase*5);
+    var gy = 70 + rint(H-220-70);
+    S.obst.push({x:x, gy:gy, gap:gap, passed:false});
+  }
+  function ensureObst(){
+    var spacing = 168;
+    if(!S.obst.length){ spawnObst(W+60); return; }
+    var last=S.obst[S.obst.length-1];
+    if(last.x < W+60-spacing) spawnObst(last.x+spacing);
+  }
+
+  // ---------- desenho (pixel chunks) ----------
+  function px(x,y,w,h,c){ cx.fillStyle=c; cx.fillRect(Math.round(x),Math.round(y),Math.ceil(w),Math.ceil(h)); }
+  function skyGrad(f){
+    var g=cx.createLinearGradient(0,0,0,H); g.addColorStop(0,f.ceu[0]); g.addColorStop(1,f.ceu[1]);
+    cx.fillStyle=g; cx.fillRect(0,0,W,H);
+  }
+  // landmarks do fundo (parallax), tile de 270px que repete
+  function drawFar(f, off){
+    var o = -(off % (W));
+    for(var k=0;k<2;k++){
+      var bx = o + k*W;
+      cx.save(); cx.translate(bx,0);
+      if(f.detail==='orla'){
+        // mar e areia
+        px(0,H-130,W,60,'#37c2a8'); px(0,H-128,W,4,'rgba(255,255,255,.5)');
+        px(0,H-70,W,70,f.chao);
+        // FAROL DA PONTA VERDE (listrado vermelho/branco)
+        var fx=40, fy=H-238;
+        for(var i=0;i<6;i++){ px(fx, fy+i*16, 26, 16, i%2? '#fff':'#E03A3A'); }
+        px(fx-3, fy-12, 32, 12, '#E03A3A'); px(fx+7, fy-22, 12, 10, '#FFD93D'); // lanterna
+        // coqueiros
+        [120,200,250].forEach(function(cxr,i){
+          px(cxr, H-160+(i*6), 6, 50-(i*6), '#7a4a24');
+          px(cxr-12, H-172+(i*6), 30, 8, '#1e9e5a'); px(cxr-8, H-180+(i*6), 22, 8, '#27b66a');
+        });
+        // predios da orla bem ao fundo
+        px(160,H-200,18,72,'rgba(255,255,255,.55)'); px(185,H-188,14,60,'rgba(255,255,255,.45)');
+      }
+      else if(f.detail==='maragogi'){
+        px(0,H-140,W,80,'#28b8a0'); // mar
+        px(0,H-138,W,3,'rgba(255,255,255,.6)');
+        // piscinas naturais (manchas claras)
+        px(30,H-120,50,16,'#7fe8d8'); px(120,H-105,64,18,'#8df0e0'); px(210,H-125,40,14,'#7fe8d8');
+        px(0,H-60,W,60,f.chao);
+        // jangada
+        px(90,H-150,34,6,'#d9b24a'); px(104,H-176,4,26,'#7a4a24'); px(96,H-174,22,16,'#fff');
+        // coqueiro
+        px(230,H-120,6,60,'#7a4a24'); px(218,H-132,30,8,'#1e9e5a');
+      }
+      else if(f.detail==='penedo'){
+        // rio Sao Francisco
+        px(0,H-110,W,50,'#3a86b8'); px(0,H-108,W,3,'rgba(255,255,255,.4)');
+        px(0,H-60,W,60,f.chao);
+        // casario colonial colorido
+        var cores=['#E8B4C8','#F2E0A0','#A8C8E8','#C8E8B4','#E8C8A0'];
+        for(var c2=0;c2<5;c2++){ var hx=20+c2*46, hh=40+((c2*13)%22); px(hx,H-150-hh+40,36,hh,cores[c2]); px(hx-2,H-156-hh+40,40,8,'#8a4d2a'); px(hx+12,H-130,10,18,'#5a3a1e'); }
+        // torre da igreja
+        px(190,H-218,22,108,'#F2EDE0'); px(186,H-228,30,12,'#8a4d2a'); px(196,H-250,10,24,'#F2EDE0'); px(193,H-256,16,8,'#8a4d2a');
+      }
+      else if(f.detail==='foz'){
+        // o rio (verde) encontrando o mar (azul)
+        px(0,H-130,128,70,'#3aa8c0');            // rio
+        px(128,H-130,W-128,70,'#1f7fa8');        // mar
+        px(120,H-130,14,70,'#5ac8d8');           // encontro das aguas
+        px(0,H-128,W,3,'rgba(255,255,255,.5)');
+        px(0,H-60,W,60,f.chao);
+        // dunas
+        cx.fillStyle='#F2E6C0';
+        cx.beginPath(); cx.moveTo(0,H-150); cx.quadraticCurveTo(45,H-195,95,H-150); cx.lineTo(0,H-130); cx.fill();
+        cx.beginPath(); cx.moveTo(150,H-145); cx.quadraticCurveTo(205,H-185,260,H-145); cx.lineTo(150,H-130); cx.fill();
+        px(40,H-176,16,4,'rgba(255,255,255,.55)'); px(195,H-168,18,4,'rgba(255,255,255,.5)');
+        // barquinho no encontro
+        px(116,H-142,26,6,'#d9b24a'); px(126,H-160,3,18,'#7a4a24'); px(120,H-158,16,12,'#fff');
+      }
+      else if(f.detail==='agreste'){
+        // chao do agreste
+        px(0,H-90,W,90,f.chao);
+        px(0,H-92,W,4,'#b58a48');
+        // CATEDRAL DE ARAPIRACA (silhueta moderna, torre alta com nervuras)
+        var cxx=92;
+        cx.fillStyle='#F2EDE0';
+        cx.beginPath(); cx.moveTo(cxx,H-92); cx.lineTo(cxx+34,H-265); cx.lineTo(cxx+68,H-92); cx.fill();   // torre triangular
+        for(var rr=0;rr<4;rr++){ px(cxx+12+rr*12, H-200+rr*22, 4, 108-rr*22, 'rgba(0,0,0,.10)'); }          // nervuras
+        px(cxx+30,H-282,8,20,'#F2EDE0'); px(cxx+26,H-274,16,4,'#F2EDE0');                                    // cruz
+        px(cxx-34,H-150,34,58,'#E8E0CC'); px(cxx+68,H-150,34,58,'#E8E0CC');                                  // naves laterais
+        px(cxx+28,H-150,12,28,'#7a5a2a');                                                                    // portal
+        // mandacarus e casinhas do agreste
+        px(20,H-130,8,40,'#2e8b57'); px(12,H-118,8,6,'#2e8b57'); px(28,H-110,8,6,'#2e8b57');
+        px(220,H-126,8,36,'#2e8b57'); px(228,H-114,8,6,'#2e8b57');
+        px(176,H-122,26,32,'#E8C8A0'); px(174,H-130,30,8,'#a85f3c');
+      }
+      else if(f.detail==='serra'){
+        // serra ao fundo
+        cx.fillStyle='#2f5f46';
+        cx.beginPath(); cx.moveTo(0,H-100); cx.lineTo(70,H-210); cx.lineTo(150,H-130); cx.lineTo(220,H-230); cx.lineTo(270,H-150); cx.lineTo(270,H); cx.lineTo(0,H); cx.fill();
+        px(0,H-60,W,60,f.chao);
+        // mata
+        for(var t2=0;t2<7;t2++){ var tx=10+t2*38; px(tx,H-92,8,32,'#4a2f1a'); px(tx-10,H-112,28,24,'#1f6b40'); }
+        // chama do quilombo (fogueira simbolica)
+        px(130,H-78,10,16,'#FF8C42'); px(133,H-86,4,8,'#FFD93D');
+      }
+      else if(f.detail==='canion'){
+        // rio verde no fundo do canion
+        px(0,H-90,W,34,'#2fa893'); px(0,H-88,W,3,'rgba(255,255,255,.45)');
+        px(0,H-56,W,56,f.chao);
+        // paredoes laranja em camadas
+        cx.fillStyle='#c46a45';
+        cx.beginPath(); cx.moveTo(0,H-240); cx.lineTo(40,H-240); cx.lineTo(55,H-90); cx.lineTo(0,H-90); cx.fill();
+        cx.beginPath(); cx.moveTo(210,H-260); cx.lineTo(260,H-260); cx.lineTo(270,H-90); cx.lineTo(196,H-90); cx.fill();
+        px(0,H-200,55,8,'#a85636'); px(204,H-220,62,8,'#a85636');
+        // catamara no rio
+        px(110,H-86,30,7,'#fff'); px(118,H-94,12,8,'#FFD93D');
+      }
+      else { // espaco
+        // estrelas
+        for(var s2=0;s2<26;s2++){ var sx=(s2*53+17)%W, sy=(s2*97+31)%(H-120); px(sx,sy,2,2, s2%4? 'rgba(255,255,255,.8)':'#00F9FF'); }
+        // a LUA no horizonte
+        cx.fillStyle='#F2EDE0'; cx.beginPath(); cx.arc(210,90,34,0,7); cx.fill();
+        px(196,76,10,8,'rgba(0,0,0,.12)'); px(216,96,12,10,'rgba(0,0,0,.12)'); px(204,104,7,6,'rgba(0,0,0,.12)');
+        // terra-alagoas la embaixo
+        px(0,H-44,W,44,'#0A0F36'); px(0,H-46,W,4,'#2A4FDA');
+      }
+      cx.restore();
+    }
+  }
+  function drawObst(f){
+    S.obst.forEach(function(o){
+      var c1=f.obst[0], c2=f.obst[1];
+      // coluna de cima
+      px(o.x, 0, 30, o.gy-o.gap/2, c1); px(o.x, o.gy-o.gap/2-10, 30, 10, c2);
+      px(o.x-3, o.gy-o.gap/2-14, 36, 8, c2);
+      // coluna de baixo
+      px(o.x, o.gy+o.gap/2, 30, H-(o.gy+o.gap/2), c1); px(o.x, o.gy+o.gap/2, 30, 10, c2);
+      px(o.x-3, o.gy+o.gap/2+6, 36, 8, c2);
+      // textura
+      for(var yy=8; yy<H; yy+=22){ if(yy<o.gy-o.gap/2-16 || yy>o.gy+o.gap/2+16){ px(o.x+6, yy, 4, 8, 'rgba(0,0,0,.18)'); px(o.x+20, yy+10, 4, 8, 'rgba(255,255,255,.12)'); } }
+    });
+  }
+  function drawRocket(){
+    var x=64, y=S.y, tilt=Math.max(-0.45,Math.min(0.6,S.vy/520));
+    cx.save(); cx.translate(x,y); cx.rotate(tilt);
+    // chama
+    if(!S.dead){ px(-22,-3,8,6,'#FF8C42'); px(-27,-2,5,4,'#FFD93D'); }
+    // corpo
+    px(-14,-7,24,14,'#E8EDF5'); px(-14,-7,24,4,'#fff');
+    px(10,-7,7,14,'#E03A3A'); cx.fillStyle='#E03A3A'; cx.beginPath(); cx.moveTo(17,-7); cx.lineTo(26,0); cx.lineTo(17,7); cx.fill();
+    // janela
+    px(-2,-4,8,8,'#00F9FF'); px(-1,-3,6,6,'#7fe8f5');
+    // asas
+    px(-14,-13,10,7,'#E03A3A'); px(-14,6,10,7,'#E03A3A');
+    cx.restore();
+  }
+
+  function draw(){
+    var f=faseAtual();
+    skyGrad(f);
+    drawFar(f, S.farX*0.35);
+    drawObst(f);
+    drawRocket();
+    // chao por cima (tira pra leitura: fina faixa)
+    px(0,H-8,W,8,'rgba(0,0,0,.25)');
+  }
+
+  // ---------- loop ----------
+  function tick(ts){
+    if(S.mode!=='play'){ return; }
+    if(!S.last)S.last=ts;
+    var dt=Math.min(0.05,(ts-S.last)/1000); S.last=ts;
+
+    if(S.started && !S.dead){
+      S.vy+=S.gravity*dt; S.y+=S.vy*dt;
+      S.farX+=S.speed*dt;
+      S.obst.forEach(function(o){ o.x-=S.speed*dt; });
+      S.obst=S.obst.filter(function(o){ return o.x>-50; });
+      ensureObst();
+      // pontuar
+      S.obst.forEach(function(o){
+        if(!o.passed && o.x+30 < 64-14){ o.passed=true; S.score++; sPoint(); $('#score').textContent=S.score;
+          var nf=faseIdx(); if(nf!==S.fase){ S.fase=nf; sFase(); showBanner(FASES[S.fase]); $('#lugar').textContent=FASES[S.fase].nm; }
+        }
+      });
+      // colisao
+      var rx=64, rTop=S.y-9, rBot=S.y+9, rL=rx-16, rR=rx+24;
+      if(rBot>=H-6 || rTop<=2){ die(); }
+      S.obst.forEach(function(o){
+        if(rR>o.x && rL<o.x+30){ if(rTop < o.gy-o.gap/2 || rBot > o.gy+o.gap/2){ die(); } }
+      });
+    }
+    if(S.dead){ S.deadT+=dt; S.vy+=S.gravity*dt; S.y=Math.min(H-10,S.y+S.vy*dt);
+      if(S.deadT>0.9){ return endRun(); }
+    }
+    if(S.bannerT>0){ S.bannerT-=dt; if(S.bannerT<=0) $('#banner').classList.remove('show'); }
+    draw();
+    S.raf=requestAnimationFrame(tick);
+  }
+
+  function flap(){
+    if(S.mode!=='play' || S.dead) return;
+    if(!S.started){ S.started=true; $('#taphint').classList.add('hide'); }
+    S.vy=S.flapV; sFlap();
+  }
+  function die(){ if(S.dead)return; S.dead=true; S.vy=Math.max(S.vy,60); sCrash(); }
+
+  // ---------- fluxo ----------
+  function startRun(){
+    ac();
+    var keep=S.nameIdx; reset(); S.nameIdx=keep;
+    S.mode='play'; S.fase=0;
+    $('#screenIntro').classList.add('hidden'); $('#screenEnd').classList.add('hidden');
+    $('#screenInitials').classList.add('hidden'); $('#screenRank').classList.add('hidden');
+    $('#hud').style.display='flex'; $('#score').textContent='0';
+    $('#lugar').textContent=FASES[0].nm;
+    $('#taphint').classList.remove('hide');
+    showBanner(FASES[0]);
+    ensureObst();
+    S.last=0; S.raf=requestAnimationFrame(tick);
+  }
+  function endRun(){
+    S.mode='end'; cancelAnimationFrame(S.raf);
+    $('#hud').style.display='none'; $('#banner').classList.remove('show');
+    var f=faseAtual();
+    $('#endVerdict').textContent = S.score>=PONTOS_POR_FASE*(FASES.length-1) ? 'VOCÊ CHEGOU AO ESPAÇO! 🚀' : 'O SONHO CAIU. BORA DE NOVO!';
+    $('#endScore').innerHTML = S.score+'<small>perrengue'+(S.score===1?'':'s')+' atravessado'+(S.score===1?'':'s')+'</small>';
+    $('#endWhere').textContent = 'VOCÊ CHEGOU ATÉ: '+f.nm;
+    if(S.score>0) sWin();
+    $('#screenEnd').classList.remove('hidden');
+  }
+  $('#contBtn').onclick=function(){
+    $('#screenEnd').classList.add('hidden');
+    if(qualifies(S.score)){ buildNamePick(); $('#screenInitials').classList.remove('hidden'); }
+    else { showRankScreen(null); }
+  };
+  $('#saveBtn').onclick=function(){
+    var nome=S.nameIdx.map(function(i){return ALPHA[i];}).join('');
+    var entry={nome:nome, score:S.score, ts:new Date().toISOString()};
+    var a=loadRank(); a.push(entry); saveRank(a);
+    $('#screenInitials').classList.add('hidden');
+    showRankScreen(entry);
+  };
+  function showRankScreen(entry){
+    renderRank($('#rankEndRows'), entry?{nome:entry.nome,score:entry.score}:null);
+    $('#screenRank').classList.remove('hidden');
+  }
+  $('#replayBtn').onclick=startRun;
+  $('#startBtn').onclick=startRun;
+
+  // ---------- iniciais (▲▼) ----------
+  function buildNamePick(){
+    var np=$('#namepick'); np.innerHTML='';
+    for(var i=0;i<3;i++){ (function(i){
+      var s=document.createElement('div'); s.className='ns';
+      s.innerHTML='<button class="na up" type="button">▲</button><div class="nl">'+ALPHA[S.nameIdx[i]]+'</div><button class="na dn" type="button">▼</button>';
+      np.appendChild(s);
+      var nl=s.querySelector('.nl');
+      s.querySelector('.up').onclick=function(){ S.nameIdx[i]=(S.nameIdx[i]+1)%26; nl.textContent=ALPHA[S.nameIdx[i]]; sTick(); };
+      s.querySelector('.dn').onclick=function(){ S.nameIdx[i]=(S.nameIdx[i]+25)%26; nl.textContent=ALPHA[S.nameIdx[i]]; sTick(); };
+    })(i); }
+  }
+
+  // ---------- input ----------
+  ['pointerdown'].forEach(function(ev){
+    $('#stage').addEventListener(ev, function(e){
+      S._idle=performance.now();
+      if(S.mode==='play'){ flap(); }
+    }, {passive:true});
+  });
+  window.addEventListener('keydown', function(e){ if(e.code==='Space') flap(); });
+
+  // idle/attract: volta pra intro depois de 60s parado fora dela
+  setInterval(function(){
+    if(performance.now()-S._idle>60000 && $('#screenIntro').classList.contains('hidden')){
+      S._idle=performance.now();
+      cancelAnimationFrame(S.raf); S.mode='intro';
+      ['screenEnd','screenInitials','screenRank'].forEach(function(id){ document.getElementById(id).classList.add('hidden'); });
+      $('#hud').style.display='none';
+      renderRank($('#rankIntroRows'), null);
+      $('#screenIntro').classList.remove('hidden');
+    }
+  }, 5000);
+
+  // intro: ranking + cena de fundo parada
+  renderRank($('#rankIntroRows'), null);
+  S.fase=0; draw();
+
+  // dev hooks
+  (function(){
+    var m=location.search.match(/dev=(\w+)/); if(!m)return; ac=function(){return null;};
+    window.__S=function(){ return {y:S.y, vy:S.vy, score:S.score, fase:S.fase, dead:S.dead, mode:S.mode, obst:S.obst.map(function(o){return {x:o.x,gy:o.gy,gap:o.gap};})}; };
+    window.__flap=flap;
+    var v=m[1];
+    if(v==='play'){ startRun(); }
+    else if(v==='end'){ reset(); S.score=14; S.fase=2; S.mode='end'; endRun(); }
+    else if(v==='rank'){ showRankScreen(null); $('#screenIntro').classList.add('hidden'); }
+    else if(v==='fase'){ var n=parseInt((location.search.match(/n=(\d)/)||[])[1]||'0',10); reset(); S.fase=n; draw(); $('#screenIntro').classList.add('hidden'); }
+  })();
+})();
+</script>
+</body>
+</html>
