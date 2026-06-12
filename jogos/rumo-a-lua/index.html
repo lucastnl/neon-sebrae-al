@@ -202,14 +202,20 @@ window.addEventListener('error', function(e){ if(!/dev=/.test(location.search))r
   ];
   var PONTOS_POR_FASE=5; // a ultima fase (Lua) e infinita: e la que os bons passam mais tempo
 
+  // ---------- CALIBRAGEM DO TOTEM ----------
+  // O touch do totem responde pior que celular. Se estiver dificil demais no hardware,
+  // ajusta AQUI (ou via URL, sem editar nada: ?vel=0.85). 1 = padrao; 0.85 = 15% mais lento; 1.1 = mais rapido.
+  var TOTEM_VEL = 1;
+  (function(){ var m=location.search.match(/[?&]vel=([0-9.]+)/); if(m){ var v=parseFloat(m[1]); if(v>=0.5 && v<=1.5) TOTEM_VEL=v; } })();
+
   // ---------- dificuldade progressiva (estilo Monstro) ----------
   function diff(){
     var f=S.fase, sc=S.score;
     return {
-      speed: 78 + f*9 + Math.min(20, Math.floor(sc/10)*3),       // acelera por fase e segue subindo
-      gap:   Math.max(104, 142 - f*5),                            // vao aperta
-      spacing: Math.max(146, 172 - f*4),                          // perrengues mais juntos
-      drift: f>=2 ? (10 + f*4) : 0                                // a partir de Penedo o vao SOBE E DESCE
+      speed: (78 + f*9 + Math.min(20, Math.floor(sc/10)*3)) * TOTEM_VEL,  // acelera por fase e segue subindo
+      gap:   Math.max(104, 142 - f*5) + (TOTEM_VEL<1 ? 10 : 0),           // vao aperta (folga extra no modo calibrado)
+      spacing: Math.max(146, 172 - f*4),                                   // perrengues mais juntos
+      drift: (f>=2 ? (10 + f*4) : 0) * TOTEM_VEL                           // a partir de Penedo o vao SOBE E DESCE
     };
   }
 
