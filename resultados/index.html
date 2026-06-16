@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#050822" />
+<title>NEON 2026 · Resultados da Educação Empreendedora — Sebrae AL × Tiro na Lua</title>
+
+<meta property="og:title" content="NEON 2026 · Resultados da Educação Empreendedora" />
+<meta property="og:description" content="Os números da ação no NEON Sebrae AL: atendimentos, alunos cadastrados, jogos do totem reutilizáveis e o que entregamos além do contrato. Realização Sebrae Alagoas, criação Tiro na Lua." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="og-resultados.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="og-resultados.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+/* ---- complementos deste relatório ---- */
+.bignum-row { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:4px; }
+.bignum { background:rgba(0,217,92,0.06); border:1px solid rgba(0,217,92,0.32); border-radius:12px; padding:18px 20px; }
+.bignum .lbl { font-family:'Press Start 2P',monospace; font-size:8px; letter-spacing:1px; color:var(--ciano); text-shadow:0 0 8px var(--ciano); line-height:1.7; margin-bottom:10px; display:block; }
+.bignum .n { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(30px,4.4vw,46px); line-height:1; color:var(--verde-claro); text-shadow:0 0 16px rgba(0,255,133,0.4); }
+.bignum .sub { font-size:12.5px; color:var(--muted); line-height:1.5; margin-top:9px; }
+.bignum.alt { background:rgba(0,249,255,0.06); border-color:rgba(0,249,255,0.30); }
+.bignum.alt .n { color:var(--ciano); text-shadow:0 0 16px rgba(0,249,255,0.4); }
+
+/* tabela */
+table.dt { width:100%; border-collapse:collapse; font-size:14px; margin-top:6px; }
+table.dt th, table.dt td { text-align:left; padding:9px 10px; border-bottom:1px dashed rgba(255,255,255,0.12); }
+table.dt th { font-family:'Press Start 2P',monospace; font-size:8px; letter-spacing:0.5px; color:var(--accent); text-shadow:0 0 6px var(--accent); }
+table.dt td.num, table.dt th.num { text-align:right; font-variant-numeric:tabular-nums; }
+table.dt tr.tot td { border-top:1px solid var(--line); border-bottom:none; font-weight:700; color:var(--verde-claro); }
+table.dt td b { color:var(--branco); }
+
+/* contratado vs entregue */
+.cve { list-style:none; }
+.cve li { display:grid; grid-template-columns:1fr auto; gap:14px; align-items:center; padding:12px 0; border-bottom:1px dashed rgba(255,255,255,0.10); }
+.cve li:last-child { border-bottom:none; }
+.cve .what { font-size:15px; line-height:1.45; }
+.cve .what b { color:var(--verde-claro); }
+.cve .delta { font-family:'Press Start 2P',monospace; font-size:11px; color:var(--amarelo); text-shadow:0 0 8px rgba(255,217,61,0.5); white-space:nowrap; }
+.cve .delta .from { color:var(--muted); text-shadow:none; }
+
+/* botões / links */
+.btns { display:flex; flex-wrap:wrap; gap:10px; margin-top:6px; }
+.btn { display:inline-flex; align-items:center; gap:8px; text-decoration:none; font-family:'Press Start 2P',monospace; font-size:9px; letter-spacing:1px; padding:11px 15px; border-radius:999px; border:1px solid var(--ciano); color:var(--ciano); background:rgba(0,249,255,0.07); transition:transform .12s; }
+.btn:hover { transform:translateY(-2px); }
+.btn.green { border-color:var(--verde); color:var(--verde-claro); background:rgba(0,217,92,0.10); }
+
+/* grade de jogos */
+.games { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:6px; }
+.game { display:block; text-decoration:none; background:rgba(10,15,54,0.55); border:1px solid var(--line); border-radius:10px; padding:14px 16px; transition:transform .12s,border-color .12s; }
+.game:hover { transform:translateY(-2px); border-color:var(--ciano); }
+.game .gn { font-weight:700; font-size:15px; color:var(--verde-claro); }
+.game .gd { font-size:12.5px; color:var(--muted); margin-top:4px; line-height:1.45; }
+.game .gl { font-family:'Press Start 2P',monospace; font-size:8px; color:var(--ciano); margin-top:9px; letter-spacing:0.5px; }
+
+@media (max-width:860px){ .bignum-row{grid-template-columns:1fr;} .games{grid-template-columns:1fr;} }
+@media print {
+  .bignum, .bignum.alt { background:#f0fff4; border-color:#006633; }
+  .bignum .lbl, .bignum .n, .bignum.alt .n { color:#006633; text-shadow:none; }
+  .bignum .sub { color:#555; }
+  table.dt th { color:#0A0F36; text-shadow:none; }
+  table.dt tr.tot td { color:#006633; }
+  table.dt td, table.dt td b { color:#1a1a1a; }
+  .cve .delta { color:#b8860b; text-shadow:none; }
+  .cve .what b { color:#006633; }
+  .btn, .btn.green { color:#0A0F36; border-color:#0A0F36; background:#fff; }
+  .game { background:#fff; border-color:#aaa; break-inside:avoid; }
+  .game .gn { color:#006633; } .game .gd { color:#444; } .game .gl { color:#0A0F36; }
+}
+</style>
+<style>
+:root {
+  --verde: #00D95C; --verde-claro: #00FF85;
+  --magenta: #FF00FF; --magenta-claro: #FF76FF;
+  --ciano: #00F9FF; --azul: #2A4FDA; --azul-claro: #5680FF;
+  --branco: #FFFFFF; --navy: #0A0F36; --navy-deep: #050822; --navy-mid: #1A1F4E;
+  --amarelo: #FFD93D; --laranja: #FF8C42; --vermelho: #FF3060;
+  --muted: rgba(255,255,255,0.66);
+  --line: rgba(0,249,255,0.18);
+  --accent: #00F9FF;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  background: var(--navy-deep);
+  color: var(--branco);
+  font-family: 'Space Grotesk', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: -2;
+  background:
+    linear-gradient(180deg, var(--navy-deep) 0%, var(--navy) 60%, var(--navy-mid) 100%),
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,249,255,0.04) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,249,255,0.04) 40px);
+}
+body::after {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 60;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,0.13) 0, rgba(0,0,0,0.13) 1px, transparent 1px, transparent 3px);
+  mix-blend-mode: multiply; opacity: 0.38;
+}
+
+.sheet { max-width: 1120px; margin: 0 auto; padding: 30px 30px 80px; }
+
+/* HEADER */
+header {
+  display: grid; grid-template-columns: auto 1fr auto; gap: 22px;
+  align-items: center; padding-bottom: 20px; margin-bottom: 26px;
+  border-bottom: 1px solid var(--line);
+}
+header .logo img { height: 34px; filter: drop-shadow(0 0 8px rgba(0,249,255,0.4)); display:block; }
+header .title .kicker {
+  font-family: 'Press Start 2P', monospace; font-size: 9px; letter-spacing: 1.5px;
+  color: var(--amarelo); text-shadow: 0 0 8px rgba(255,217,61,0.5); margin-bottom: 9px;
+}
+header .title h1 {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+  font-size: clamp(18px, 2.5vw, 26px); line-height: 1.22; letter-spacing: -0.3px;
+}
+header .title h1 .hl { color: var(--verde-claro); text-shadow: 0 0 14px rgba(0,255,133,0.45); }
+header .title .credit {
+  margin-top: 10px; font-size: 12.5px; color: var(--muted); line-height: 1.5;
+}
+header .title .credit b { color: var(--ciano); font-weight: 600; }
+header .badge {
+  font-family: 'Press Start 2P', monospace; font-size: 9px; letter-spacing: 1.3px;
+  color: var(--accent); text-align: right; line-height: 2; text-shadow: 0 0 10px var(--accent);
+}
+header .badge span { color: var(--amarelo); }
+
+/* GRID */
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+.block {
+  background: rgba(10,15,54,0.6); border: 1px solid var(--line);
+  border-radius: 12px; padding: 22px 24px; backdrop-filter: blur(4px);
+}
+.block.full { grid-column: 1 / -1; }
+.block .tag {
+  font-family: 'Press Start 2P', monospace; font-size: 9px; letter-spacing: 1.5px;
+  color: var(--accent); margin-bottom: 14px; text-shadow: 0 0 8px var(--accent);
+}
+.block h2 {
+  font-weight: 700; font-size: 17px; line-height: 1.3; letter-spacing: -0.2px;
+  color: var(--verde-claro); margin-bottom: 13px;
+}
+.block p { font-size: 15px; line-height: 1.62; color: rgba(255,255,255,0.92); margin-bottom: 11px; }
+.block p:last-child { margin-bottom: 0; }
+.block p strong { color: var(--branco); font-weight: 700; }
+.block p .ci { color: var(--ciano); font-weight: 600; }
+.block p.sec { font-size: 13px; color: var(--muted); margin-top: 12px; }
+
+/* DESTAQUE (bloco do fio condutor) */
+.block.spot { background: rgba(0,217,92,0.06); border-color: rgba(0,217,92,0.34); }
+.block.spot .lead { font-size: 17px; line-height: 1.55; color: var(--branco); }
+.block.spot .lead .hl { color: var(--verde-claro); font-weight: 700; }
+
+/* GANCHOS (lista) */
+.hooks { list-style: none; }
+.hooks li {
+  display: grid; grid-template-columns: 22px 1fr; gap: 12px;
+  padding: 11px 0; border-bottom: 1px dashed rgba(255,255,255,0.09);
+  font-size: 14.5px; line-height: 1.5;
+}
+.hooks li:last-child { border-bottom: none; }
+.hooks li::before { content: '>'; color: var(--ciano); font-size: 14px; font-family: 'Press Start 2P', monospace; text-shadow: 0 0 8px var(--ciano); }
+.hooks li strong { color: var(--verde-claro); font-weight: 700; }
+
+/* FLUXO numerado (momentos) */
+.flow { counter-reset: step; }
+.flow .step {
+  display: grid; grid-template-columns: 28px 1fr; gap: 12px; padding: 10px 0;
+  border-bottom: 1px dashed rgba(255,255,255,0.09); font-size: 14.5px; line-height: 1.5; align-items: start;
+}
+.flow .step:last-child { border-bottom: none; }
+.flow .step::before {
+  counter-increment: step; content: counter(step);
+  font-family: 'Press Start 2P', monospace; font-size: 11px; color: var(--accent);
+  text-shadow: 0 0 8px var(--accent); padding-top: 2px;
+}
+.flow .step strong { color: var(--verde-claro); font-weight: 700; }
+
+/* KEY-VALUE */
+.kv { font-size: 14.5px; line-height: 1.6; }
+.kv p { margin-bottom: 10px; display: grid; grid-template-columns: 98px 1fr; gap: 12px; }
+.kv p:last-child { margin-bottom: 0; }
+.kv strong {
+  font-family: 'Press Start 2P', monospace; font-size: 8.5px; letter-spacing: 0.5px;
+  color: var(--accent); line-height: 1.7; padding-top: 2px;
+}
+
+/* FOOTER */
+footer {
+  margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--line);
+  display: flex; justify-content: space-between; align-items: center; gap: 18px;
+  font-size: 12px; color: var(--muted); flex-wrap: wrap;
+}
+footer .logos { display: flex; align-items: center; gap: 18px; }
+footer .logos img { height: 24px; opacity: 0.9; }
+footer .stamp { font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--accent); letter-spacing: 1px; }
+
+/* PRINT BTN */
+.print-btn {
+  position: fixed; bottom: 24px; right: 24px; z-index: 500;
+  font-family: 'Press Start 2P', monospace; font-size: 10px; letter-spacing: 1px;
+  padding: 13px 18px; border: none; border-radius: 999px; cursor: pointer;
+  background: var(--verde); color: var(--navy-deep); box-shadow: 0 6px 24px rgba(0,217,92,0.5);
+}
+.print-btn:hover { transform: translateY(-2px); }
+
+@media (max-width: 860px) {
+  .sheet { padding: 22px 16px 96px; }
+  header { grid-template-columns: auto 1fr; }
+  header .badge { display: none; }
+  .grid { grid-template-columns: 1fr; }
+  .kv p { grid-template-columns: 88px 1fr; }
+}
+
+@media print {
+  @page { size: A4 landscape; margin: 9mm; }
+  html, body { background: white; color: black; }
+  body::before, body::after { display: none; }
+  .sheet { padding: 0; max-width: none; }
+  header { border-color: #999; }
+  header .logo img { filter: none; }
+  header .title h1, header .title h1 .hl { color: #0A0F36; text-shadow: none; }
+  header .title .kicker { color: #b8860b; text-shadow: none; }
+  header .title .credit { color: #444; }
+  header .title .credit b { color: #0A0F36; }
+  header .badge { color: #0A0F36; text-shadow: none; }
+  header .badge span { color: #0A0F36; }
+  .block { background: white; border-color: #aaa; break-inside: avoid; }
+  .block.spot { background: #f0fff4; border-color: #006633; }
+  .block h2, .block.spot .lead .hl, .hooks li strong, .flow .step strong { color: #006633; text-shadow: none; }
+  .block.spot .lead { color: #111; }
+  .block .tag { color: #0A0F36; text-shadow: none; }
+  .block p, .kv, .hooks li, .flow .step { color: #1a1a1a; }
+  .block p.sec { color: #555; }
+  .block p .ci { color: #0A0F36; }
+  .hooks li::before, .flow .step::before { color: #0A0F36; text-shadow: none; }
+  .kv strong { color: #0A0F36; }
+  footer { color: #555; border-color: #aaa; }
+  footer .stamp { color: #0A0F36; }
+  footer .logos img { filter: none; }
+  .print-btn { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header>
+    <div class="logo"><img src="../assets/logo-tnl-h.png" alt="Tiro na Lua" /></div>
+    <div class="title">
+      <div class="kicker">RELATÓRIO DE RESULTADOS</div>
+      <h1>Educação Empreendedora no <span class="hl">NEON 2026</span>: os números da ação</h1>
+      <div class="credit">Realização: <b>Educação Empreendedora · Sebrae Alagoas</b> &nbsp;|&nbsp; Criação e experiência: <b>Tiro na Lua</b></div>
+    </div>
+    <div class="badge">11 A 13 JUN<br><span>MACEIÓ</span></div>
+  </header>
+
+  <div class="grid">
+
+    <!-- TL;DR -->
+    <div class="block full">
+      <div class="tag">RESUMO · O QUE VOCÊ PEDIU</div>
+      <h2>As três respostas, de forma direta</h2>
+      <div class="bignum-row">
+        <div class="bignum">
+          <span class="lbl">ATENDIMENTOS NO EVENTO</span>
+          <div class="n">≈ 5.647</div>
+          <div class="sub">Total estimado somando os 3 dias e todas as ativações (totem, VR, oficina, palestra e parede de escalada). Detalhe e método na seção 4.</div>
+        </div>
+        <div class="bignum alt">
+          <span class="lbl">ALUNOS CADASTRADOS</span>
+          <div class="n">1.026</div>
+          <div class="sub">Cadastrados no total. Desses, <b style="color:var(--branco)">712</b> com perfil completo na plataforma (Escalada) e <b style="color:var(--branco)">314</b> com cadastro simplificado.</div>
+        </div>
+        <div class="bignum">
+          <span class="lbl">RELAÇÃO DOS ALUNOS</span>
+          <div class="n">Planilha</div>
+          <div class="sub">Lista nominal completa pra compatibilização do NEON, em 3 abas. Link na seção 6.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTRATADO VS ENTREGUE -->
+    <div class="block spot full">
+      <div class="tag">CONTRATADO × ENTREGUE</div>
+      <p class="lead">A gente entregou <span class="hl">além do que estava no contrato</span>, e estruturou peças que não estavam previstas mas eram necessárias pra ação funcionar como uma jornada só.</p>
+      <ul class="cve" style="margin-top:14px">
+        <li><span class="what"><b>Oficinas</b> realizadas no espaço</span><span class="delta"><span class="from">9 contratadas →</span> 12</span></li>
+        <li><span class="what"><b>Jogos do totem.</b> O jogo do Sabiá (Sabraitim) não funcionou na operação, e a gente desenvolveu um quarto jogo no lugar pra não deixar buraco na experiência.</span><span class="delta"><span class="from">3 contratados →</span> 4</span></li>
+        <li><span class="what"><b>A costura da jornada (Lunoscópio).</b> Toda a jornada do participante — storytelling, personagem e a amarração das experiências numa subida só.</span><span class="delta">+ extra</span></li>
+        <li><span class="what"><b>Gestão do fluxo</b> entre as caravanas e as experiências do espaço.</span><span class="delta">+ extra</span></li>
+        <li><span class="what"><b>Gestão do credenciamento</b> dos estudantes (cadastro, crachá numerado, perfis).</span><span class="delta">+ extra</span></li>
+        <li><span class="what"><b>Gestão do lançamento</b> dos atendimentos dos eventos.</span><span class="delta">+ extra</span></li>
+      </ul>
+    </div>
+
+    <!-- JOGOS REUTILIZÁVEIS -->
+    <div class="block full">
+      <div class="tag">JOGOS DO TOTEM · FORMATO REUTILIZÁVEL</div>
+      <h2>Os 4 jogos, prontos pra usar em outras atividades</h2>
+      <p>Todos rodam no navegador, em qualquer tela (totem, computador, celular ou projetor). É só abrir o link, sem instalar nada. Dá pra usar soltos em outras ações da Educação Empreendedora.</p>
+      <div class="games">
+        <a class="game" href="https://neon-sebrae-al.netlify.app/jogar/monstro/">
+          <div class="gn">O Monstro do Próximo Passo</div>
+          <div class="gd">Derruba os medos e dá o próximo passo. Reflexo e coragem.</div>
+          <div class="gl">▸ NEON-SEBRAE-AL.NETLIFY.APP/JOGAR/MONSTRO</div>
+        </a>
+        <a class="game" href="https://neon-sebrae-al.netlify.app/jogos/forja-de-ideias/">
+          <div class="gn">Forja de Ideias</div>
+          <div class="gd">Combina elementos e forja ideias novas. Criatividade.</div>
+          <div class="gl">▸ /JOGOS/FORJA-DE-IDEIAS</div>
+        </a>
+        <a class="game" href="https://neon-sebrae-al.netlify.app/jogos/acende-a-centelha/">
+          <div class="gn">Acende a Centelha</div>
+          <div class="gd">Arromba a sala e acende a centelha. Lógica.</div>
+          <div class="gl">▸ /JOGOS/ACENDE-A-CENTELHA</div>
+        </a>
+        <a class="game" href="https://neon-sebrae-al.netlify.app/jogos/rumo-a-lua/">
+          <div class="gn">Tiro na Lua</div>
+          <div class="gd">O quarto jogo, desenvolvido no lugar do Sabiá. Mira e foco.</div>
+          <div class="gl">▸ /JOGOS/RUMO-A-LUA</div>
+        </a>
+      </div>
+      <div class="btns" style="margin-top:14px">
+        <a class="btn green" href="https://neon-sebrae-al.netlify.app/hub/">▸ HUB COM TODAS AS EXPERIÊNCIAS</a>
+        <a class="btn" href="https://neon-sebrae-al.netlify.app/jornada/">▸ A COSTURA DA JORNADA (LUNOSCÓPIO)</a>
+      </div>
+    </div>
+
+    <!-- ATENDIMENTOS DETALHE -->
+    <div class="block">
+      <div class="tag">4 · ATENDIMENTOS POR ATIVAÇÃO</div>
+      <h2>De onde vêm os ≈ 5.647</h2>
+      <table class="dt">
+        <tr><th>Ativação</th><th class="num">Atendimentos</th></tr>
+        <tr><td>Totem (4 unidades)</td><td class="num"><b>3.489</b></td></tr>
+        <tr><td>Realidade Virtual</td><td class="num"><b>1.060</b></td></tr>
+        <tr><td>Oficinas</td><td class="num"><b>600</b></td></tr>
+        <tr><td>Parede de Escalada</td><td class="num"><b>408</b></td></tr>
+        <tr><td>Palestras</td><td class="num"><b>90</b></td></tr>
+        <tr class="tot"><td>TOTAL ESTIMADO</td><td class="num">≈ 5.647</td></tr>
+      </table>
+      <p class="sec">1 atendimento = 1 estudante numa ativação, num dos 3 dias. Parte é contagem real (coletada nos tablets) e parte é estimativa, nos dias/ativações em que a coleta falhou — por isso "estimado". A regra de cada estimativa está documentada no relatório técnico.</p>
+    </div>
+
+    <!-- CADASTROS DETALHE -->
+    <div class="block">
+      <div class="tag">5 · ALUNOS CADASTRADOS</div>
+      <h2>Como se dividem os 1.026</h2>
+      <table class="dt">
+        <tr><th>Fonte</th><th>Perfil</th><th class="num">Total</th></tr>
+        <tr><td>Operador (presencial)</td><td>Completo</td><td class="num">320</td></tr>
+        <tr><td>Auto-cadastro (Escalada)</td><td>Completo</td><td class="num">392</td></tr>
+        <tr><td>Formulário simplificado</td><td>Simplificado</td><td class="num">244</td></tr>
+        <tr><td>Cadastro legado (menores)</td><td>Simplificado</td><td class="num">70</td></tr>
+        <tr class="tot"><td>TOTAL</td><td></td><td class="num">1.026</td></tr>
+      </table>
+      <p class="sec"><b style="color:var(--branco)">712</b> perfis completos (entram na plataforma Escalada do jeito tradicional). <b style="color:var(--branco)">314</b> simplificados — boa parte são estudantes menores, em que pedimos só nome e instituição de ensino.</p>
+    </div>
+
+    <!-- LANÇAMENTO -->
+    <div class="block spot full">
+      <div class="tag">6 · LANÇAMENTO DOS ATENDIMENTOS · PONTOS PRA ALINHAR COM VOCÊS</div>
+      <p class="lead">Os atendimentos aconteceram. O que a gente quer fechar com vocês é <span class="hl">como registrar isso da forma certa no sistema</span>, porque essa configuração de evento traz situações novas e a gente prefere combinar antes de lançar.</p>
+      <ul class="hooks" style="margin-top:14px">
+        <li><span><strong>Tem dois tipos de cadastro.</strong> Parte dos estudantes tem o cadastro completo (dá pra lançar via orientação técnica). Outra parte são menores com cadastro simplificado (nome + instituição) — esses não entram pela orientação técnica tradicional, só via lista.</span></li>
+        <li><span><strong>Boa parte do total é estimativa.</strong> Nos dias e ativações em que a coleta por tablet falhou, sabemos que os atendimentos aconteceram, mas não temos o registro nominal de cada pessoa — então não dá pra amarrar um nome a cada um desses.</span></li>
+        <li><span><strong>O que precisamos decidir juntos:</strong> dá pra subir uma parte via orientação técnica e outra via lista, na mesma ação? Como vocês preferem tratar os atendimentos estimados, que não têm nome? E os menores, qual o caminho?</span></li>
+      </ul>
+      <p style="margin-top:13px">Sugestão: um bate-papo rápido pra fechar esses três pontos. A gente já chega com os dados organizados pra lançar do jeito que vocês indicarem.</p>
+    </div>
+
+    <!-- PLANILHA + PRÓXIMOS PASSOS -->
+    <div class="block">
+      <div class="tag">7 · RELAÇÃO DOS ALUNOS</div>
+      <h2>Lista nominal pra compatibilização</h2>
+      <p>Planilha com a relação completa, em 3 abas: <b>relação geral (1.026)</b>, <b>perfil completo (712)</b> e <b>perfil simplificado (314)</b>, com as ativações que cada estudante fez.</p>
+      <div class="btns">
+        <a class="btn green" href="https://docs.google.com/spreadsheets/d/1TZVnnkivjdYkBYERP84EPv9XJ0j29lEvNHjssD7CNg4/edit">▸ ABRIR A PLANILHA</a>
+      </div>
+      <p class="sec">Por conter dados pessoais (inclusive de menores), o acesso é liberado por e-mail. O Lucas compartilha o link diretamente com você.</p>
+    </div>
+
+    <div class="block">
+      <div class="tag">8 · PRÓXIMO PASSO</div>
+      <h2>Vem aí o relatório completo</h2>
+      <p>Este é o resumo dos resultados pra você já sair de férias com os números na mão. Em seguida a gente entrega um <b>relatório mais completo</b>, com as evidências da ação em <span class="ci">foto e vídeo</span> e o detalhamento de cada experiência.</p>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="logos">
+      <img src="../assets/logo-tnl-h.png" alt="Tiro na Lua" />
+      <img src="../assets/logo-sebrae.png" alt="Sebrae Alagoas" />
+    </div>
+    <div class="stamp">NEON 2026 · RESULTADOS</div>
+  </footer>
+
+</div>
+
+<button class="print-btn" onclick="window.print()">↓ SALVAR PDF</button>
+</body>
+</html>

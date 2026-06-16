@@ -4,3 +4,8 @@ node_modules/
 .env.local
 *.log
 .netlify/
+
+# Dados pessoais (CPF/telefone/email, inclui menores) — NUNCA publicar
+_relatorio_renata/
+# preview interno do relatorio
+resultados/_preview.png
